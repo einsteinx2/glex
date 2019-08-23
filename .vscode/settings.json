@@ -63,6 +63,8 @@
         "ratio": "cpp",
         "stdexcept": "cpp",
         "type_traits": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "vec234.h": "c",
+        "stdlib.h": "c"
     }
 }
