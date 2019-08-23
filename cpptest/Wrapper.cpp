@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+Wrapper::Wrapper(std::string windowName) {
+    _windowName = windowName;
+}
+
 /* change view angle, exit upon ESC */
 void key(GLFWwindow* window, int k, int s, int action, int mods) {
     if (action != GLFW_PRESS) {
@@ -85,7 +89,7 @@ void Wrapper::createWindow() {
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
-    window = glfwCreateWindow(640, 480, "Fixed Function Triangle", NULL, NULL);
+    window = glfwCreateWindow(640, 480, _windowName.c_str(), NULL, NULL);
     if (!window) {
         fprintf(stderr, "Failed to open GLFW window\n");
         glfwTerminate();

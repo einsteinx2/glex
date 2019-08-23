@@ -65,6 +65,7 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "vec234.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "iomanip": "cpp"
     }
 }

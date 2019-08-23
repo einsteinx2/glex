@@ -3,8 +3,6 @@
 #include <stdio.h>
 
 Cube::Cube() {
-    DEBUG_PRINTLN("Cube constructor called");
-
     _list = glGenLists(1);
     glNewList(_list, GL_COMPILE);
     

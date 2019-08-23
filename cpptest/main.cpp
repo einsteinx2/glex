@@ -21,7 +21,7 @@ double fps = 0.0;
 int main(int argc, char *argv[])
 {
     DEBUG_PRINTLN("Application started!");
-    Wrapper wrapper;
+    Wrapper wrapper("C++ Test");
     wrapper.createWindow();
 
     // Main loop
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
         // Draw the 3d object(s)
         wrapper.reshapeFrustum();
-        triangle.draw();
+        //triangle.draw();
         cube.draw();
 
         // Draw the text
