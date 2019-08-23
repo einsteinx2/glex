@@ -1,10 +1,28 @@
 #include "Font.h"
 #include "../common_gl.h"
 #include "../debug_log.h"
-#include "fonts/arial-32.h"
+#include "fonts/arial-16.hpp"
+#include "fonts/arial-28.hpp"
+#include "fonts/arial-32.hpp"
+#include "fonts/bitWonder-28.hpp"
 
 #include <stdlib.h>
 #include <stdio.h>
+
+Font::Font(FontFace f, float scale_, float kerning_) {
+    switch(f) {
+    case arial_16:     _font = arialFont_16; break;
+    case arial_28:     _font = arialFont_28; break;
+    case arial_32:     _font = arialFont_32; break;
+    case bitWonder_28: _font = bitWonderFont_28; break;
+    default:
+        printf("Unsupported font type\n");
+        exit(EXIT_FAILURE);
+    }
+
+    scale = scale_;
+    kerning = kerning_;
+}
 
 void Font::createTexture() {
     GLuint texid;
@@ -14,12 +32,12 @@ void Font::createTexture() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, font.tex_width, font.tex_height,
-                 0, GL_ALPHA, GL_UNSIGNED_BYTE, font.tex_data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, _font.tex_width, _font.tex_height,
+                 0, GL_ALPHA, GL_UNSIGNED_BYTE, &_font.tex_data[0]);
     glBindTexture(GL_TEXTURE_2D, texid);
 }
 
-void Font::printAt(float penX, float penY, float kerning, std::string const& text) {
+void Font::draw(float penX, float penY, std::string const& text) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_TEXTURE_2D);
@@ -28,9 +46,9 @@ void Font::printAt(float penX, float penY, float kerning, std::string const& tex
     for(i = 0; i < text.length(); ++i) {
         // Find the glyph
         texture_glyph_t* glyph = 0;
-        for(j = 0; j < font.glyphs_count; ++j) {
-            if (font.glyphs[j].charcode == text[i]) {
-                glyph = &font.glyphs[j];
+        for(j = 0; j < _font.glyphs_count; ++j) {
+            if (_font.glyphs[j].charcode == text[i]) {
+                glyph = &_font.glyphs[j];
                 break;
             }
         }

@@ -27,8 +27,7 @@ int main(int argc, char *argv[])
     // Main loop
     Triangle triangle;
     Cube cube;
-    Font font;
-    font.scale = 1.0;
+    Font font(FontFace::arial_32);
     font.createTexture();
     while (!glfwWindowShouldClose(wrapper.window)) {
         // Measure speed
@@ -56,7 +55,7 @@ int main(int argc, char *argv[])
         wrapper.reshapeOrtho(font.scale);
         static std::string outputString;
         outputString = "frame time: " + std::to_string(frameTime) + "ms  fps: " + std::to_string(fps); 
-        font.printAt(20, 20, 0.0, outputString);
+        font.draw(20, 20, outputString);
 
         // Swap buffers to display the current frame
         wrapper.swapBuffers();

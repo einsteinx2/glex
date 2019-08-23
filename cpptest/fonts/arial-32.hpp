@@ -42,44 +42,10 @@
  * ===============================================================================
  */
 
-#include <stddef.h>
-#ifdef __cplusplus
-extern "C" {
-#endif
+#pragma once
+#include "common-font.hpp"
 
-typedef struct
-{
-    wchar_t charcode;
-    float kerning;
-} kerning_t;
-
-typedef struct
-{
-    wchar_t charcode;
-    int width, height;
-    int offset_x, offset_y;
-    float advance_x, advance_y;
-    float s0, t0, s1, t1;
-    size_t kerning_count;
-    kerning_t kerning[10];
-} texture_glyph_t;
-
-typedef struct
-{
-    size_t tex_width;
-    size_t tex_height;
-    size_t tex_depth;
-    unsigned char tex_data[65536];
-    float size;
-    float height;
-    float linegap;
-    float ascender;
-    float descender;
-    size_t glyphs_count;
-    texture_glyph_t glyphs[96];
-} texture_font_t;
-
-texture_font_t font = {
+texture_font_t arialFont_32 = {
  256, 256, 1, 
  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -2229,6 +2195,3 @@ texture_font_t font = {
   {L'~', 17, 7, 1, 15, 18.687500f, 0.000000f, 0.171875f, 0.527344f, 0.238281f, 0.554688f, 0, { } },
  }
 };
-#ifdef __cplusplus
-}
-#endif
