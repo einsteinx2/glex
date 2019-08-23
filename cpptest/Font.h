@@ -4,5 +4,5 @@ class Font {
     public:
         float scale = 1.0;
         void createTexture();
-        void printAt(int penX, int penY, std::string const& text);
+        void printAt(float penX, float penY, float kerning, std::string const& text);
 };

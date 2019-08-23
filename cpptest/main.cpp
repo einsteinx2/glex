@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
         wrapper.reshapeOrtho(font.scale);
         static std::string outputString;
         outputString = "frame time: " + std::to_string(frameTime) + "ms  fps: " + std::to_string(fps); 
-        font.printAt(20, 20, outputString);
+        font.printAt(20, 20, 0.0, outputString);
 
         // Swap buffers to display the current frame
         wrapper.swapBuffers();
