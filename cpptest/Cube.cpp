@@ -7,15 +7,7 @@ Cube::Cube() {
 
     _list = glGenLists(1);
     glNewList(_list, GL_COMPILE);
-    DEBUG_PRINTLN("_list: %d", _list);
     
-    // // Create the triangle
-    // glBegin(GL_TRIANGLES);
-    // glColor3f(1.0, 0.0, 0.0); glVertex3f(-1.0, -1.0, 0.0);
-    // glColor3f(0.0, 1.0, 0.0); glVertex3f( 0.0,  1.0, 0.0);
-    // glColor3f(0.0, 0.0, 1.0); glVertex3f( 1.0, -1.0, 0.0);
-    // glEnd();
-
     // cube ///////////////////////////////////////////////////////////////////////
     //    v7----- v4
     //   /|      /|
@@ -24,7 +16,6 @@ Cube::Cube() {
     //  | |v6---|-|v5
     //  |/      |/
     //  v2------v1
-
 
     GLfloat v0[3] = {  1.0f,  1.0f,  1.0f };
     GLfloat v1[3] = {  1.0f, -1.0f,  1.0f };
@@ -88,7 +79,6 @@ void Cube::draw() {
     glRotatef(_anglez, 0.0f, 0.0f, 1.0f);
     glRotatef(_angley, 0.0f, 1.0f, 0.0f);
     glRotatef(_anglex, 1.0f, 0.0f, 0.0f);
-    
     
     glScalef(3.0, 3.0, 3.0);
     

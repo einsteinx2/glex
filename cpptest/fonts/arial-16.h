@@ -38,13 +38,13 @@ extern "C" {
 
 typedef struct
 {
-    wchar_t charcode;
+    unsigned char charcode;
     float kerning;
 } kerning_t;
 
 typedef struct
 {
-    wchar_t charcode;
+    unsigned char charcode;
     int width, height;
     int offset_x, offset_y;
     float advance_x, advance_y;

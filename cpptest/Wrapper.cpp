@@ -97,10 +97,12 @@ void Wrapper::createWindow() {
     //glfwSetFramebufferSizeCallback(window, _reshapeOrtho);
     glfwSetKeyCallback(window, key);
 
+    // Lock to (probably) 60fps if vsyncEnabled, or unlock framerate
     glfwMakeContextCurrent(window);
     gladLoadGL(glfwGetProcAddress);
-    glfwSwapInterval(1);
+    glfwSwapInterval(vsyncEnabled ? 1 : 0);
 
+    // Setup the frame buffer and view port size
     glfwGetFramebufferSize(window, &_width, &_height);
     DEBUG_PRINTLN("_width: %d _height: %d", _width, _height);
     _reshapeFrustum(window, _width, _height);

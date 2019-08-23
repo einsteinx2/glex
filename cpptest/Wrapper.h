@@ -4,6 +4,7 @@
 class Wrapper {
     public:
         Wrapper() {}; // Default constructor
+        bool vsyncEnabled = true; // By default, lock to 60fps (or whatever refresh rate the monitor is)
         GLFWwindow* window;
         void createWindow();
         void closeWindow();
@@ -14,6 +15,6 @@ class Wrapper {
     private:
         int _width;
         int _height;
-        Wrapper(Wrapper const&);        // prevent copies
-        void operator=(Wrapper const&); // prevent assignments
+        Wrapper(Wrapper const&);        // Prevent copies
+        void operator=(Wrapper const&); // Prevent assignments
 };
