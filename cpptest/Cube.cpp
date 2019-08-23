@@ -83,7 +83,7 @@ void Cube::draw() {
     glCallList(_list);
     glPopMatrix();
 
-    _anglez += 0.5;
-    _angley -= 0.5;
-    _anglex += 0.5;
+    _anglez += 0.75;
+    _angley -= 0.75;
+    _anglex += 0.75;
 }

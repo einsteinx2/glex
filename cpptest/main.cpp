@@ -27,9 +27,9 @@ int main(int argc, char *argv[])
     // Main loop
     Triangle triangle;
     Cube cube;
-    Font arialFont;
-    arialFont.scale = 2.0;
-    arialFont.createTexture();
+    Font font;
+    font.scale = 1.0;
+    font.createTexture();
     while (!glfwWindowShouldClose(wrapper.window)) {
         // Measure speed
         currentTime = glfwGetTime();
@@ -53,10 +53,10 @@ int main(int argc, char *argv[])
 
         // Draw the text
         glClear(GL_DEPTH_BUFFER_BIT);
-        wrapper.reshapeOrtho(arialFont.scale);
+        wrapper.reshapeOrtho(font.scale);
         static std::string outputString;
         outputString = "frame time: " + std::to_string(frameTime) + "ms  fps: " + std::to_string(fps); 
-        arialFont.printAt(20, 20, outputString);
+        font.printAt(20, 20, outputString);
 
         // Swap buffers to display the current frame
         wrapper.swapBuffers();

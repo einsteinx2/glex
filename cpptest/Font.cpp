@@ -1,11 +1,10 @@
 #include "Font.h"
 #include "../common_gl.h"
 #include "../debug_log.h"
-#include "fonts/arial-16.h"
+#include "fonts/arial-32.h"
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <wchar.h>
 
 void Font::createTexture() {
     GLuint texid;
