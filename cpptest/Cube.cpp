@@ -1,13 +1,13 @@
 #include "Cube.h"
-#include "debug_log.h"
+#include "../debug_log.h"
 #include <stdio.h>
 
 Cube::Cube() {
-    DEBUG_WRITELN("Cube constructor called");
+    DEBUG_PRINTLN("Cube constructor called");
 
     _list = glGenLists(1);
     glNewList(_list, GL_COMPILE);
-    DEBUG_WRITELN("_list: %d", _list);
+    DEBUG_PRINTLN("_list: %d", _list);
     
     // // Create the triangle
     // glBegin(GL_TRIANGLES);
@@ -85,12 +85,12 @@ void Cube::draw() {
     glDepthFunc(GL_LESS);
 
     glPushMatrix();
-    glRotatef(_anglez, 0.0f, 0.0f, 0.5f);
+    glRotatef(_anglez, 0.0f, 0.0f, 1.0f);
     glRotatef(_angley, 0.0f, 1.0f, 0.0f);
     glRotatef(_anglex, 1.0f, 0.0f, 0.0f);
     
     
-    glScalef(5.0, 5.0, 5.0);
+    glScalef(3.0, 3.0, 3.0);
     
     glCallList(_list);
     glPopMatrix();

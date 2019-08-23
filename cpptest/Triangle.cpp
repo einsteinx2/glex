@@ -1,13 +1,13 @@
 #include "Triangle.h"
-#include "debug_log.h"
+#include "../debug_log.h"
 #include <stdio.h>
 
 Triangle::Triangle() {
-    DEBUG_WRITELN("Triangle constructor called");
+    DEBUG_PRINTLN("Triangle constructor called");
 
     _list = glGenLists(1);
     glNewList(_list, GL_COMPILE);
-    DEBUG_WRITELN("_list: %d", _list);
+    DEBUG_PRINTLN("_list: %d", _list);
     
     // Create the triangle
     glBegin(GL_TRIANGLES);

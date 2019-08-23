@@ -1,4 +1,6 @@
 #include "Wrapper.h"
+#include "../debug_log.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -35,8 +37,7 @@ void key(GLFWwindow* window, int k, int s, int action, int mods) {
     }
 }
 
-/* new window size */
-void reshape(GLFWwindow* window, int width, int height)
+void _reshapeFrustum(GLFWwindow* window, int width, int height)
 {
     GLfloat h = (GLfloat)height / (GLfloat)width;
     GLfloat xmax, znear, zfar;
@@ -51,7 +52,28 @@ void reshape(GLFWwindow* window, int width, int height)
     glFrustum(-xmax, xmax, -xmax * h, xmax * h, znear, zfar);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.0, 0.0, -20.0);
+    glTranslatef(0.5, 0.5, -20.0);
+}
+
+void _reshapeOrtho(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, width, 0, height, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(0.0, 0.0, 0.0);
+}
+
+void Wrapper::reshapeFrustum() {
+    glfwGetFramebufferSize(window, &_width, &_height);
+    _reshapeFrustum(window, _width, _height);
+}
+
+void Wrapper::reshapeOrtho(float scale) {
+    glfwGetFramebufferSize(window, &_width, &_height);
+    _reshapeOrtho(window, _width, _height);
+    glViewport(0, 0, (int)((float)_width * scale), (int)((float)_height * scale));
 }
 
 void Wrapper::createWindow() {
@@ -63,7 +85,7 @@ void Wrapper::createWindow() {
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
-    window = glfwCreateWindow(300, 300, "Fixed Function Triangle", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "Fixed Function Triangle", NULL, NULL);
     if (!window) {
         fprintf(stderr, "Failed to open GLFW window\n");
         glfwTerminate();
@@ -71,16 +93,18 @@ void Wrapper::createWindow() {
     }
 
     // Set callback functions
-    glfwSetFramebufferSizeCallback(window, reshape);
+    glfwSetFramebufferSizeCallback(window, _reshapeFrustum);
+    //glfwSetFramebufferSizeCallback(window, _reshapeOrtho);
     glfwSetKeyCallback(window, key);
 
     glfwMakeContextCurrent(window);
     gladLoadGL(glfwGetProcAddress);
     glfwSwapInterval(1);
 
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    reshape(window, width, height);
+    glfwGetFramebufferSize(window, &_width, &_height);
+    DEBUG_PRINTLN("_width: %d _height: %d", _width, _height);
+    _reshapeFrustum(window, _width, _height);
+    //_reshapeOrtho(window, _width, _height);
 
     // Handle resizing
     // auto sizeCallback = [this] (GLFWwindow* win, int w, int h) {

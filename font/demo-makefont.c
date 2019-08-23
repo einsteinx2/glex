@@ -157,7 +157,6 @@ int main( int argc, char **argv )
     {
         // Display the text
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-        glColor4f(0,0,0,1);
         print_at(20, 20, L"Hello World !");
 
         // Swap buffers
