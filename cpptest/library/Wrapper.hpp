@@ -1,5 +1,5 @@
 #pragma once
-#include "../common_gl.h"
+#include "../../common_gl.h"
 
 #include <string>
 

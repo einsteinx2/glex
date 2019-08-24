@@ -1,9 +1,9 @@
 #include "Font.hpp"
-#include "../debug_log.h"
-#include "fonts/arial-16.hpp"
-#include "fonts/arial-28.hpp"
-#include "fonts/arial-32.hpp"
-#include "fonts/bitWonder-28.hpp"
+#include "../../debug_log.h"
+#include "../fonts/arial-16.hpp"
+#include "../fonts/arial-28.hpp"
+#include "../fonts/arial-32.hpp"
+#include "../fonts/bitWonder-28.hpp"
 
 Font::~Font() {
     deleteTexture();

@@ -1,5 +1,5 @@
 #include "Wrapper.hpp"
-#include "../debug_log.h"
+#include "../../debug_log.h"
 
 extern "C" {
     /* change view angle, exit upon ESC */

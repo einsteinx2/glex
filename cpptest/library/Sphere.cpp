@@ -1,5 +1,5 @@
 #include "Sphere.hpp"
-#include "../debug_log.h"
+#include "../../debug_log.h"
 #include "Texture.hpp"
 
 #include <cmath>

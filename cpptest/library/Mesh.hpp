@@ -1,6 +1,6 @@
 #pragma once
-#include "../common_gl.h"
-#include "meshes/common_mesh.hpp"
+#include "../../common_gl.h"
+#include "../meshes/common_mesh.hpp"
 #include "Texture.hpp"
 
 class Mesh {

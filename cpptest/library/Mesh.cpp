@@ -1,5 +1,5 @@
 #include "Mesh.hpp"
-#include "../debug_log.h"
+#include "../../debug_log.h"
 
 Mesh::Mesh(MeshData* meshData, Texture* texture, GLfloat scale) {
     _meshData = meshData;

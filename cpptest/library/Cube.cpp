@@ -1,5 +1,5 @@
 #include "Cube.hpp"
-#include "../debug_log.h"
+#include "../../debug_log.h"
 
 Cube::Cube() {
     _texture.loadBmpTexture(256, 256, "out/textures/wood1.bmp");

@@ -1,5 +1,5 @@
 #include "Texture.hpp"
-#include "../debug_log.h"
+#include "../../debug_log.h"
 
 Texture::~Texture() {
     if (isTextureLoaded()) {

@@ -1,5 +1,5 @@
-#include "../common_gl.h"
-#include "fonts/common_font.hpp"
+#include "../../common_gl.h"
+#include "../fonts/common_font.hpp"
 
 #include <string>
 

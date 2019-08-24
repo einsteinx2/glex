@@ -1,6 +1,5 @@
 #include "Triangle.hpp"
-#include "../debug_log.h"
-#include <stdio.h>
+#include "../../debug_log.h"
 
 Triangle::Triangle() {
     _list = glGenLists(1);
