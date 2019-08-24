@@ -1,5 +1,4 @@
 #include "Font.h"
-#include "../common_gl.h"
 #include "../debug_log.h"
 #include "fonts/arial-16.hpp"
 #include "fonts/arial-28.hpp"
@@ -8,6 +7,10 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+
+Font::~Font() {
+    deleteTexture();
+}
 
 Font::Font(FontFace f, float scale_, float kerning_) {
     switch(f) {
@@ -25,19 +28,26 @@ Font::Font(FontFace f, float scale_, float kerning_) {
 }
 
 void Font::createTexture() {
-    GLuint texid;
-    glGenTextures(1, &texid);
-    glBindTexture(GL_TEXTURE_2D, texid);
+    glGenTextures(1, &_textureId);
+    glBindTexture(GL_TEXTURE_2D, _textureId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, _font.tex_width, _font.tex_height,
                  0, GL_ALPHA, GL_UNSIGNED_BYTE, &_font.tex_data[0]);
-    glBindTexture(GL_TEXTURE_2D, texid);
+    
+}
+
+void Font::deleteTexture() {
+    if (_textureId != 0) {
+        glDeleteTextures(1, &_textureId);
+        _textureId = 0;
+    }
 }
 
 void Font::draw(float penX, float penY, std::string const& text) {
+    glBindTexture(GL_TEXTURE_2D, _textureId);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_TEXTURE_2D);

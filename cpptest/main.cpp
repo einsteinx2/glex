@@ -8,6 +8,8 @@
 #include "Wrapper.h"
 #include "Triangle.h"
 #include "Cube.h"
+#include "Mesh.h"
+#include "Sphere.h"
 #include "Font.h"
 
 double currentTime = 0;
@@ -27,6 +29,8 @@ int main(int argc, char *argv[])
     // Main loop
     Triangle triangle;
     Cube cube;
+    Mesh mesh;
+    Sphere sphere(1.5);
     Font font(FontFace::arial_32);
     font.createTexture();
     while (!glfwWindowShouldClose(wrapper.window)) {
@@ -48,7 +52,9 @@ int main(int argc, char *argv[])
         // Draw the 3d object(s)
         wrapper.reshapeFrustum();
         //triangle.draw();
-        cube.draw();
+        //cube.draw();
+        mesh.draw();
+        //sphere.draw();
 
         // Draw the text
         glClear(GL_DEPTH_BUFFER_BIT);

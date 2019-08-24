@@ -1,5 +1,6 @@
 #pragma once
 #include "../common_gl.h"
+#include "Texture.h"
 
 class Cube {
     public:
@@ -10,4 +11,5 @@ class Cube {
         GLfloat _anglex;
         GLfloat _angley;
         GLfloat _anglez;
+        Texture _texture;
 };
