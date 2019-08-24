@@ -1,4 +1,4 @@
-#include "Triangle.h"
+#include "Triangle.hpp"
 #include "../debug_log.h"
 #include <stdio.h>
 

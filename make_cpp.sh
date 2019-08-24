@@ -14,5 +14,5 @@ fi
 # files $1
 #FILES=`find $1 -name "*.c" -exec echo -n "'{}' " \; -o -name "*.cpp" -exec echo -n '"{}" ' \;`
 FILES=`find $1 -name "*.c" -o -name "*.cpp" | xargs echo`
-clang++ -g -std=c++11 -stdlib=libc++ `pkg-config --cflags glfw3` -o ./out/$1 glad_gl.c $FILES `pkg-config --static --libs glfw3`
+clang++ -g -std=c++11 -stdlib=libc++ `pkg-config --cflags glfw3` -o ./out/$1 glad_gl.cpp $FILES `pkg-config --static --libs glfw3`
 

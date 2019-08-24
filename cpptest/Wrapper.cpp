@@ -1,74 +1,73 @@
-#include "Wrapper.h"
+#include "Wrapper.hpp"
 #include "../debug_log.h"
 
-#include <stdlib.h>
-#include <stdio.h>
+extern "C" {
+    /* change view angle, exit upon ESC */
+    void key(GLFWwindow* window, int k, int s, int action, int mods) {
+        if (action != GLFW_PRESS) {
+            return;
+        }
+
+        Wrapper* wrapper = (Wrapper*)glfwGetWindowUserPointer(window);
+
+        switch (k) {
+        case GLFW_KEY_Z:
+            if( mods & GLFW_MOD_SHIFT )
+            wrapper->rotationZ -= 5.0;
+            else
+            wrapper->rotationZ += 5.0;
+            break;
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+            break;
+        case GLFW_KEY_UP:
+            wrapper->rotationX -= 5.0;
+            break;
+        case GLFW_KEY_DOWN:
+            wrapper->rotationX += 5.0;
+            break;
+        case GLFW_KEY_LEFT:
+            wrapper->rotationY -= 5.0;
+            break;
+        case GLFW_KEY_RIGHT:
+            wrapper->rotationY += 5.0;
+            break;
+        default:
+            return;
+        }
+    }
+
+    void _reshapeFrustum(GLFWwindow* window, int width, int height)
+    {
+        GLfloat h = (GLfloat)height / (GLfloat)width;
+        GLfloat xmax, znear, zfar;
+
+        znear = 5.0f;
+        zfar  = 30.0f;
+        xmax  = znear * 0.5f;
+
+        glViewport(0, 0, (GLint) width, (GLint) height);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glFrustum(-xmax, xmax, -xmax * h, xmax * h, znear, zfar);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glTranslatef(0.5, 0.5, -20.0);
+    }
+
+    void _reshapeOrtho(GLFWwindow* window, int width, int height) {
+        glViewport(0, 0, width, height);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, width, 0, height, -1, 1);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glTranslatef(0.0, 0.0, 0.0);
+    }
+}
 
 Wrapper::Wrapper(std::string windowName) {
     _windowName = windowName;
-}
-
-/* change view angle, exit upon ESC */
-void key(GLFWwindow* window, int k, int s, int action, int mods) {
-    if (action != GLFW_PRESS) {
-        return;
-    }
-
-    Wrapper* wrapper = (Wrapper*)glfwGetWindowUserPointer(window);
-
-    switch (k) {
-    case GLFW_KEY_Z:
-        if( mods & GLFW_MOD_SHIFT )
-          wrapper->rotationZ -= 5.0;
-        else
-          wrapper->rotationZ += 5.0;
-        break;
-    case GLFW_KEY_ESCAPE:
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-        break;
-    case GLFW_KEY_UP:
-        wrapper->rotationX -= 5.0;
-        break;
-    case GLFW_KEY_DOWN:
-        wrapper->rotationX += 5.0;
-        break;
-    case GLFW_KEY_LEFT:
-        wrapper->rotationY -= 5.0;
-        break;
-    case GLFW_KEY_RIGHT:
-        wrapper->rotationY += 5.0;
-        break;
-    default:
-        return;
-    }
-}
-
-void _reshapeFrustum(GLFWwindow* window, int width, int height)
-{
-    GLfloat h = (GLfloat)height / (GLfloat)width;
-    GLfloat xmax, znear, zfar;
-
-    znear = 5.0f;
-    zfar  = 30.0f;
-    xmax  = znear * 0.5f;
-
-    glViewport(0, 0, (GLint) width, (GLint) height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glFrustum(-xmax, xmax, -xmax * h, xmax * h, znear, zfar);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glTranslatef(0.5, 0.5, -20.0);
-}
-
-void _reshapeOrtho(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, width, 0, height, -1, 1);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glTranslatef(0.0, 0.0, 0.0);
 }
 
 void Wrapper::reshapeFrustum() {

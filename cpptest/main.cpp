@@ -1,16 +1,13 @@
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <wchar.h>
-
 #include "../debug_log.h"
-#include "Wrapper.h"
-#include "Triangle.h"
-#include "Cube.h"
-#include "Mesh.h"
-#include "Sphere.h"
-#include "Font.h"
+#include "Wrapper.hpp"
+#include "Triangle.hpp"
+#include "Cube.hpp"
+#include "Mesh.hpp"
+#include "Sphere.hpp"
+#include "Font.hpp"
+
+#include "meshes/houseFilledTrianglesMesh.hpp"
+#include "textures/houseMesh_RGBA_512x512.h"
 
 double currentTime = 0;
 double lastTime = glfwGetTime();
@@ -29,7 +26,9 @@ int main(int argc, char *argv[])
     // Main loop
     //Triangle triangle;
     //Cube cube;
-    Mesh mesh;
+    Texture houseTexture;
+    houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
+    Mesh mesh(&houseFilledTrianglesMesh, &houseTexture, 0.3);
     //Sphere sphere(1.5);
     Font font(FontFace::arial_32);
     font.createTexture();
@@ -54,9 +53,9 @@ int main(int argc, char *argv[])
         //triangle.draw();
         //cube.draw();
         mesh.draw();
-        mesh.anglex = wrapper.rotationX;
-        // mesh.angley = wrapper.rotationY;
-        mesh.anglez = wrapper.rotationZ;
+        mesh.rotationX = wrapper.rotationX;
+        mesh.rotationY = wrapper.rotationY;
+        mesh.rotationZ = wrapper.rotationZ;
         //sphere.draw();
 
         // Draw the text

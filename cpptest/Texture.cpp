@@ -1,7 +1,5 @@
-#include "Texture.h"
+#include "Texture.hpp"
 #include "../debug_log.h"
-
-#include <cstdio>
 
 Texture::~Texture() {
     if (isTextureLoaded()) {

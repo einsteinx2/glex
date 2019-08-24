@@ -1,18 +1,10 @@
-#include "Mesh.h"
+#include "Mesh.hpp"
 #include "../debug_log.h"
 
-//#include "meshes/cubeMesh.h"
-//#include "textures/cubeMesh_RGBA_512x512.h"
-//#include "meshes/rockMesh.h"
-//#include "textures/rockMesh_RGBA_512x512.h"
-#include "meshes/houseFilledTrianglesMesh.h"
-#include "textures/houseMesh_RGBA_512x512.h"
-//#include "meshes/monkeyTrianglesMesh.h"
-
-#include <stdio.h>
-
-Mesh::Mesh() {
-    _texture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
+Mesh::Mesh(MeshData* meshData, Texture* texture, GLfloat scale) {
+    _meshData = meshData;
+    _texture = texture;
+    _scale = scale;
 
     _list = glGenLists(1);
     glNewList(_list, GL_COMPILE);
@@ -20,14 +12,17 @@ Mesh::Mesh() {
     // Enable texture
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D, _texture.textureId);
+    glBindTexture(GL_TEXTURE_2D, _texture->textureId);
 
     glBegin(GL_TRIANGLES);
-    for (int i = 0; i < houseFilledTrianglesMesh.numVertices; i+=1) {
+    for (int i = 0; i < meshData->numVertices; i+=1) {
         glColor3f(1.0, 1.0, 1.0);
-        glNormal3fv(houseFilledTrianglesMesh.normals[i]);
-        glTexCoord2fv(houseFilledTrianglesMesh.textureCoordinates[i]);
-        glVertex3fv(houseFilledTrianglesMesh.vertices[i]);
+        glNormal3f(meshData->normals[i][0], meshData->normals[i][1], meshData->normals[i][2]);
+        glTexCoord2f(meshData->textureCoordinates[i][0], meshData->textureCoordinates[i][1]);
+        glVertex3f(meshData->vertices[i][0], meshData->vertices[i][1], meshData->vertices[i][2]);
+        //glNormal3fv(meshData->normals[i]);
+        //glTexCoord2fv(meshData->textureCoordinates[i]);
+        //glVertex3fv(meshData->vertices[i]);
     }
     glEnd();
 
@@ -41,10 +36,10 @@ void Mesh::draw() {
     glCullFace(GL_BACK); 
     glEnable(GL_CULL_FACE);
     // Enable lighting
-    // glEnable(GL_LIGHTING); 
-    // glEnable(GL_LIGHT0);
-    // GLfloat lightpos0[] = {0., 0., 1., 0.}; 
-    // glLightfv(GL_LIGHT0, GL_POSITION, lightpos0);
+    //glEnable(GL_LIGHTING); 
+    //glEnable(GL_LIGHT0);
+    //GLfloat lightpos0[] = {1., 1., 1., 0.}; 
+    //glLightfv(GL_LIGHT0, GL_POSITION, lightpos0);
     //glEnable(GL_LIGHT1);
     // GLfloat lightpos1[] = {-1., 1., 1., 0.}; 
     // glLightfv(GL_LIGHT1, GL_POSITION, lightpos1);
@@ -52,19 +47,18 @@ void Mesh::draw() {
     glDepthFunc(GL_LESS);
 
     glPushMatrix();
-    //glTranslatef(1.0, -2.0, 1.0);
 
-    glRotatef(anglez, 0.0f, 0.0f, 1.0f);
-    glRotatef(angley, 0.0f, 1.0f, 0.0f);
-    glRotatef(anglex, 1.0f, 0.0f, 0.0f);
+    glScalef(_scale, _scale, _scale);
+
+    glRotatef(rotationZ, 0.0f, 0.0f, 1.0f);
+    glRotatef(rotationY, 0.0f, 1.0f, 0.0f);
+    glRotatef(rotationX, 1.0f, 0.0f, 0.0f);
+    // rotationZ += 0.75;
+    // rotationY += 0.75;
+    // rotationX += 0.75;
     
-    //glScalef(2.0, 2.0, 2.0);
-    glScalef(0.3, 0.3, 0.3);
+    //glTranslatef(1.0, -2.0, 1.0);
     
     glCallList(_list);
     glPopMatrix();
-
-    anglez += 0.75;
-    angley += 0.75;
-    anglex += 0.75;
 }

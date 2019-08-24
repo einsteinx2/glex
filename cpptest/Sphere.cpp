@@ -1,8 +1,7 @@
-#include "Sphere.h"
+#include "Sphere.hpp"
 #include "../debug_log.h"
-#include "Texture.h"
+#include "Texture.hpp"
 
-#include <stdio.h>
 #include <cmath>
 
 Sphere::Sphere(double radius) {
