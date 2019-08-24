@@ -1,2 +1,7 @@
 .DS_Store
 /out
+/cpptest/output
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+Makefile
