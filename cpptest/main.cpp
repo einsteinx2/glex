@@ -27,10 +27,10 @@ int main(int argc, char *argv[])
     wrapper.createWindow();
 
     // Main loop
-    Triangle triangle;
-    Cube cube;
+    //Triangle triangle;
+    //Cube cube;
     Mesh mesh;
-    Sphere sphere(1.5);
+    //Sphere sphere(1.5);
     Font font(FontFace::arial_32);
     font.createTexture();
     while (!glfwWindowShouldClose(wrapper.window)) {
@@ -54,6 +54,9 @@ int main(int argc, char *argv[])
         //triangle.draw();
         //cube.draw();
         mesh.draw();
+        mesh.anglex = wrapper.rotationX;
+        // mesh.angley = wrapper.rotationY;
+        mesh.anglez = wrapper.rotationZ;
         //sphere.draw();
 
         // Draw the text

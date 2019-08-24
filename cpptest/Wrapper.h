@@ -5,6 +5,9 @@
 
 class Wrapper {
     public:
+        float rotationX;
+        float rotationY;
+        float rotationZ;
         Wrapper(std::string windowName);
         bool vsyncEnabled = true; // By default, lock to 60fps (or whatever refresh rate the monitor is)
         GLFWwindow* window;

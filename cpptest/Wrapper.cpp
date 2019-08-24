@@ -14,28 +14,30 @@ void key(GLFWwindow* window, int k, int s, int action, int mods) {
         return;
     }
 
+    Wrapper* wrapper = (Wrapper*)glfwGetWindowUserPointer(window);
+
     switch (k) {
-    //   case GLFW_KEY_Z:
-    //     if( mods & GLFW_MOD_SHIFT )
-    //       view_rotz -= 5.0;
-    //     else
-    //       view_rotz += 5.0;
-    //     break;
+    case GLFW_KEY_Z:
+        if( mods & GLFW_MOD_SHIFT )
+          wrapper->rotationZ -= 5.0;
+        else
+          wrapper->rotationZ += 5.0;
+        break;
     case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(window, GLFW_TRUE);
-    break;
-    //   case GLFW_KEY_UP:
-    //     view_rotx += 5.0;
-    //     break;
-    //   case GLFW_KEY_DOWN:
-    //     view_rotx -= 5.0;
-    //     break;
-    //   case GLFW_KEY_LEFT:
-    //     view_roty += 5.0;
-    //     break;
-    //   case GLFW_KEY_RIGHT:
-    //     view_roty -= 5.0;
-    //     break;
+        break;
+    case GLFW_KEY_UP:
+        wrapper->rotationX -= 5.0;
+        break;
+    case GLFW_KEY_DOWN:
+        wrapper->rotationX += 5.0;
+        break;
+    case GLFW_KEY_LEFT:
+        wrapper->rotationY -= 5.0;
+        break;
+    case GLFW_KEY_RIGHT:
+        wrapper->rotationY += 5.0;
+        break;
     default:
         return;
     }
@@ -97,6 +99,7 @@ void Wrapper::createWindow() {
     }
 
     // Set callback functions
+    glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, _reshapeFrustum);
     //glfwSetFramebufferSizeCallback(window, _reshapeOrtho);
     glfwSetKeyCallback(window, key);
