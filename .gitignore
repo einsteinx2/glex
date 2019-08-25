@@ -1,6 +1,6 @@
 .DS_Store
-/out
-/cpptest/output
+.vscode
+/build
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
