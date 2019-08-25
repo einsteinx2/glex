@@ -104,5 +104,39 @@ elseif(${DREAMCAST_BUILD})
         examples/playground/main.cpp 
     )
     target_link_libraries(playground-example "${CMAKE_SOURCE_DIR}/deps/dc/libGLdc.a")
+
+    # Build CDI
+    SET(DC_EXECUTABLES # Names without .elf extension
+        playground-example
+    )
+    #message(STATUS "DC_EXECUTABLES: ${DC_EXECUTABLES}")
+
+    FOREACH(EXE ${DC_EXECUTABLES})
+    get_filename_component(EXE_FILENAME ${EXE} NAME)
+    ADD_CUSTOM_TARGET(
+        ${EXE_FILENAME}.bin ALL
+        COMMENT "EXE: ${EXE}"
+        COMMENT "EXE_FILENAME: ${EXE_FILENAME}"
+        COMMENT "EXECUTABLE_OUTPUT_PATH: ${EXECUTABLE_OUTPUT_PATH}"
+        COMMAND $ENV{KOS_OBJCOPY} -R .stack -O binary -S -g ${EXECUTABLE_OUTPUT_PATH}/${EXE}.elf ${EXECUTABLE_OUTPUT_PATH}/${EXE}.bin
+        COMMAND rm -rf ${EXECUTABLE_OUTPUT_PATH}/${EXE}
+        COMMAND mkdir -p ${EXECUTABLE_OUTPUT_PATH}/${EXE}
+        COMMAND $ENV{KOS_BASE}/utils/scramble/scramble ${EXECUTABLE_OUTPUT_PATH}/${EXE}.bin ${EXECUTABLE_OUTPUT_PATH}/${EXE}/1ST_READ.BIN
+        COMMAND IP_TEMPLATE_FILE=${CMAKE_SOURCE_DIR}/deps/dc/IP.TMPL $ENV{KOS_BASE}/utils/makeip/makeip ${CMAKE_SOURCE_DIR}/deps/dc/ip.txt ${EXECUTABLE_OUTPUT_PATH}/${EXE}/IP.BIN
+        # COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${EXE}/simulant
+        # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/fonts ${CMAKE_BINARY_DIR}/${EXE}/simulant
+        # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/materials ${CMAKE_BINARY_DIR}/${EXE}/simulant
+        # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/particles ${CMAKE_BINARY_DIR}/${EXE}/simulant
+        # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/textures ${CMAKE_BINARY_DIR}/${EXE}/simulant
+        # COMMAND cp -r ${CMAKE_SOURCE_DIR}/samples/data ${CMAKE_BINARY_DIR}/${EXE}/sample_data
+        COMMAND mkisofs -C 0,11702 -V ${EXE_FILENAME} -G ${EXECUTABLE_OUTPUT_PATH}/${EXE}/IP.BIN -joliet -rock -l -o ${EXECUTABLE_OUTPUT_PATH}/${EXE}.iso ${EXECUTABLE_OUTPUT_PATH}/${EXE}
+        COMMAND $ENV{KOS_BASE}/utils/img4dc/cdi4dc/cdi4dc ${EXECUTABLE_OUTPUT_PATH}/${EXE}.iso ${EXECUTABLE_OUTPUT_PATH}/${EXE}.cdi
+        DEPENDS ${EXE}
+        COMMENT "Converting ${EXE}.elf to ${EXE}.bin"
+        COMMENT "mkisofs -C 0,11702 -V ${EXE_FILENAME} -G ${EXECUTABLE_OUTPUT_PATH}/${EXE}/IP.BIN -joliet -rock -l -o ${EXE}.iso ${EXECUTABLE_OUTPUT_PATH}/${EXE}"
+    )
+    ENDFOREACH()
 endif()
 target_link_libraries(playground-example glex)
+
+#TODO: in docker container - add img4dc and makeip to kos utils, apt-get install cmake and genisoimage
