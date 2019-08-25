@@ -6,27 +6,25 @@
 
 Sphere::Sphere(double radius) {
     _radius = radius;
-    _list = glGenLists(1);
-    glNewList(_list, GL_COMPILE);
+}
 
-    GLdouble a[] = {1, 0, 0};
-    GLdouble b[] = {0, 0, -1};
-    GLdouble c[] = {-1, 0, 0};
-    GLdouble d[] = {0, 0, 1};
-    GLdouble e[] = {0, 1, 0};
-    GLdouble f[] = {0, -1, 0};
+void Sphere::_drawList() {
+   GLdouble a[] = {1, 0, 0};
+   GLdouble b[] = {0, 0, -1};
+   GLdouble c[] = {-1, 0, 0};
+   GLdouble d[] = {0, 0, 1};
+   GLdouble e[] = {0, 1, 0};
+   GLdouble f[] = {0, -1, 0};
 
-    int recurse = 5;
-    _drawFace(recurse, d, a, e);
-    _drawFace(recurse, a, b, e);
-    _drawFace(recurse, b, c, e);
-    _drawFace(recurse, c, d, e);
-    _drawFace(recurse, a, d, f);
-    _drawFace(recurse, b, a, f);
-    _drawFace(recurse, c, b, f);
-    _drawFace(recurse, d, c, f);
-
-    glEndList();
+   int recurse = 5;
+   _drawFace(recurse, d, a, e);
+   _drawFace(recurse, a, b, e);
+   _drawFace(recurse, b, c, e);
+   _drawFace(recurse, c, d, e);
+   _drawFace(recurse, a, d, f);
+   _drawFace(recurse, b, a, f);
+   _drawFace(recurse, c, b, f);
+   _drawFace(recurse, d, c, f);
 }
 
 void Sphere::draw() {
@@ -42,7 +40,7 @@ void Sphere::draw() {
     
     glScalef(3.0, 3.0, 3.0);
     
-    glCallList(_list);
+    _drawList();
     glPopMatrix();
 
     //_anglez += 0.75;

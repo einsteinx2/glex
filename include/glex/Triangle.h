@@ -3,8 +3,7 @@
 
 class Triangle {
     public:
-        Triangle();
         void draw();
     private:
-        GLint _list;
+        void _drawList();
 };

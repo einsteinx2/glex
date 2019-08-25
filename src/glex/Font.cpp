@@ -4,6 +4,9 @@
 #include "fonts/arial_28pt.h"
 #include "fonts/arial_32pt.h"
 
+#include <cstdio>
+#include <cstdlib>
+
 Font::~Font() {
     deleteTexture();
 }

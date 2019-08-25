@@ -7,8 +7,8 @@ class Sphere {
         void draw();
     private:
         double _radius;
-        GLint _list;
         void _drawFace(int p_recurse, GLdouble* a, GLdouble* b, GLdouble* c);
+        void _drawList();
         // GLint _list;
         // GLfloat _anglex;
         // GLfloat _angley;

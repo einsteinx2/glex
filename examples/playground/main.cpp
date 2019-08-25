@@ -1,16 +1,24 @@
 #include "debug_log.h"
 #include "glex/Window.h"
 #include "glex/Triangle.h"
-#include "glex/Cube.h"
-#include "glex/Mesh.h"
-#include "glex/Sphere.h"
+//#include "glex/Cube.h"
+//#include "glex/Mesh.h"
+//#include "glex/Sphere.h"
 #include "glex/Font.h"
 
 #include "meshes/houseMesh.h"
 #include "textures/houseMesh_RGBA_512x512.h"
 
+#include <cstdio>
+#include <cstdlib>
+#include <string>
+
 double currentTime = 0;
+#ifdef DREAMCAST
+double lastTime = 0;
+#else
 double lastTime = glfwGetTime();
+#endif
 double timeDiff = 0.0;
 int nbFrames = 0;
 double frameTime = 0.0;
@@ -20,21 +28,25 @@ double fps = 0.0;
 int main(int argc, char *argv[])
 {
     DEBUG_PRINTLN("Application started!");
-    Window wrapper("C++ Test");
-    wrapper.createWindow();
+    Window wrapper;
+    wrapper.createWindow("C++ Test", 640, 480);
 
     // Main loop
-    //Triangle triangle;
+    Triangle triangle;
     //Cube cube;
-    Texture houseTexture;
-    houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
-    Mesh mesh(&houseMesh, &houseTexture, 0.3);
+    //Texture houseTexture;
+    //houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
+    //Mesh mesh(&houseMesh, &houseTexture, 0.3);
     //Sphere sphere(1.5);
     Font font(FontFace::arial_32);
     font.createTexture();
-    while (!glfwWindowShouldClose(wrapper.window)) {
+    while (!wrapper.windowShouldClose()) {
         // Measure speed
+        #ifdef DREAMCAST
+        currentTime = 0;
+        #else
         currentTime = glfwGetTime();
+        #endif
         nbFrames++;
         timeDiff = currentTime - lastTime;
         if (timeDiff >= 1.0) {
@@ -50,19 +62,25 @@ int main(int argc, char *argv[])
 
         // Draw the 3d object(s)
         wrapper.reshapeFrustum();
-        //triangle.draw();
+        triangle.draw();
         //cube.draw();
-        mesh.draw();
-        mesh.rotationX = wrapper.rotationX;
-        mesh.rotationY = wrapper.rotationY;
-        mesh.rotationZ = wrapper.rotationZ;
+        //mesh.draw();
+        //mesh.rotationX = wrapper.rotationX;
+        //mesh.rotationY = wrapper.rotationY;
+        //mesh.rotationZ = wrapper.rotationZ;
         //sphere.draw();
 
         // Draw the text
         glClear(GL_DEPTH_BUFFER_BIT);
         wrapper.reshapeOrtho(font.scale);
         static std::string outputString;
+        #ifdef DREAMCAST
+        static char* outputCString;
+        sprintf(outputCString, "frame time: %f ms  fps: %f", frameTime, fps);
+        outputString = outputCString; 
+        #else
         outputString = "frame time: " + std::to_string(frameTime) + "ms  fps: " + std::to_string(fps); 
+        #endif
         font.draw(20, 20, outputString);
 
         // Swap buffers to display the current frame

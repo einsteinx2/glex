@@ -1,0 +1,3 @@
+[submodule "deps/dc/GLdc"]
+	path = deps/dc/GLdc
+	url = https://gitlab.com/simulant/GLdc.git

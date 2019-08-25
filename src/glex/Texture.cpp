@@ -1,6 +1,8 @@
 #include "glex/Texture.h"
 #include "debug_log.h"
 
+#include <cstdio>
+
 Texture::~Texture() {
     if (isTextureLoaded()) {
         unloadTexture();
@@ -11,6 +13,7 @@ bool Texture::isTextureLoaded() {
     return textureId != 0;
 }
 
+#ifndef DREAMCAST
 bool Texture::loadBmpTexture(GLsizei textureWidth_, GLsizei textureHeight_, std::string path) {
     // Data read from the header of the BMP file
     unsigned char header[54]; // Each BMP file begins by a 54-bytes header
@@ -87,6 +90,7 @@ void Texture::loadBrgTexture(GLsizei textureWidth_, GLsizei textureHeight_, cons
     textureWidth = textureWidth_;
     textureHeight = textureHeight_;
 }
+#endif
 
 void Texture::loadRgbaTexture(GLsizei textureWidth_, GLsizei textureHeight_, const unsigned char* rgbaData) {
     if (isTextureLoaded()) {

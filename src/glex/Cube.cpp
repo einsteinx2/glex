@@ -3,10 +3,9 @@
 
 Cube::Cube() {
     _texture.loadBmpTexture(256, 256, "out/textures/wood1.bmp");
+}
 
-    _list = glGenLists(1);
-    glNewList(_list, GL_COMPILE);
-
+void Cube::_drawList() {
     // Enable texture
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -69,7 +68,9 @@ Cube::Cube() {
     // glVertex3fv(v1);
 
     
+    #ifndef DREAMCAST
     glNormal3d(0, 0, 1); 
+    #endif
 
     glColor3f(1.0, 1.0, 1.0); 
     glTexCoord2f(0, 0);
@@ -129,8 +130,6 @@ Cube::Cube() {
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
-
-    glEndList();
 }
 
 void Cube::draw() {
@@ -146,7 +145,7 @@ void Cube::draw() {
     
     glScalef(3.0, 3.0, 3.0);
     
-    glCallList(_list);
+    _drawList();
     glPopMatrix();
 
     _anglez += 0.5;

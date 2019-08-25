@@ -12,8 +12,8 @@ class Mesh {
         Mesh(MeshData* meshData, Texture* texture, GLfloat scale = 1.0);
         void draw();
     private:
-        GLint _list;
         MeshData* _meshData;
         Texture* _texture;
         GLfloat _scale;
+        void _drawList();
 };

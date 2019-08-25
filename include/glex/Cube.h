@@ -7,9 +7,9 @@ class Cube {
         Cube();
         void draw();
     private:
-        GLint _list;
         GLfloat _anglex;
         GLfloat _angley;
         GLfloat _anglez;
         Texture _texture;
+        void _drawList();
 };
