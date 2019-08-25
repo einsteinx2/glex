@@ -1,6 +1,7 @@
 .DS_Store
 .vscode
 /build
+/lib
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake

@@ -4,14 +4,27 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set output directory
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build/mac")
-set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib/mac")
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    message(STATUS "Building for macOS")
+    set(USE_GLFW true)
+    set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build/mac")
+    set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib/mac")
+elseif(ENV{KOS_ARCH} STREQUAL "dreamcast")
+    message(FATAL_ERROR "Building for Dreamcast")
+    set(USE_GLDC true)
+    set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build/dc")
+    set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib/dc")
+else()
+    message(FATAL_ERROR "Your build system '${CMAKE_SYSTEM_NAME}' is not supported")
+endif()
 
 # Include GLFW
+if(${USE_GLFW})
 find_package(PkgConfig REQUIRED)
 pkg_search_module(GLFW REQUIRED glfw3)
 include_directories(${GLFW_INCLUDE_DIRS})
 link_directories(${GLFW_LIBRARY_DIRS})
+endif()
 
 # Add the project files
 add_library(glex STATIC
@@ -45,11 +58,15 @@ add_library(glex STATIC
     src/glex/Window.cpp    include/glex/Window.h
 )
 include_directories("${PROJECT_SOURCE_DIR}/include")
+if(${USE_GLFW})
 target_link_libraries(glex ${GLFW_STATIC_LIBRARIES})
+endif()
 
 add_executable(playground-example 
     examples/playground/main.cpp 
     examples/playground/glad_gl.cpp
 )
-target_link_libraries(playground-example "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
 target_link_libraries(playground-example glex)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+target_link_libraries(playground-example "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
+endif()
