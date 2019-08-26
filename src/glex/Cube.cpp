@@ -2,14 +2,18 @@
 #include "debug_log.h"
 
 Cube::Cube() {
-    //_texture.loadBmpTexture(256, 256, "out/textures/wood1.bmp");
+    #ifndef DREAMCAST
+    _texture.loadBmpTexture(256, 256, "examples/playground/wood1.bmp");
+    #endif
 }
 
 void Cube::_drawList() {
+    #ifndef DREAMCAST
     // Enable texture
-    // glEnable(GL_TEXTURE_2D);
-    // glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    // glBindTexture(GL_TEXTURE_2D, _texture.textureId);
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glBindTexture(GL_TEXTURE_2D, _texture.textureId);
+    #endif
     
     // cube ///////////////////////////////////////////////////////////////////////
     //    v7----- v4
@@ -31,6 +35,7 @@ void Cube::_drawList() {
 
     glBegin(GL_QUADS);  // draw a cube with 6 quads
 
+    #ifdef DREAMCAST
     glColor3f(1.0, 0.0, 0.0); 
     glVertex3fv(v0);    // front face
     glVertex3fv(v3);
@@ -67,67 +72,68 @@ void Cube::_drawList() {
     glVertex3fv(v2);
     glVertex3fv(v1);
 
-    
-    // glNormal3f(0, 0, 1); 
+    glEnd();
+    #else
+    glNormal3f(0, 0, 1); 
 
-    // glColor3f(1.0, 1.0, 1.0); 
-    // glTexCoord2f(0, 0);
-    // glVertex3fv(v0);    // front face
-    // glTexCoord2f(1, 0);
-    // glVertex3fv(v3);
-    // glTexCoord2f(1, 1);
-    // glVertex3fv(v2);
-    // glTexCoord2f(0, 1);
-    // glVertex3fv(v1);
+    glColor3f(1.0, 1.0, 1.0); 
+    glTexCoord2f(0, 0);
+    glVertex3fv(v0);    // front face
+    glTexCoord2f(1, 0);
+    glVertex3fv(v3);
+    glTexCoord2f(1, 1);
+    glVertex3fv(v2);
+    glTexCoord2f(0, 1);
+    glVertex3fv(v1);
 
-    // glTexCoord2f(0, 0);
-    // glVertex3fv(v4);    // top face
-    // glTexCoord2f(1, 0);
-    // glVertex3fv(v7);
-    // glTexCoord2f(1, 1);
-    // glVertex3fv(v3);
-    // glTexCoord2f(0, 1);
-    // glVertex3fv(v0);
+    glTexCoord2f(0, 0);
+    glVertex3fv(v4);    // top face
+    glTexCoord2f(1, 0);
+    glVertex3fv(v7);
+    glTexCoord2f(1, 1);
+    glVertex3fv(v3);
+    glTexCoord2f(0, 1);
+    glVertex3fv(v0);
 
-    // glTexCoord2f(0, 0);
-    // glVertex3fv(v3);    // left face
-    // glTexCoord2f(1, 0);
-    // glVertex3fv(v7);
-    // glTexCoord2f(1, 1);
-    // glVertex3fv(v6);
-    // glTexCoord2f(0, 1);
-    // glVertex3fv(v2);
+    glTexCoord2f(0, 0);
+    glVertex3fv(v3);    // left face
+    glTexCoord2f(1, 0);
+    glVertex3fv(v7);
+    glTexCoord2f(1, 1);
+    glVertex3fv(v6);
+    glTexCoord2f(0, 1);
+    glVertex3fv(v2);
 
-    // glTexCoord2f(0, 0);
-    // glVertex3fv(v4);    // back face
-    // glTexCoord2f(1, 0);
-    // glVertex3fv(v7);
-    // glTexCoord2f(1, 1);
-    // glVertex3fv(v6);
-    // glTexCoord2f(0, 1);
-    // glVertex3fv(v5);
+    glTexCoord2f(0, 0);
+    glVertex3fv(v4);    // back face
+    glTexCoord2f(1, 0);
+    glVertex3fv(v7);
+    glTexCoord2f(1, 1);
+    glVertex3fv(v6);
+    glTexCoord2f(0, 1);
+    glVertex3fv(v5);
 
-    // glTexCoord2f(0, 0);
-    // glVertex3fv(v4);    // right face
-    // glTexCoord2f(1, 0);
-    // glVertex3fv(v0);
-    // glTexCoord2f(1, 1);
-    // glVertex3fv(v1);
-    // glTexCoord2f(0, 1);
-    // glVertex3fv(v5);
+    glTexCoord2f(0, 0);
+    glVertex3fv(v4);    // right face
+    glTexCoord2f(1, 0);
+    glVertex3fv(v0);
+    glTexCoord2f(1, 1);
+    glVertex3fv(v1);
+    glTexCoord2f(0, 1);
+    glVertex3fv(v5);
 
-    // glTexCoord2f(0, 0);
-    // glVertex3fv(v5);    // bottom face
-    // glTexCoord2f(1, 0);
-    // glVertex3fv(v6);
-    // glTexCoord2f(1, 1);
-    // glVertex3fv(v2);
-    // glTexCoord2f(0, 1);
-    // glVertex3fv(v1);
+    glTexCoord2f(0, 0);
+    glVertex3fv(v5);    // bottom face
+    glTexCoord2f(1, 0);
+    glVertex3fv(v6);
+    glTexCoord2f(1, 1);
+    glVertex3fv(v2);
+    glTexCoord2f(0, 1);
+    glVertex3fv(v1);
 
     glEnd();
-
-    // glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);
+    #endif
 }
 
 void Cube::draw() {
