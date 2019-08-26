@@ -14,14 +14,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <chrono>
 
-double currentTime = 0;
-#ifdef DREAMCAST
-double lastTime = 0;
-#else
-double lastTime = glfwGetTime();
-#endif
-double timeDiff = 0.0;
+std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
+std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
+int16_t timeDiff = 0;
 int nbFrames = 0;
 double frameTime = 0.0;
 double fps = 0.0;
@@ -35,7 +32,7 @@ int main(int argc, char *argv[])
 
     // Main loop
     //Triangle triangle;
-    //Cube cube;
+    Cube cube;
     // Texture cubeTexture;
     // cubeTexture.loadRgbaTexture(512, 512, cubeMesh_RGBA_512x512);
     // Mesh mesh(&cubeMesh, &cubeTexture, 3.0);
@@ -44,23 +41,23 @@ int main(int argc, char *argv[])
     Mesh mesh(&houseMesh, &houseTexture, 0.3);
     //Mesh mesh(&cubeMesh, NULL, 3.0);
     //Sphere sphere(1.5);
+    #ifdef DREAMCAST
+    Font font(FontFace::arial_16);
+    #else
     Font font(FontFace::arial_32);
+    #endif
     font.createTexture();
     while (!wrapper.windowShouldClose()) {
         // Measure speed
-        #ifdef DREAMCAST
-        currentTime = 0;
-        #else
-        currentTime = glfwGetTime();
-        #endif
         nbFrames++;
-        timeDiff = currentTime - lastTime;
-        if (timeDiff >= 1.0) {
-            frameTime = (timeDiff * 1000.0) / double(nbFrames);
+        currentTime = std::chrono::steady_clock::now();
+        timeDiff = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
+        if (timeDiff >= 1000) {
+            frameTime = double(timeDiff) / double(nbFrames);
             fps = nbFrames;
             //DEBUG_PRINTLN("%f ms/frame\n", frameTime);
             nbFrames = 0;
-            lastTime += timeDiff;
+            lastTime = currentTime;
         }
 
         // Clear the buffer to draw the prepare frame
@@ -79,15 +76,8 @@ int main(int argc, char *argv[])
         // Draw the text
         glClear(GL_DEPTH_BUFFER_BIT);
         wrapper.reshapeOrtho(font.scale);
-        static std::string outputString;
-        #ifdef DREAMCAST
-        // static char* outputCString;
-        // sprintf(outputCString, "frame time: %f ms  fps: %f", frameTime, fps);
-        // outputString = outputCString; 
-        outputString = "Running on Dreamcast";
-        #else
-        outputString = "frame time: " + std::to_string(frameTime) + "ms  fps: " + std::to_string(fps); 
-        #endif
+        static char outputString[50];
+        sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f", frameTime, fps);
         font.draw(20, 20, outputString);
 
         // Swap buffers to display the current frame
