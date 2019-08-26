@@ -19,9 +19,9 @@
 std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
 int16_t timeDiff = 0;
-int nbFrames = 0;
-double frameTime = 0.0;
-double fps = 0.0;
+uint32_t nbFrames = 0;
+float frameTime = 0.0;
+float fps = 0.0;
 
 /* program entry */
 int main(int argc, char *argv[])
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
         currentTime = std::chrono::steady_clock::now();
         timeDiff = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
         if (timeDiff >= 1000) {
-            frameTime = double(timeDiff) / double(nbFrames);
+            frameTime = float(timeDiff) / float(nbFrames);
             fps = nbFrames;
             //DEBUG_PRINTLN("%f ms/frame\n", frameTime);
             nbFrames = 0;

@@ -4,17 +4,17 @@
 
 #include <cmath>
 
-Sphere::Sphere(double radius) {
+Sphere::Sphere(float radius) {
     _radius = radius;
 }
 
 void Sphere::_drawList() {
-   GLdouble a[] = {1, 0, 0};
-   GLdouble b[] = {0, 0, -1};
-   GLdouble c[] = {-1, 0, 0};
-   GLdouble d[] = {0, 0, 1};
-   GLdouble e[] = {0, 1, 0};
-   GLdouble f[] = {0, -1, 0};
+   GLfloat a[] = {1, 0, 0};
+   GLfloat b[] = {0, 0, -1};
+   GLfloat c[] = {-1, 0, 0};
+   GLfloat d[] = {0, 0, 1};
+   GLfloat e[] = {0, 1, 0};
+   GLfloat f[] = {0, -1, 0};
 
    int recurse = 5;
    _drawFace(recurse, d, a, e);
