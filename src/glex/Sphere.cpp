@@ -48,19 +48,19 @@ void Sphere::draw() {
     //_anglex += 0.75;
 }
 
-inline void normalize(GLdouble *v) {
-   GLdouble len = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+inline void normalize(GLfloat *v) {
+   GLfloat len = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
    v[0] /= len;
    v[1] /= len;
    v[2] /= len;
 }
 
-void Sphere::_drawFace(int recurse, GLdouble* a, GLdouble* b, GLdouble* c) {
+void Sphere::_drawFace(int recurse, GLfloat* a, GLfloat* b, GLfloat* c) {
    if (recurse > 1) {
       // Compute vectors halfway between the passed vectors
-      GLdouble d[3] = {a[0] + b[0], a[1] + b[1], a[2] + b[2]};
-      GLdouble e[3] = {b[0] + c[0], b[1] + c[1], b[2] + c[2]};
-      GLdouble f[3] = {c[0] + a[0], c[1] + a[1], c[2] + a[2]};
+      GLfloat d[3] = {a[0] + b[0], a[1] + b[1], a[2] + b[2]};
+      GLfloat e[3] = {b[0] + c[0], b[1] + c[1], b[2] + c[2]};
+      GLfloat f[3] = {c[0] + a[0], c[1] + a[1], c[2] + a[2]};
 
       normalize(d);
       normalize(e);
@@ -73,13 +73,13 @@ void Sphere::_drawFace(int recurse, GLdouble* a, GLdouble* b, GLdouble* c) {
    }
 
    glBegin(GL_TRIANGLES);
-      glNormal3dv(a);
-      glVertex3d(a[0] * _radius, a[1] * _radius, a[2] * _radius);
+      glNormal3fv(a);
+      glVertex3f(a[0] * _radius, a[1] * _radius, a[2] * _radius);
 
-      glNormal3dv(b);
-      glVertex3d(b[0] * _radius, b[1] * _radius, b[2] * _radius);
+      glNormal3fv(b);
+      glVertex3f(b[0] * _radius, b[1] * _radius, b[2] * _radius);
 
-      glNormal3dv(c);
-      glVertex3d(c[0] * _radius, c[1] * _radius, c[2] * _radius);
+      glNormal3fv(c);
+      glVertex3f(c[0] * _radius, c[1] * _radius, c[2] * _radius);
    glEnd();
 }

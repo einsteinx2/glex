@@ -1,11 +1,13 @@
 #include "debug_log.h"
 #include "glex/Window.h"
 #include "glex/Triangle.h"
-//#include "glex/Cube.h"
-//#include "glex/Mesh.h"
+#include "glex/Cube.h"
+#include "glex/Mesh.h"
 //#include "glex/Sphere.h"
 #include "glex/Font.h"
 
+//#include "meshes/cubeMesh.h"
+//#include "textures/cubeMesh_RGBA_512x512.h"
 #include "meshes/houseMesh.h"
 #include "textures/houseMesh_RGBA_512x512.h"
 
@@ -32,11 +34,15 @@ int main(int argc, char *argv[])
     wrapper.createWindow("C++ Test", 640, 480);
 
     // Main loop
-    Triangle triangle;
+    //Triangle triangle;
     //Cube cube;
-    //Texture houseTexture;
-    //houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
-    //Mesh mesh(&houseMesh, &houseTexture, 0.3);
+    // Texture cubeTexture;
+    // cubeTexture.loadRgbaTexture(512, 512, cubeMesh_RGBA_512x512);
+    // Mesh mesh(&cubeMesh, &cubeTexture, 3.0);
+    Texture houseTexture;
+    houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
+    Mesh mesh(&houseMesh, &houseTexture, 0.3);
+    //Mesh mesh(&cubeMesh, NULL, 3.0);
     //Sphere sphere(1.5);
     Font font(FontFace::arial_32);
     font.createTexture();
@@ -62,9 +68,9 @@ int main(int argc, char *argv[])
 
         // Draw the 3d object(s)
         wrapper.reshapeFrustum();
-        triangle.draw();
+        //triangle.draw();
         //cube.draw();
-        //mesh.draw();
+        mesh.draw();
         //mesh.rotationX = wrapper.rotationX;
         //mesh.rotationY = wrapper.rotationY;
         //mesh.rotationZ = wrapper.rotationZ;
@@ -75,9 +81,10 @@ int main(int argc, char *argv[])
         wrapper.reshapeOrtho(font.scale);
         static std::string outputString;
         #ifdef DREAMCAST
-        static char* outputCString;
-        sprintf(outputCString, "frame time: %f ms  fps: %f", frameTime, fps);
-        outputString = outputCString; 
+        // static char* outputCString;
+        // sprintf(outputCString, "frame time: %f ms  fps: %f", frameTime, fps);
+        // outputString = outputCString; 
+        outputString = "Running on Dreamcast";
         #else
         outputString = "frame time: " + std::to_string(frameTime) + "ms  fps: " + std::to_string(fps); 
         #endif

@@ -2,7 +2,7 @@
 
 #include "meshes/cubeMesh.h"
 
-const struct MeshData cubeMesh = {
+struct MeshData cubeMesh = {
     .numVertices = 36,
     .vertices = {
         {1, -1, -1}, 

@@ -67,19 +67,23 @@ add_library(glex STATIC
     
     # Meshes
     include/meshes/common_mesh.h  
-    #src/meshes/cubeMesh.cpp    include/meshes/cubeMesh.h
-    #src/meshes/houseMesh.cpp   include/meshes/houseMesh.h
-    #src/meshes/monkeyMesh.cpp  include/meshes/monkeyMesh.h
+    src/meshes/cubeMesh.cpp    include/meshes/cubeMesh.h
+    src/meshes/houseMesh.cpp   include/meshes/houseMesh.h
+    src/meshes/monkeyMesh.cpp  include/meshes/monkeyMesh.h
 
     # Textures
-    #src/textures/cubeMesh_RGBA_512x512.cpp   include/textures/cubeMesh_RGBA_512x512.h
-    #src/textures/houseMesh_RGBA_512x512.cpp  include/textures/houseMesh_RGBA_512x512.h
+    src/textures/cubeMesh_RGBA_64x64.cpp   include/textures/cubeMesh_RGBA_64x64.h
+    src/textures/cubeMesh_RGBA_128x128.cpp   include/textures/cubeMesh_RGBA_128x128.h
+    src/textures/cubeMesh_RGBA_512x512.cpp   include/textures/cubeMesh_RGBA_512x512.h
+    src/textures/houseMesh_RGBA_128x128.cpp  include/textures/houseMesh_RGBA_128x128.h
+    src/textures/houseMesh_RGBA_256x256.cpp  include/textures/houseMesh_RGBA_256x256.h
+    src/textures/houseMesh_RGBA_512x512.cpp  include/textures/houseMesh_RGBA_512x512.h
 
     # GLEX
-    #src/glex/Cube.cpp      include/glex/Cube.h
+    src/glex/Cube.cpp      include/glex/Cube.h
     src/glex/Font.cpp      include/glex/Font.h
-    #src/glex/Mesh.cpp      include/glex/Mesh.h
-    #src/glex/Sphere.cpp    include/glex/Sphere.h
+    src/glex/Mesh.cpp      include/glex/Mesh.h
+    src/glex/Sphere.cpp    include/glex/Sphere.h
     src/glex/Texture.cpp   include/glex/Texture.h
     src/glex/Triangle.cpp  include/glex/Triangle.h  
     src/glex/Window.cpp    include/glex/Window.h

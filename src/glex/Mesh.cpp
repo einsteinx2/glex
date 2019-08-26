@@ -24,6 +24,8 @@ void Mesh::_drawList() {
         //glVertex3fv(meshData->vertices[i]);
     }
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
 }
 
 void Mesh::draw() {
@@ -50,9 +52,9 @@ void Mesh::draw() {
     glRotatef(rotationZ, 0.0f, 0.0f, 1.0f);
     glRotatef(rotationY, 0.0f, 1.0f, 0.0f);
     glRotatef(rotationX, 1.0f, 0.0f, 0.0f);
-    // rotationZ += 0.75;
-    // rotationY += 0.75;
-    // rotationX += 0.75;
+    rotationZ += 0.75;
+    rotationY += 0.75;
+    rotationX += 0.75;
     
     //glTranslatef(1.0, -2.0, 1.0);
     

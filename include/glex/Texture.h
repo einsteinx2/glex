@@ -5,9 +5,9 @@
 
 class Texture {
     public:
-        GLuint textureId;
-        GLsizei textureWidth;
-        GLsizei textureHeight;
+        GLuint textureId = 0;
+        GLsizei textureWidth = 0;
+        GLsizei textureHeight = 0;
         ~Texture();
         #ifndef DREAMCAST
         bool loadBmpTexture(GLsizei textureWidth_, GLsizei textureHeight_, std::string path);

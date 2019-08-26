@@ -9,4 +9,4 @@
 #pragma once
 #include "common_mesh.h"
 
-extern const struct MeshData cubeMesh;
+extern struct MeshData cubeMesh;
