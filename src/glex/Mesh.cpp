@@ -1,6 +1,8 @@
 #include "glex/Mesh.h"
 #include "debug_log.h"
 
+#define IMMEDIATE_MODE false
+
 Mesh::Mesh(MeshData* meshData, Texture* texture, GLfloat scale) {
     _meshData = meshData;
     _texture = texture;
@@ -13,17 +15,45 @@ void Mesh::_drawList() {
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glBindTexture(GL_TEXTURE_2D, _texture->textureId);
 
-    glBegin(GL_TRIANGLES);
+    #if IMMEDIATE_MODE
+    glBegin(GL_TRIANGLES); 
+    int c = 0;
+    int t = 0;
     for (int i = 0; i < _meshData->numVertices; i+=1) {
-        glColor3f(1.0, 1.0, 1.0);
-        glNormal3f(_meshData->normals[i][0], _meshData->normals[i][1], _meshData->normals[i][2]);
-        glTexCoord2f(_meshData->textureCoordinates[i][0], _meshData->textureCoordinates[i][1]);
-        glVertex3f(_meshData->vertices[i][0], _meshData->vertices[i][1], _meshData->vertices[i][2]);
-        //glNormal3fv(meshData->normals[i]);
-        //glTexCoord2fv(meshData->textureCoordinates[i]);
-        //glVertex3fv(meshData->vertices[i]);
+        glNormal3f(_meshData->normals[c], _meshData->normals[c+1], _meshData->normals[c+2]);
+        glTexCoord2f(_meshData->textureCoordinates[t], _meshData->textureCoordinates[t+1]);
+        glVertex3f(_meshData->vertices[c], _meshData->vertices[c+1], _meshData->vertices[c+2]);
+        c += 3;
+        t += 2;
     }
     glEnd();
+    
+    #else
+    // Create vertex color array (all 1s)
+    GLubyte colors[_meshData->numVertices*3];
+    for (int i = 0; i < _meshData->numVertices * 3; i += 1) {
+        colors[i] = 0xFF;
+    }
+    
+    //glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY); //enable vertex array
+    glEnableClientState(GL_NORMAL_ARRAY); //enable normal array
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY); //enable texcoord array
+
+    //glColorPointer(3, GL_UNSIGNED_BYTE, 0, colors);
+    glVertexPointer(3, GL_FLOAT, 0, &_meshData->vertices[0]); //give vertex array to OGL
+    glTexCoordPointer(2, GL_FLOAT, 0, &_meshData->textureCoordinates[0]); //same with texcoord array
+    glNormalPointer(GL_FLOAT, 0, &_meshData->normals[0]); //and normal array
+
+    //glDrawElements(GL_TRIANGLES, length, GL_FLOAT, 0); //draw the whole set in one go
+    glDrawArrays(GL_TRIANGLES, 0, _meshData->numVertices);
+
+    //glDisableClientState(GL_COLOR);
+    glDisableClientState(GL_VERTEX_ARRAY); //disable the client states again
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    #endif
 
     glDisable(GL_TEXTURE_2D);
 }

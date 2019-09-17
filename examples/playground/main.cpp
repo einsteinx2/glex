@@ -6,8 +6,8 @@
 #include "glex/Sphere.h"
 #include "glex/Font.h"
 
-//#include "meshes/cubeMesh.h"
-//#include "textures/cubeMesh_RGBA_512x512.h"
+#include "meshes/cubeMesh.h"
+#include "textures/cubeMesh_RGBA_512x512.h"
 #include "meshes/houseMesh.h"
 #include "textures/houseMesh_RGBA_512x512.h"
 
@@ -31,16 +31,16 @@ int main(int argc, char *argv[])
     wrapper.createWindow("C++ Test", 640, 480);
 
     // Main loop
-    //Triangle triangle;
+    Triangle triangle;
     //Cube cube;
-    //Texture cubeTexture;
-    //cubeTexture.loadRgbaTexture(512, 512, cubeMesh_RGBA_512x512);
-    //Mesh mesh(&cubeMesh, &cubeTexture, 3.0);
+    // Texture cubeTexture;
+    // cubeTexture.loadRgbaTexture(512, 512, cubeMesh_RGBA_512x512);
+    // Mesh mesh(&cubeMesh, &cubeTexture, 3.0);
     Texture houseTexture;
     houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
     Mesh mesh(&houseMesh, &houseTexture, 0.3);
     //Mesh mesh(&cubeMesh, NULL, 3.0);
-    Sphere sphere(1.5);
+    //Sphere sphere(1.5);
     #ifdef DREAMCAST
     Font font(FontFace::arial_16);
     #else
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
         // Draw the 3d object(s)
         wrapper.reshapeFrustum();
-        //triangle.draw();
+        // triangle.draw();
         //cube.draw();
         mesh.draw();
         //mesh.rotationX = wrapper.rotationX;
