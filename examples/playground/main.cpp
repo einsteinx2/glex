@@ -32,13 +32,13 @@ int main(int argc, char *argv[])
 
     // Main loop
     //Triangle triangle;
-    Cube cube;
-    // Texture cubeTexture;
-    // cubeTexture.loadRgbaTexture(512, 512, cubeMesh_RGBA_512x512);
-    // Mesh mesh(&cubeMesh, &cubeTexture, 3.0);
-    //Texture houseTexture;
-    //houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
-    //Mesh mesh(&houseMesh, &houseTexture, 0.3);
+    //Cube cube;
+    //Texture cubeTexture;
+    //cubeTexture.loadRgbaTexture(512, 512, cubeMesh_RGBA_512x512);
+    //Mesh mesh(&cubeMesh, &cubeTexture, 3.0);
+    Texture houseTexture;
+    houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
+    Mesh mesh(&houseMesh, &houseTexture, 0.3);
     //Mesh mesh(&cubeMesh, NULL, 3.0);
     Sphere sphere(1.5);
     #ifdef DREAMCAST
@@ -67,11 +67,11 @@ int main(int argc, char *argv[])
         wrapper.reshapeFrustum();
         //triangle.draw();
         //cube.draw();
-        //mesh.draw();
+        mesh.draw();
         //mesh.rotationX = wrapper.rotationX;
         //mesh.rotationY = wrapper.rotationY;
         //mesh.rotationZ = wrapper.rotationZ;
-        sphere.draw();
+        //sphere.draw();
 
         // Draw the text
         glClear(GL_DEPTH_BUFFER_BIT);

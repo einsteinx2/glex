@@ -32,19 +32,7 @@ void Font::createTexture() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-    #ifdef DREAMCAST
-    // GLdc doesn't support GL_ALPHA textures, so convert to RGBA format
-    uint32_t alphaSize = _font.tex_data.size();
-    unsigned char rgbData[alphaSize*4];
-    for(uint32_t i = 0; i < alphaSize; ++i) {
-        rgbData[i*4] = rgbData[(i*4)+1] = rgbData[(i*4)+2] = 0xFF; // Set RGB values to max
-        rgbData[(i*4)+3] = _font.tex_data[i];                      // Use existing alpha value
-    }
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _font.tex_width, _font.tex_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &rgbData[0]);
-    #else
     glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, _font.tex_width, _font.tex_height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, &_font.tex_data[0]);
-    #endif
 }
 
 void Font::deleteTexture() {
