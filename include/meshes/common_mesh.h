@@ -1,10 +1,9 @@
 #pragma once
 #include <vector>
 
-using namespace std;
 struct MeshData {
-    const int numVertices;
-    const vector<float> vertices;
-    const vector<float> textureCoordinates;
-    const vector<float> normals;
+    int numVertices;
+    std::vector<float> vertices;
+    std::vector<float> textureCoordinates;
+    std::vector<float> normals;
 };

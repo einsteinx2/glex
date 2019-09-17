@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(glex)
 
+# Disable optimizations when building debug version
+SET(CMAKE_CXX_FLAGS_DEBUG "-O0")
+SET(CMAKE_C_FLAGS_DEBUG "-O0")
+
 # Set output directory
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     message(STATUS "Building for macOS")
@@ -80,13 +84,14 @@ add_library(glex STATIC
     src/textures/houseMesh_RGBA_512x512.cpp  include/textures/houseMesh_RGBA_512x512.h
 
     # GLEX
-    src/glex/Cube.cpp      include/glex/Cube.h
-    src/glex/Font.cpp      include/glex/Font.h
-    src/glex/Mesh.cpp      include/glex/Mesh.h
-    src/glex/Sphere.cpp    include/glex/Sphere.h
-    src/glex/Texture.cpp   include/glex/Texture.h
-    src/glex/Triangle.cpp  include/glex/Triangle.h  
-    src/glex/Window.cpp    include/glex/Window.h
+    src/glex/Cube.cpp       include/glex/Cube.h
+    src/glex/Font.cpp       include/glex/Font.h
+    src/glex/Mesh.cpp       include/glex/Mesh.h
+    src/glex/MeshLoader.cpp include/glex/MeshLoader.h
+    src/glex/Sphere.cpp     include/glex/Sphere.h
+    src/glex/Texture.cpp    include/glex/Texture.h
+    src/glex/Triangle.cpp   include/glex/Triangle.h  
+    src/glex/Window.cpp     include/glex/Window.h
 )
 include_directories("${CMAKE_SOURCE_DIR}/include")
 if(${USE_GLFW})
@@ -103,6 +108,12 @@ if(${MACOS_BUILD})
         examples/playground/main.cpp 
         examples/playground/glad_gl.cpp
     )
+
+    # Copy meshes
+    file(GLOB OBJ_MESHES
+        "${CMAKE_SOURCE_DIR}/meshes/*.obj"
+    )
+    file(COPY ${OBJ_MESHES} DESTINATION "${CMAKE_BINARY_DIR}/meshes")
 
     # Link macOS libraries
     target_link_libraries(playground-example "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
@@ -141,6 +152,8 @@ elseif(${DREAMCAST_BUILD})
         COMMAND mkdir -p ${EXECUTABLE_OUTPUT_PATH}/${EXE}
         COMMAND $ENV{KOS_BASE}/utils/scramble/scramble ${EXECUTABLE_OUTPUT_PATH}/${EXE}.bin ${EXECUTABLE_OUTPUT_PATH}/${EXE}/1ST_READ.BIN
         COMMAND IP_TEMPLATE_FILE=${CMAKE_SOURCE_DIR}/deps/dc/IP.TMPL $ENV{KOS_BASE}/utils/makeip/makeip ${CMAKE_SOURCE_DIR}/deps/dc/ip.txt ${EXECUTABLE_OUTPUT_PATH}/${EXE}/IP.BIN
+        #COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${EXE}/meshes
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/meshes ${CMAKE_BINARY_DIR}/${EXE}/
         # COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${EXE}/simulant
         # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/fonts ${CMAKE_BINARY_DIR}/${EXE}/simulant
         # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/materials ${CMAKE_BINARY_DIR}/${EXE}/simulant

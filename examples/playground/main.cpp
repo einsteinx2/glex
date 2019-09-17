@@ -5,10 +5,11 @@
 #include "glex/Mesh.h"
 #include "glex/Sphere.h"
 #include "glex/Font.h"
+#include "glex/MeshLoader.h"
 
 #include "meshes/cubeMesh.h"
 #include "textures/cubeMesh_RGBA_512x512.h"
-#include "meshes/houseMesh.h"
+//#include "meshes/houseMesh.h"
 #include "textures/houseMesh_RGBA_512x512.h"
 
 #include <cstdio>
@@ -33,12 +34,20 @@ int main(int argc, char *argv[])
     // Main loop
     Triangle triangle;
     //Cube cube;
+    // MeshData *houseMesh = MeshLoader::loadObjMesh("meshes/cube.obj");
     // Texture cubeTexture;
     // cubeTexture.loadRgbaTexture(512, 512, cubeMesh_RGBA_512x512);
     // Mesh mesh(&cubeMesh, &cubeTexture, 3.0);
+    #ifdef DREAMCAST
+    std::string meshPath = "/cd/meshes/house.obj";
+    #else
+    std::string meshPath = "meshes/house.obj";
+    #endif
+
+    MeshData *houseMesh = MeshLoader::loadObjMesh(meshPath);
     Texture houseTexture;
     houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
-    Mesh mesh(&houseMesh, &houseTexture, 0.3);
+    Mesh mesh(houseMesh, &houseTexture, 0.3);
     //Mesh mesh(&cubeMesh, NULL, 3.0);
     //Sphere sphere(1.5);
     #ifdef DREAMCAST
@@ -65,7 +74,7 @@ int main(int argc, char *argv[])
 
         // Draw the 3d object(s)
         wrapper.reshapeFrustum();
-        // triangle.draw();
+        //triangle.draw();
         //cube.draw();
         mesh.draw();
         //mesh.rotationX = wrapper.rotationX;

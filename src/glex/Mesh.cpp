@@ -29,26 +29,16 @@ void Mesh::_drawList() {
     glEnd();
     
     #else
-    // Create vertex color array (all 1s)
-    GLubyte colors[_meshData->numVertices*3];
-    for (int i = 0; i < _meshData->numVertices * 3; i += 1) {
-        colors[i] = 0xFF;
-    }
-    
-    //glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY); //enable vertex array
     glEnableClientState(GL_NORMAL_ARRAY); //enable normal array
     glEnableClientState(GL_TEXTURE_COORD_ARRAY); //enable texcoord array
 
-    //glColorPointer(3, GL_UNSIGNED_BYTE, 0, colors);
     glVertexPointer(3, GL_FLOAT, 0, &_meshData->vertices[0]); //give vertex array to OGL
     glTexCoordPointer(2, GL_FLOAT, 0, &_meshData->textureCoordinates[0]); //same with texcoord array
     glNormalPointer(GL_FLOAT, 0, &_meshData->normals[0]); //and normal array
 
-    //glDrawElements(GL_TRIANGLES, length, GL_FLOAT, 0); //draw the whole set in one go
     glDrawArrays(GL_TRIANGLES, 0, _meshData->numVertices);
 
-    //glDisableClientState(GL_COLOR);
     glDisableClientState(GL_VERTEX_ARRAY); //disable the client states again
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
