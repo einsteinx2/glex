@@ -3,7 +3,6 @@
 #include "glex/Triangle.h"
 #include "glex/Cube.h"
 #include "glex/Mesh.h"
-#include "glex/Sphere.h"
 #include "glex/Font.h"
 #include "glex/MeshLoader.h"
 
@@ -49,7 +48,6 @@ int main(int argc, char *argv[])
     houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
     Mesh mesh(houseMesh, &houseTexture, 0.3);
     //Mesh mesh(&cubeMesh, NULL, 3.0);
-    //Sphere sphere(1.5);
     #ifdef DREAMCAST
     Font font(FontFace::arial_16);
     #else
@@ -80,7 +78,6 @@ int main(int argc, char *argv[])
         //mesh.rotationX = wrapper.rotationX;
         //mesh.rotationY = wrapper.rotationY;
         //mesh.rotationZ = wrapper.rotationZ;
-        //sphere.draw();
 
         // Draw the text
         glClear(GL_DEPTH_BUFFER_BIT);
