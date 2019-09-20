@@ -119,10 +119,10 @@ if(${MACOS_BUILD})
     target_link_libraries(playground-example "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
 elseif(${DREAMCAST_BUILD})
     # Create GLdc library target
-    # add_custom_target(GLdc
-    #     COMMAND make
-    #     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/deps/dc/GLdc"
-    # )
+    add_custom_target(GLdc
+        COMMAND make build
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/deps/dc/GLdc"
+    )
 
     # Create final application target
     add_executable(playground-example 
@@ -132,7 +132,7 @@ elseif(${DREAMCAST_BUILD})
     # Link Dreamcast libraries
     #target_link_libraries(playground-example "${CMAKE_SOURCE_DIR}/deps/dc/libGLdc.a")
     target_link_libraries(playground-example "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/libGLdc.a")
-    # add_dependencies(playground-example GLdc)
+    add_dependencies(playground-example GLdc)
 
     # Build CDI
     SET(DC_EXECUTABLES # Names without .elf extension
