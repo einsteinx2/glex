@@ -19,7 +19,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib/mac")
 elseif(${DREAMCAST_BUILD})
     message(STATUS "Building for Dreamcast")
-    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/toolchains/Dreamcast.cmake")
+    # Currently adding the toolchain file doesn't work from here because it's the toolchain file that sets DREAMCAST_BUILD,
+    # so instead it's set in the build script
+    #set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/toolchains/Dreamcast.cmake")
     message(STATUS "DREAMCAST_BUILD: ${DREAMCAST_BUILD}")
     SET(CMAKE_BUILD_TYPE Release)
     SET(THREADS_PREFER_PTHREAD_FLAG OFF)
