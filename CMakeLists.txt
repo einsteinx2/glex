@@ -105,7 +105,7 @@ elseif(${DREAMCAST_BUILD})
         COMMAND make build
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/deps/dc/GLdc"
     )
-    target_link_libraries(glex "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/libGLdc.a")
+    target_link_libraries(glex "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/libGLdc.a" "-lm")
     add_dependencies(glex GLdc)
 endif()
 
