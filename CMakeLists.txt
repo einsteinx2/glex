@@ -5,6 +5,11 @@ project(glex)
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0")
 SET(CMAKE_C_FLAGS_DEBUG "-O0")
 
+# Set C and C++ standards
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Set output directory
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     message(STATUS "Building for macOS")
@@ -12,24 +17,20 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     set(USE_GLFW true)
     set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build/mac")
     set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib/mac")
-    set(CMAKE_C_STANDARD 99)
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
 elseif(${DREAMCAST_BUILD})
     message(STATUS "Building for Dreamcast")
-    #set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/toolchains/Dreamcast.cmake")
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/toolchains/Dreamcast.cmake")
     message(STATUS "DREAMCAST_BUILD: ${DREAMCAST_BUILD}")
     SET(CMAKE_BUILD_TYPE Release)
     SET(THREADS_PREFER_PTHREAD_FLAG OFF)
-    #set(USE_GLDC true)
-    #add_definitions(-DUSE_GLDC)
     set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build/dc")
     set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib/dc")
-
     SET(OpenGL_GL_PREFERENCE "LEGACY")
 
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -DTIXML_USE_STL -Wdelete-non-virtual-dtor")
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall")
+    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -DTIXML_USE_STL -Wdelete-non-virtual-dtor")
+    #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall")
+    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -DTIXML_USE_STL -Wdelete-non-virtual-dtor")
+    #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
     SET(CMAKE_ASM_FLAGS "")
 
     # We force disable debugging information in release builds - this is so we override settings in the
@@ -37,24 +38,9 @@ elseif(${DREAMCAST_BUILD})
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -s -fomit-frame-pointer -g0")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -s -fomit-frame-pointer -g0")
 
-    set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -Wextra -Wno-unused-parameter")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -Wextra -Wno-unused-parameter")
 else()
     message(FATAL_ERROR "Your build system '${CMAKE_SYSTEM_NAME}' is not supported")
-endif()
-
-# Include GLFW
-if(${USE_GLFW})
-    find_package(PkgConfig REQUIRED)
-    pkg_search_module(GLFW REQUIRED glfw3)
-    include_directories(${GLFW_INCLUDE_DIRS})
-    link_directories(${GLFW_LIBRARY_DIRS})
-endif()
-
-# Include GLdc
-if(${DREAMCAST_BUILD})
-    FILE(GLOB_RECURSE GLDC "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/GL/*.c")
-    #LIST(REMOVE_ITEM GLDC "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/samples/*")
-    INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/deps/dc/GLdc/include")
 endif()
 
 # Add the project files
@@ -88,18 +74,37 @@ add_library(glex STATIC
     src/glex/Font.cpp       include/glex/Font.h
     src/glex/Mesh.cpp       include/glex/Mesh.h
     src/glex/MeshLoader.cpp include/glex/MeshLoader.h
-    src/glex/Sphere.cpp     include/glex/Sphere.h
     src/glex/Texture.cpp    include/glex/Texture.h
     src/glex/Triangle.cpp   include/glex/Triangle.h  
     src/glex/Window.cpp     include/glex/Window.h
 )
 include_directories("${CMAKE_SOURCE_DIR}/include")
+
+# Add corrent OpenGL library
 if(${USE_GLFW})
-    target_link_libraries(glex ${GLFW_STATIC_LIBRARIES})
+    # Build and include glfw submodule so it's not necessary to build and install to system
+    add_subdirectory("${CMAKE_SOURCE_DIR}/deps/pc/glfw")
+    include_directories("${CMAKE_SOURCE_DIR}/deps/pc/glfw/include")
+    include_directories("${CMAKE_SOURCE_DIR}/deps/pc/glfw/deps")
+    target_link_libraries(glex glfw)
 elseif(${DREAMCAST_BUILD})
+    # Example to use pre-compiled GLdc library instead of compiling the submodule
     #target_link_libraries(glex ${GLDC})
-    message(STATUS "Linking pre-built libGLdc.a")
+    #message(STATUS "Linking pre-built libGLdc.a")
     #target_link_libraries(glex "${CMAKE_SOURCE_DIR}/deps/dc/libGLdc.a")
+
+    # Build and include GLdc submodule so it's not necessary to build and install to system
+    FILE(GLOB_RECURSE GLDC "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/GL/*.c")
+    LIST(REMOVE_ITEM GLDC "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/samples/*")
+    INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/deps/dc/GLdc/include")
+
+    # Create GLdc library target
+    add_custom_target(GLdc
+        COMMAND make build
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/deps/dc/GLdc"
+    )
+    target_link_libraries(glex "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/libGLdc.a")
+    add_dependencies(glex GLdc)
 endif()
 
 if(${MACOS_BUILD})
@@ -118,21 +123,10 @@ if(${MACOS_BUILD})
     # Link macOS libraries
     target_link_libraries(playground-example "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
 elseif(${DREAMCAST_BUILD})
-    # Create GLdc library target
-    add_custom_target(GLdc
-        COMMAND make build
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/deps/dc/GLdc"
-    )
-
     # Create final application target
     add_executable(playground-example 
         examples/playground/main.cpp 
     )
-    
-    # Link Dreamcast libraries
-    #target_link_libraries(playground-example "${CMAKE_SOURCE_DIR}/deps/dc/libGLdc.a")
-    target_link_libraries(playground-example "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/libGLdc.a")
-    add_dependencies(playground-example GLdc)
 
     # Build CDI
     SET(DC_EXECUTABLES # Names without .elf extension
