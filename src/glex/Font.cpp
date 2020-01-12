@@ -85,12 +85,12 @@ void Font::draw(float penX, float penY, std::string const& text) {
         
         glBegin(GL_TRIANGLES);
         glColor4f(1.0, 1.0, 1.0, 1.0);
-        glTexCoord2f(glyph->s0, glyph->t0 ); glVertex2f(x,     y  );
-        glTexCoord2f(glyph->s0, glyph->t1 ); glVertex2f(x,     y - h);
-        glTexCoord2f(glyph->s1, glyph->t1 ); glVertex2f(x + w, y - h);
-        glTexCoord2f(glyph->s0, glyph->t0 ); glVertex2f(x,     y  );
-        glTexCoord2f(glyph->s1, glyph->t1 ); glVertex2f(x + w, y - h);
-        glTexCoord2f(glyph->s1, glyph->t0 ); glVertex2f(x + w, y  );
+        glTexCoord2f(glyph->s0, glyph->t0); glVertex2f(x,     y  );
+        glTexCoord2f(glyph->s0, glyph->t1); glVertex2f(x,     y - h);
+        glTexCoord2f(glyph->s1, glyph->t1); glVertex2f(x + w, y - h);
+        glTexCoord2f(glyph->s0, glyph->t0); glVertex2f(x,     y  );
+        glTexCoord2f(glyph->s1, glyph->t1); glVertex2f(x + w, y - h);
+        glTexCoord2f(glyph->s1, glyph->t0); glVertex2f(x + w, y  );
         glEnd();
         
         penX += glyph->advance_x;
