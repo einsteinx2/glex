@@ -18,9 +18,9 @@ MeshObjInfo MeshLoader::_getObjInfo(std::string path) {
     MeshObjInfo info = {};
     
     // Open OBJ file
-    std::ifstream inOBJ;
-    inOBJ.open(path);
-    if (!inOBJ.good()) {
+    DEBUG_PRINTLN("obj path: %s", path.c_str());
+    std::ifstream inOBJ(path);
+    if (inOBJ && !inOBJ.good()) {
         DEBUG_PRINTLN("ERROR OPENING OBJ FILE");
         exit(1);
     }

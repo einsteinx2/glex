@@ -12,9 +12,9 @@ struct MeshObjInfo {
 };
 
 class MeshLoader {
-    public:
-        static MeshData* loadObjMesh(std::string path);
-    private:
-        static MeshObjInfo _getObjInfo(std::string path);
-        static MeshData* _readObjFile(std::string path, MeshObjInfo info);
+public:
+    static MeshData* loadObjMesh(std::string path);
+private:
+    static MeshObjInfo _getObjInfo(std::string path);
+    static MeshData* _readObjFile(std::string path, MeshObjInfo info);
 };
