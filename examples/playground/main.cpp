@@ -3,6 +3,7 @@
 #include "glex/Triangle.h"
 #include "glex/Cube.h"
 #include "glex/Mesh.h"
+#include "glex/Image.h"
 #include "glex/Font.h"
 #include "glex/MeshLoader.h"
 
@@ -30,7 +31,6 @@ int main(int argc, char *argv[])
     Window wrapper;
     wrapper.createWindow("C++ Test", 640, 480);
 
-    // Main loop
     Triangle triangle;
     //Cube cube;
     // MeshData *houseMesh = MeshLoader::loadObjMesh("meshes/cube.obj");
@@ -43,10 +43,15 @@ int main(int argc, char *argv[])
     std::string meshPath = "meshes/house.obj";
     #endif
 
+    Texture woodTexture;
+    woodTexture.loadBmpTexture(256, 256, "images/wood1.bmp");
+    Image woodImage(&woodTexture);
+
     MeshData *houseMesh = MeshLoader::loadObjMesh(meshPath);
     Texture houseTexture;
     houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
     Mesh mesh(houseMesh, &houseTexture, 0.3);
+    //Mesh mesh(houseMesh, &woodTexture, 0.3);
     //Mesh mesh(&cubeMesh, NULL, 3.0);
     #ifdef DREAMCAST
     Font font(FontFace::arial_16);
@@ -54,6 +59,8 @@ int main(int argc, char *argv[])
     Font font(FontFace::arial_32);
     #endif
     font.createTexture();
+
+    // Main loop
     while (!wrapper.windowShouldClose()) {
         // Measure speed
         nbFrames++;
@@ -85,6 +92,10 @@ int main(int argc, char *argv[])
         static char outputString[50];
         sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f", frameTime, fps);
         font.draw(20, 20, outputString);
+
+        // Draw the image
+        wrapper.reshapeOrtho(1.0);
+        woodImage.draw(500, 500, 256, 256);
 
         // Swap buffers to display the current frame
         wrapper.swapBuffers();
