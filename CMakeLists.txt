@@ -74,6 +74,7 @@ add_library(glex STATIC
     # GLEX
     src/glex/Cube.cpp       include/glex/Cube.h
     src/glex/Font.cpp       include/glex/Font.h
+    src/glex/Image.cpp      include/glex/Image.h
     src/glex/Mesh.cpp       include/glex/Mesh.h
     src/glex/MeshLoader.cpp include/glex/MeshLoader.h
     src/glex/Texture.cpp    include/glex/Texture.h
@@ -121,6 +122,12 @@ if(${MACOS_BUILD})
         "${CMAKE_SOURCE_DIR}/meshes/*.obj"
     )
     file(COPY ${OBJ_MESHES} DESTINATION "${CMAKE_BINARY_DIR}/meshes")
+
+    # Copy images
+    file(GLOB IMG_FILES
+        "${CMAKE_SOURCE_DIR}/images/*"
+    )
+    file(COPY ${IMG_FILES} DESTINATION "${CMAKE_BINARY_DIR}/images")
 
     # Link macOS libraries
     target_link_libraries(playground-example "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
