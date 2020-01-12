@@ -1,7 +1,8 @@
 #include "glex/Texture.h"
 #include "debug_log.h"
 
-#include <cstdio>
+#include <iostream>
+#include <fstream>
 
 Texture::~Texture() {
     if (isTextureLoaded()) {
@@ -16,25 +17,27 @@ bool Texture::isTextureLoaded() {
 #ifndef DREAMCAST
 bool Texture::loadBmpTexture(GLsizei textureWidth_, GLsizei textureHeight_, std::string path) {
     // Data read from the header of the BMP file
-    unsigned char header[54]; // Each BMP file begins by a 54-bytes header
+    char header[54];          // Each BMP file begins by a 54-bytes header
     unsigned int dataPos;     // Position in the file where the actual data begins
     unsigned int width, height;
     unsigned int imageSize;   // = width * height * 3
-    unsigned char* bgrData;
+    char* bgrData;
 
+    // Open BMP file
     DEBUG_PRINTLN("bmp path: %s", path.c_str());
-    FILE* file = fopen(path.c_str(), "rb");
-    if (!file) {
+    std::ifstream inBMP(path, std::ios::binary);
+    if (inBMP && !inBMP.good()) {
         DEBUG_PRINTLN("Image could not be opened"); 
         return false;
     }
 
-    if (fread(header, 1, 54, file) != 54) { 
-        // If not 54 bytes read : problem
-        DEBUG_PRINTLN("Not a correct BMP file");
+    // Read BMP header
+    if (!inBMP.read(header, 54).good()) {
+        DEBUG_PRINTLN("Image could not be opened"); 
         return false;
     }
-
+    
+    // Check if header contains valid BMP signature
     if (header[0] != 'B' || header[1] != 'M') {
         DEBUG_PRINTLN("Not a correct BMP file");
         return false;
@@ -57,23 +60,25 @@ bool Texture::loadBmpTexture(GLsizei textureWidth_, GLsizei textureHeight_, std:
     }  
 
     // Create a buffer
-    bgrData = new unsigned char[imageSize];
+    bgrData = new char[imageSize];
 
     // Read the actual data from the file into the buffer
-    size_t actualSize = fread(bgrData, 1, imageSize, file);
+    inBMP.read(bgrData, imageSize);
+    std::streamsize actualSize = inBMP.gcount();
+    if (imageSize != actualSize) {
+        DEBUG_PRINTLN("Failed to read BMP file, imageSize: %u actualSize: %zu", imageSize, actualSize);
+    }
 
     // Everything is in memory now, the file can be closed
-    fclose(file);
+    inBMP.close();
 
     // Create the OpenGL texture
     loadBrgTexture(textureWidth_, textureHeight_, bgrData);
 
-    DEBUG_PRINTLN("dataPos: %d  imageSize: %d  width: %d  height: %d  actualSize: %zu", dataPos, imageSize, width, height, actualSize);
-
     return true;
 }
 
-void Texture::loadBrgTexture(GLsizei textureWidth_, GLsizei textureHeight_, const unsigned char* bgrData) {
+void Texture::loadBrgTexture(GLsizei textureWidth_, GLsizei textureHeight_, const char* bgrData) {
     if (isTextureLoaded()) {
         unloadTexture();
     }
