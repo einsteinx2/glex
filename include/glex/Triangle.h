@@ -4,6 +4,7 @@
 class Triangle {
 public:
     void draw();
+    
 private:
     void _drawList();
 };
