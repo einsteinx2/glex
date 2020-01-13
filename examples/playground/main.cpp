@@ -28,8 +28,10 @@ float fps = 0.0;
 int main(int argc, char *argv[])
 {
     DEBUG_PRINTLN("Application started!");
+    int width = 640;
+    int height = 480;
     Window wrapper;
-    wrapper.createWindow("C++ Test", 640, 480);
+    wrapper.createWindow("GLEX Playground", width, height);
 
     Triangle triangle;
     //Cube cube;
@@ -44,7 +46,7 @@ int main(int argc, char *argv[])
     #endif
 
     Texture woodTexture;
-    woodTexture.loadBmpTexture(256, 256, "images/wood1.bmp");
+    woodTexture.loadBmpTexture("images/wood1.bmp");
     Image woodImage(&woodTexture);
 
     MeshData *houseMesh = MeshLoader::loadObjMesh(meshPath);
@@ -53,11 +55,8 @@ int main(int argc, char *argv[])
     Mesh mesh(houseMesh, &houseTexture, 0.3);
     //Mesh mesh(houseMesh, &woodTexture, 0.3);
     //Mesh mesh(&cubeMesh, NULL, 3.0);
-    #ifdef DREAMCAST
-    Font font(FontFace::arial_16);
-    #else
-    Font font(FontFace::arial_32);
-    #endif
+
+    Font font(FontFace::arial_16, FONT_COLOR_BLACK);
     font.createTexture();
 
     // Main loop
@@ -77,6 +76,11 @@ int main(int argc, char *argv[])
         // Clear the buffer to draw the prepare frame
         wrapper.clear();
 
+        // Draw the background image
+        wrapper.reshapeOrtho(1.0);
+        //woodImage.draw(0, wrapper.height, wrapper.width, wrapper.height, wrapper.screenScale);
+        woodImage.draw(0, 480, 640, 480, wrapper.screenScale);
+
         // Draw the 3d object(s)
         wrapper.reshapeFrustum();
         //triangle.draw();
@@ -87,15 +91,14 @@ int main(int argc, char *argv[])
         //mesh.rotationZ = wrapper.rotationZ;
 
         // Draw the text
-        glClear(GL_DEPTH_BUFFER_BIT);
         wrapper.reshapeOrtho(font.scale);
         static char outputString[50];
         sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f", frameTime, fps);
-        font.draw(20, 20, outputString);
+        font.draw(20, 20, outputString, wrapper.screenScale);
 
         // Draw the image
-        wrapper.reshapeOrtho(1.0);
-        woodImage.draw(500, 500, 256, 256);
+        // wrapper.reshapeOrtho(1.0);
+        // woodImage.draw(500, 500, 256, 256);
 
         // Swap buffers to display the current frame
         wrapper.swapBuffers();
