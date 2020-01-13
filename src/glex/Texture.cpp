@@ -10,17 +10,14 @@ Texture::~Texture() {
     }
 }
 
-bool Texture::isTextureLoaded() {
-    return textureId != 0;
-}
-
 #ifndef DREAMCAST
-bool Texture::loadBmpTexture(GLsizei textureWidth_, GLsizei textureHeight_, std::string path) {
+bool Texture::loadBmpTexture(std::string path) {
     // Data read from the header of the BMP file
-    char header[54];          // Each BMP file begins by a 54-bytes header
-    unsigned int dataPos;     // Position in the file where the actual data begins
-    unsigned int width, height;
-    unsigned int imageSize;   // = width * height * 3
+    const int headerSize = 54;              // Each BMP file begins by a 54-bytes header
+    char header[headerSize];          
+    unsigned int dataPos;                   // Position in the file where the actual data begins
+    unsigned int headerWidth, headerHeight;
+    unsigned int imageSize;                 // = width * height * 3
     char* bgrData;
 
     // Open BMP file
@@ -32,7 +29,7 @@ bool Texture::loadBmpTexture(GLsizei textureWidth_, GLsizei textureHeight_, std:
     }
 
     // Read BMP header
-    if (!inBMP.read(header, 54).good()) {
+    if (!inBMP.read(header, headerSize).good()) {
         DEBUG_PRINTLN("Image could not be opened"); 
         return false;
     }
@@ -44,20 +41,31 @@ bool Texture::loadBmpTexture(GLsizei textureWidth_, GLsizei textureHeight_, std:
     }
 
     // Read ints from the byte array
-    dataPos    = *(int*)&(header[0x0A]);
-    imageSize  = *(int*)&(header[0x22]);
-    width      = *(int*)&(header[0x12]);
-    height     = *(int*)&(header[0x16]);
+    dataPos      = *(int*)&(header[0x0A]);
+    imageSize    = *(int*)&(header[0x22]);
+    headerWidth  = *(int*)&(header[0x12]);
+    headerHeight = *(int*)&(header[0x16]);
+    DEBUG_PRINTLN("BMP headerWidth: %u  headerHeight: %u", headerWidth, headerWidth);
 
     // Some BMP files are misformatted, guess missing information
     if (imageSize == 0) {
         // 3 : one byte for each Red, Green and Blue component
-        imageSize = width * height * 3;
+        imageSize = headerWidth * headerHeight * 3;
     }
     if (dataPos == 0) {
         // The BMP header is done that way
-        dataPos = 54; 
-    }  
+        dataPos = headerSize; 
+    }
+
+    // Seek to the data position in case it's not the default
+    if (dataPos != headerSize) {
+        inBMP.clear();
+        if (inBMP.seekg(dataPos).good()) {
+            DEBUG_PRINTLN("Unable to seek to BMP data position: %d", dataPos);
+            return false;
+        }
+    }
+    
 
     // Create a buffer
     bgrData = new char[imageSize];
@@ -73,51 +81,62 @@ bool Texture::loadBmpTexture(GLsizei textureWidth_, GLsizei textureHeight_, std:
     inBMP.close();
 
     // Create the OpenGL texture
-    loadBrgTexture(textureWidth_, textureHeight_, bgrData);
+    DEBUG_PRINTLN("headerWidth: %u  headerHeight: %u", headerWidth, headerHeight);
+    loadBgrTexture(headerWidth, headerHeight, bgrData);
 
     return true;
 }
 
-void Texture::loadBrgTexture(GLsizei textureWidth_, GLsizei textureHeight_, const char* bgrData) {
+void Texture::loadBgrTexture(GLsizei textureWidth, GLsizei textureHeight, const char* bgrData) {
     if (isTextureLoaded()) {
         unloadTexture();
     }
 
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_2D, textureId);
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth_, textureHeight_, 0, GL_BGR, GL_UNSIGNED_BYTE, bgrData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, bgrData);
 
-    textureWidth = textureWidth_;
-    textureHeight = textureHeight_;
+    _width = textureWidth;
+    _height = textureHeight;
 }
 #endif
 
-void Texture::loadRgbaTexture(GLsizei textureWidth_, GLsizei textureHeight_, const unsigned char* rgbaData) {
+void Texture::loadRgbaTexture(GLsizei textureWidth, GLsizei textureHeight, const unsigned char* rgbaData) {
     if (isTextureLoaded()) {
         unloadTexture();
     }
 
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_2D, textureId);
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth_, textureHeight_, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgbaData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgbaData);
 
-    textureWidth = textureWidth_;
-    textureHeight = textureHeight_;
+    _width = textureWidth;
+    _height = textureHeight;
+}
+
+void Texture::loadExistingTexture(GLsizei textureWidth, GLsizei textureHeight, GLuint textureId) {
+    _width = textureWidth;
+    _height = textureHeight;
+    id = textureId;
 }
 
 void Texture::unloadTexture() {
     if (isTextureLoaded()) {
-        glDeleteTextures(1, &textureId);
-        textureId = 0;
+        glDeleteTextures(1, &id);
+        id = 0;
     }
+}
+
+bool Texture::isTextureLoaded() {
+    return id != 0;
 }

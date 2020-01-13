@@ -7,11 +7,15 @@
 #include <cstdio>
 #include <cstdlib>
 
+bool operator==(const FontColor& lhs, const FontColor& rhs) {
+    return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b;
+}
+
 Font::~Font() {
     deleteTexture();
 }
 
-Font::Font(FontFace f, float scale_, float kerning_) {
+Font::Font(FontFace f, FontColor color_, float scale_, float kerning_) {
     switch(f) {
     case arial_16:     _font = arial_16pt; break;
     case arial_28:     _font = arial_28pt; break;
@@ -23,32 +27,69 @@ Font::Font(FontFace f, float scale_, float kerning_) {
 
     scale = scale_;
     kerning = kerning_;
+    _color = color_;
 }
 
 void Font::createTexture() {
-    glGenTextures(1, &_textureId);
-    glBindTexture(GL_TEXTURE_2D, _textureId);
+    GLuint textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, _font.tex_width, _font.tex_height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, &_font.tex_data[0]);
+
+    // Optimization for white text
+    if (_color == FONT_COLOR_WHITE) {
+        // Use 8bit alpha only texture to save memory
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, _font.tex_width, _font.tex_height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, &_font.tex_data[0]);
+    } else {
+        // Convert the texture data to 32bit RGBA
+        size_t currentSize = _font.tex_data.size();
+        size_t newSize = _font.tex_data.size() * 4;
+        uint8_t* rgbData = (uint8_t*)malloc(newSize * sizeof(uint8_t));
+        for (int i = 0; i < currentSize; i+=1) {
+            rgbData[(i*4)]   = _color.r;
+            rgbData[(i*4)+1] = _color.g;
+            rgbData[(i*4)+2] = _color.b;
+            rgbData[(i*4)+3] = _font.tex_data[i];
+        }
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _font.tex_width, _font.tex_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgbData);
+    }
+
+    _texture.loadExistingTexture(_font.tex_width, _font.tex_height, textureId);
 }
 
 void Font::deleteTexture() {
-    if (_textureId != 0) {
-        glDeleteTextures(1, &_textureId);
-        _textureId = 0;
+    if (_texture.id != 0) {
+        glDeleteTextures(1, &_texture.id);
+        _texture.id = 0;
     }
 }
 
-void Font::draw(float penX, float penY, std::string const& text) {
+void Font::draw(float penX, float penY, std::string const& text, float windowScale) {
+    // Set OpenGL draw settings
+    // glClear(GL_DEPTH_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
-    glBindTexture(GL_TEXTURE_2D, _textureId);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // glAlphaFunc(GL_GREATER, 0.f);
+    // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+    glPushMatrix();
+
+    // Perform scaling
+    glScalef(scale * windowScale, scale * windowScale, 1.0);
+
+    _drawList(penX * (1 / windowScale), penY * (1 / windowScale), text, windowScale);
+
+    glDisable(GL_BLEND);
+}
+
+void Font::_drawList(float penX, float penY, std::string const& text, float ws) {
     glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, _texture.id);
 
     size_t i, j;
     for(i = 0; i < text.length(); ++i) {
@@ -85,6 +126,13 @@ void Font::draw(float penX, float penY, std::string const& text) {
         
         glBegin(GL_TRIANGLES);
         glColor4f(1.0, 1.0, 1.0, 1.0);
+        ws = 1.0;
+        // glTexCoord2f(glyph->s0, glyph->t0); glVertex2f(ws * x,     ws * y  );
+        // glTexCoord2f(glyph->s0, glyph->t1); glVertex2f(ws * x,     ws * y - h);
+        // glTexCoord2f(glyph->s1, glyph->t1); glVertex2f(ws * x + w, ws * y - h);
+        // glTexCoord2f(glyph->s0, glyph->t0); glVertex2f(ws * x,     ws * y  );
+        // glTexCoord2f(glyph->s1, glyph->t1); glVertex2f(ws * x + w, ws * y - h);
+        // glTexCoord2f(glyph->s1, glyph->t0); glVertex2f(ws * x + w, ws * y  );
         glTexCoord2f(glyph->s0, glyph->t0); glVertex2f(x,     y  );
         glTexCoord2f(glyph->s0, glyph->t1); glVertex2f(x,     y - h);
         glTexCoord2f(glyph->s1, glyph->t1); glVertex2f(x + w, y - h);
@@ -98,5 +146,4 @@ void Font::draw(float penX, float penY, std::string const& text) {
     }
 
     glDisable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
 }

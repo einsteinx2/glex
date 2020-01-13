@@ -47,7 +47,7 @@ void Mesh::_drawList() {
     // Enable texture
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D, _texture->textureId);
+    glBindTexture(GL_TEXTURE_2D, _texture->id);
 
     // Draw the mesh
 #if IMMEDIATE_MODE

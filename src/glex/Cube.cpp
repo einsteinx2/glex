@@ -3,7 +3,7 @@
 
 Cube::Cube() {
     #ifndef DREAMCAST
-    _texture.loadBmpTexture(256, 256, "examples/playground/wood1.bmp");
+    _texture.loadBmpTexture("images/wood1.bmp");
     #endif
 }
 
@@ -12,7 +12,7 @@ void Cube::_drawList() {
     // Enable texture
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D, _texture.textureId);
+    glBindTexture(GL_TEXTURE_2D, _texture.id);
     #endif
     
     // cube ///////////////////////////////////////////////////////////////////////

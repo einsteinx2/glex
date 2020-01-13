@@ -5,15 +5,21 @@
 
 class Texture {
 public:
-    GLuint textureId = 0;
-    GLsizei textureWidth = 0;
-    GLsizei textureHeight = 0;
+    GLuint id = 0;
+    const int& width = _width;
+    const int& height = _height;
+
     ~Texture();
 #ifndef DREAMCAST
-    bool loadBmpTexture(GLsizei textureWidth_, GLsizei textureHeight_, std::string path);
-    void loadBrgTexture(GLsizei textureWidth_, GLsizei textureHeight_, const char* bgrData);
+    bool loadBmpTexture(std::string path);
+    void loadBgrTexture(GLsizei textureWidth, GLsizei textureHeight, const char* bgrData);
 #endif
-    void loadRgbaTexture(GLsizei textureWidth_, GLsizei textureHeight_, const unsigned char* rgbaData);
+    void loadRgbaTexture(GLsizei textureWidth, GLsizei textureHeight, const unsigned char* rgbaData);
+    void loadExistingTexture(GLsizei textureWidth, GLsizei textureHeight, GLuint textureId);
     void unloadTexture();
     bool isTextureLoaded();
+
+private:
+    GLsizei _width = 0;
+    GLsizei _height = 0;
 };
