@@ -8,9 +8,9 @@ public:
     void draw();
 
 private:
-    GLfloat _anglex;
-    GLfloat _angley;
-    GLfloat _anglez;
+    GLfloat _anglex = 0.0;
+    GLfloat _angley = 0.0;
+    GLfloat _anglez = 0.0;
     Texture _texture;
     
     void _drawList();

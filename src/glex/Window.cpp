@@ -55,6 +55,8 @@ void _reshapeFrustum(GLFWwindow* window, int width, int height)
     xmax  = znear * 0.5f;
 
     glViewport(0, 0, (GLint) width, (GLint) height);
+    //Window* wrapper = (Window*)glfwGetWindowUserPointer(window);
+    //glViewport(0, 0, width * wrapper->screenScale, height * wrapper->screenScale);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glFrustum(-xmax, xmax, -xmax * h, xmax * h, znear, zfar);
@@ -70,7 +72,8 @@ void _reshapeOrtho(GLFWwindow* window, int width, int height)
 #endif
 {
     //DEBUG_PRINTLN("_reshapeOrtho   width: %d  height: %d", width, height);
-    glViewport(0, 0, width, height);
+    //Window* wrapper = (Window*)glfwGetWindowUserPointer(window);
+    //glViewport(0, 0, width * wrapper->screenScale, height * wrapper->screenScale);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0, width, 0, height, -1, 1);
@@ -108,69 +111,10 @@ void Window::reshapeFrustum() {
 void Window::reshapeOrtho(float scale) {
 #ifdef DREAMCAST
     _reshapeOrtho(_width, _height);
-    glViewport(0, 0, (int)((float)_width * scale), (int)((float)_height * scale));
 #else
     _reshapeOrtho(_window, _width, _height);
-    glViewport(0, 0, (int)((float)_width * scale), (int)((float)_height * scale));
 #endif
-}
-
-void Window::createWindow(std::string windowName, int width, int height) {
-    _windowName = windowName;
-    _width = width;
-    _height = height;
-
-#ifdef DREAMCAST
-    glKosInit();
-    _reshapeFrustum(_width, _height);
-#else
-    if (!glfwInit()) {
-        fprintf( stderr, "Failed to initialize GLFW\n" );
-        exit( EXIT_FAILURE );
-    }
-
-    glfwWindowHint(GLFW_DEPTH_BITS, 16);
-    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-
-    _window = glfwCreateWindow(_width, _height, _windowName.c_str(), NULL, NULL);
-    if (!_window) {
-        fprintf(stderr, "Failed to open GLFW window\n");
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-
-    // Set callback functions
-    glfwSetWindowUserPointer(_window, this);
-    glfwSetFramebufferSizeCallback(_window, _sizeCallback);
-    glfwSetKeyCallback(_window, key);
-
-    // Lock to (probably) 60fps if vsyncEnabled, or unlock framerate
-    glfwMakeContextCurrent(_window);
-    gladLoadGL(glfwGetProcAddress);
-    glfwSwapInterval(vsyncEnabled ? 1 : 0);
-
-    // Setup the frame buffer and view port size
-    _reshapeFrustum(_window, _width, _height);
-    //_reshapeOrtho(_window, _width, _height);
-
-    // Detect screen scale by comparing window size to framebuffer size
-    int frameBufferWidth;
-    glfwGetFramebufferSize(_window, &frameBufferWidth, NULL);
-    screenScale = frameBufferWidth / _width;
-    DEBUG_PRINTLN("screen scale detected: %f", screenScale);
-#endif
-}
-
-void Window::closeWindow() {
-#ifdef DREAMCAST
-    // Not implemented for Dreamcast
-#else
-    // Terminate GLFW
-    glfwTerminate();
-
-    // Exit program
-    exit(EXIT_SUCCESS);
-#endif
+    glViewport(0, 0, (int)((float)_width * scale * screenScale), (int)((float)_height * screenScale));
 }
 
 void Window::clear() {
@@ -181,25 +125,17 @@ void Window::clear() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Window::swapBuffers() {
-#ifdef DREAMCAST
-    glKosSwapBuffers();
-#else
-    glfwSwapBuffers(_window);
-    glfwPollEvents();
-#endif
-}
-
-int Window::windowShouldClose() {
-#ifdef DREAMCAST
-    return 0;
-#else
-    return glfwWindowShouldClose(_window);
-#endif
-}
-
 void Window::_updateWindowSize() {
 #ifndef DREAMCAST
     glfwGetWindowSize(_window, &_width, &_height);
 #endif
 }
+
+/*
+ * Override in subclasses
+ */
+
+void createWindow(std::string windowName, int width, int height) {}
+void closeWindow() {}
+void swapBuffers() {}
+int windowShouldClose() { return 0; }

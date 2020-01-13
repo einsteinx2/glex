@@ -25,16 +25,15 @@ bool operator==(const FontColor& lhs, const FontColor& rhs);
 
 class Font {
 public:
-    float scale;
-    float kerning;
+    float scale = 1.0;
+    float kerning = 0.0; // TODO: Figure out sane default value
     const FontColor& color = _color;
-    const Texture& texture = _texture;
+    const Texture& texture = _texture; // Texture object referencing the internal font texture
 
     Font(FontFace face, FontColor color = FONT_COLOR_WHITE, float scale_ = 1.0, float kerning_ = 0.0);
     ~Font();
     void createTexture();
     void deleteTexture();
-    //Texture texture(); // Returns a Texture object referencing the internal font texture
     void draw(float penX, float penY, std::string const& text, float windowScale = 1.0);
 private:
     FontColor _color;

@@ -4,9 +4,9 @@
 
 class Image {
 public:
-    GLfloat rotationX;
-    GLfloat rotationY;
-    GLfloat scale;
+    GLfloat rotationX = 0.0;
+    GLfloat rotationY = 0.0;
+    GLfloat scale = 1.0;
 
     int width();
     int height();

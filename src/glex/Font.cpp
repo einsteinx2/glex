@@ -4,9 +4,6 @@
 #include "fonts/arial_28pt.h"
 #include "fonts/arial_32pt.h"
 
-#include <cstdio>
-#include <cstdlib>
-
 bool operator==(const FontColor& lhs, const FontColor& rhs) {
     return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b;
 }
@@ -21,8 +18,8 @@ Font::Font(FontFace f, FontColor color_, float scale_, float kerning_) {
     case arial_28:     _font = arial_28pt; break;
     case arial_32:     _font = arial_32pt; break;
     default:
-        printf("Unsupported font type\n");
-        exit(EXIT_FAILURE);
+        DEBUG_PRINTLN("Unsupported font type");
+        //exit(EXIT_FAILURE);
     }
 
     scale = scale_;
@@ -47,8 +44,8 @@ void Font::createTexture() {
         // Convert the texture data to 32bit RGBA
         size_t currentSize = _font.tex_data.size();
         size_t newSize = _font.tex_data.size() * 4;
-        uint8_t* rgbData = (uint8_t*)malloc(newSize * sizeof(uint8_t));
-        for (int i = 0; i < currentSize; i+=1) {
+        uint8_t* rgbData = new uint8_t[newSize];
+        for (size_t i = 0; i < currentSize; i+=1) {
             rgbData[(i*4)]   = _color.r;
             rgbData[(i*4)+1] = _color.g;
             rgbData[(i*4)+2] = _color.b;
@@ -109,10 +106,10 @@ void Font::_drawList(float penX, float penY, std::string const& text, float ws) 
         //float k = 0;
         // if (i > 0) {
         //     for (j = 0; j < glyph->kerning_count; ++j) {
-        //         //printf("text[i]: %s text[i-1]: %s\n", &text[i], &text[i-1]);
+        //         //DEBUG_PRINTLN("text[i]: %s text[i-1]: %s", &text[i], &text[i-1]);
         //         if (glyph->kerning[j].codepoint == text[i-1]) {
         //             k = glyph->kerning[j].kerning;
-        //             //printf("text[i]: %d text[i+1]: %d k: %f\n", &text[i], &text[i-1], k);
+        //             //DEBUG_PRINTLN("text[i]: %d text[i+1]: %d k: %f", &text[i], &text[i-1], k);
         //             break;
         //         }
         //     }

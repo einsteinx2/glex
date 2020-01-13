@@ -1,5 +1,6 @@
 #include "debug_log.h"
-#include "glex/Window.h"
+#include "glex/DreamcastWindow.h"
+#include "glex/PCWindow.h"
 #include "glex/Triangle.h"
 #include "glex/Cube.h"
 #include "glex/Mesh.h"
@@ -30,7 +31,11 @@ int main(int argc, char *argv[])
     DEBUG_PRINTLN("Application started!");
     int width = 640;
     int height = 480;
-    Window wrapper;
+#ifdef DREAMCAST
+    DreamcastWindow wrapper;
+#else
+    PCWindow wrapper;
+#endif
     wrapper.createWindow("GLEX Playground", width, height);
 
     Triangle triangle;
@@ -39,14 +44,16 @@ int main(int argc, char *argv[])
     // Texture cubeTexture;
     // cubeTexture.loadRgbaTexture(512, 512, cubeMesh_RGBA_512x512);
     // Mesh mesh(&cubeMesh, &cubeTexture, 3.0);
-    #ifdef DREAMCAST
+#ifdef DREAMCAST
     std::string meshPath = "/cd/meshes/house.obj";
-    #else
+    std::string woodPath = "/cd/images/wood1.bmp";
+#else
     std::string meshPath = "meshes/house.obj";
-    #endif
+    std::string woodPath = "images/wood1.bmp";
+#endif
 
     Texture woodTexture;
-    woodTexture.loadBmpTexture("images/wood1.bmp");
+    woodTexture.loadBmpTexture(woodPath);
     Image woodImage(&woodTexture);
 
     MeshData *houseMesh = MeshLoader::loadObjMesh(meshPath);
@@ -78,8 +85,7 @@ int main(int argc, char *argv[])
 
         // Draw the background image
         wrapper.reshapeOrtho(1.0);
-        //woodImage.draw(0, wrapper.height, wrapper.width, wrapper.height, wrapper.screenScale);
-        woodImage.draw(0, 480, 640, 480, wrapper.screenScale);
+        woodImage.draw(0, wrapper.height, wrapper.width, wrapper.height, wrapper.screenScale);
 
         // Draw the 3d object(s)
         wrapper.reshapeFrustum();
@@ -97,8 +103,8 @@ int main(int argc, char *argv[])
         font.draw(20, 20, outputString, wrapper.screenScale);
 
         // Draw the image
-        // wrapper.reshapeOrtho(1.0);
-        // woodImage.draw(500, 500, 256, 256);
+        wrapper.reshapeOrtho(1.0);
+        woodImage.draw(100, 400, 256, 256, wrapper.screenScale);
 
         // Swap buffers to display the current frame
         wrapper.swapBuffers();

@@ -10,10 +10,9 @@ Texture::~Texture() {
     }
 }
 
-#ifndef DREAMCAST
 bool Texture::loadBmpTexture(std::string path) {
     // Data read from the header of the BMP file
-    const int headerSize = 54;              // Each BMP file begins by a 54-bytes header
+    const unsigned int headerSize = 54;              // Each BMP file begins by a 54-bytes header
     char header[headerSize];          
     unsigned int dataPos;                   // Position in the file where the actual data begins
     unsigned int headerWidth, headerHeight;
@@ -66,13 +65,12 @@ bool Texture::loadBmpTexture(std::string path) {
         }
     }
     
-
     // Create a buffer
     bgrData = new char[imageSize];
 
     // Read the actual data from the file into the buffer
     inBMP.read(bgrData, imageSize);
-    std::streamsize actualSize = inBMP.gcount();
+    unsigned int actualSize = (unsigned int)inBMP.gcount();
     if (imageSize != actualSize) {
         DEBUG_PRINTLN("Failed to read BMP file, imageSize: %u actualSize: %zu", imageSize, actualSize);
     }
@@ -92,6 +90,18 @@ void Texture::loadBgrTexture(GLsizei textureWidth, GLsizei textureHeight, const 
         unloadTexture();
     }
 
+#ifdef DREAMCAST
+    // TODO: Move this to GLdc
+    // Convert BGR data to RGB
+    GLsizei length = textureWidth * textureHeight;
+    char* data = new char[length];
+    for (int i = 0; i < length; i+=3) {
+        data[i]   = bgrData[i+2];
+        data[i+1] = bgrData[i+1];
+        data[i+2] = bgrData[i];
+    }
+#endif
+
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
 
@@ -99,12 +109,15 @@ void Texture::loadBgrTexture(GLsizei textureWidth, GLsizei textureHeight, const 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+#ifdef DREAMCAST
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+#else
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, bgrData);
+#endif
 
     _width = textureWidth;
     _height = textureHeight;
 }
-#endif
 
 void Texture::loadRgbaTexture(GLsizei textureWidth, GLsizei textureHeight, const unsigned char* rgbaData) {
     if (isTextureLoaded()) {

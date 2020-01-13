@@ -64,7 +64,7 @@ add_library(glex STATIC
     src/meshes/monkeyMesh.cpp  include/meshes/monkeyMesh.h
 
     # Textures
-    src/textures/cubeMesh_RGBA_64x64.cpp   include/textures/cubeMesh_RGBA_64x64.h
+    src/textures/cubeMesh_RGBA_64x64.cpp     include/textures/cubeMesh_RGBA_64x64.h
     src/textures/cubeMesh_RGBA_128x128.cpp   include/textures/cubeMesh_RGBA_128x128.h
     src/textures/cubeMesh_RGBA_512x512.cpp   include/textures/cubeMesh_RGBA_512x512.h
     src/textures/houseMesh_RGBA_128x128.cpp  include/textures/houseMesh_RGBA_128x128.h
@@ -72,14 +72,16 @@ add_library(glex STATIC
     src/textures/houseMesh_RGBA_512x512.cpp  include/textures/houseMesh_RGBA_512x512.h
 
     # GLEX
-    src/glex/Cube.cpp       include/glex/Cube.h
-    src/glex/Font.cpp       include/glex/Font.h
-    src/glex/Image.cpp      include/glex/Image.h
-    src/glex/Mesh.cpp       include/glex/Mesh.h
-    src/glex/MeshLoader.cpp include/glex/MeshLoader.h
-    src/glex/Texture.cpp    include/glex/Texture.h
-    src/glex/Triangle.cpp   include/glex/Triangle.h  
-    src/glex/Window.cpp     include/glex/Window.h
+    src/glex/Cube.cpp             include/glex/Cube.h
+    src/glex/Font.cpp             include/glex/Font.h
+    src/glex/Image.cpp            include/glex/Image.h
+    src/glex/Mesh.cpp             include/glex/Mesh.h
+    src/glex/MeshLoader.cpp       include/glex/MeshLoader.h
+    src/glex/Texture.cpp          include/glex/Texture.h
+    src/glex/Triangle.cpp         include/glex/Triangle.h  
+    src/glex/Window.cpp           include/glex/Window.h
+    src/glex/DreamcastWindow.cpp  include/glex/DreamcastWindow.h
+    src/glex/PCWindow.cpp         include/glex/PCWindow.h
 )
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
@@ -157,6 +159,7 @@ elseif(${DREAMCAST_BUILD})
         COMMAND IP_TEMPLATE_FILE=${CMAKE_SOURCE_DIR}/deps/dc/IP.TMPL $ENV{KOS_BASE}/utils/makeip/makeip ${CMAKE_SOURCE_DIR}/deps/dc/ip.txt ${EXECUTABLE_OUTPUT_PATH}/${EXE}/IP.BIN
         #COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${EXE}/meshes
         COMMAND cp -r ${CMAKE_SOURCE_DIR}/meshes ${CMAKE_BINARY_DIR}/${EXE}/
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/images ${CMAKE_BINARY_DIR}/${EXE}/
         # COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${EXE}/simulant
         # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/fonts ${CMAKE_BINARY_DIR}/${EXE}/simulant
         # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/materials ${CMAKE_BINARY_DIR}/${EXE}/simulant
