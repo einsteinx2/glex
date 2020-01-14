@@ -11,7 +11,7 @@ public:
 
     ~Texture();
     bool loadBmpTexture(std::string path);
-    void loadBgrTexture(GLsizei textureWidth, GLsizei textureHeight, const char* bgrData);
+    void loadBgrTexture(GLsizei textureWidth, GLsizei textureHeight, char* bgrData);
     void loadRgbaTexture(GLsizei textureWidth, GLsizei textureHeight, const unsigned char* rgbaData);
     void loadExistingTexture(GLsizei textureWidth, GLsizei textureHeight, GLuint textureId);
     void unloadTexture();

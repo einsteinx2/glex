@@ -18,6 +18,10 @@
 #include <string>
 #include <chrono>
 
+#ifdef DREAMCAST
+#include <dc/maple/keyboard.h>
+#endif
+
 std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
 int16_t timeDiff = 0;
@@ -32,11 +36,11 @@ int main(int argc, char *argv[])
     int width = 640;
     int height = 480;
 #ifdef DREAMCAST
-    DreamcastWindow wrapper;
+    DreamcastWindow window;
 #else
-    PCWindow wrapper;
+    PCWindow window;
 #endif
-    wrapper.createWindow("GLEX Playground", width, height);
+    window.createWindow("GLEX Playground", width, height);
 
     Triangle triangle;
     //Cube cube;
@@ -63,11 +67,16 @@ int main(int argc, char *argv[])
     //Mesh mesh(houseMesh, &woodTexture, 0.3);
     //Mesh mesh(&cubeMesh, NULL, 3.0);
 
-    Font font(FontFace::arial_16, FONT_COLOR_BLACK);
+    Font font(FontFace::arial_16, FONT_COLOR_GREEN);
     font.createTexture();
 
+#ifdef DREAMCAST
+    int key = -1;
+    kbd_set_queue(1); // Enable keyboard queue
+#endif
+
     // Main loop
-    while (!wrapper.windowShouldClose()) {
+    while (!window.windowShouldClose()) {
         // Measure speed
         nbFrames++;
         currentTime = std::chrono::steady_clock::now();
@@ -80,35 +89,55 @@ int main(int argc, char *argv[])
             lastTime = currentTime;
         }
 
-        // Clear the buffer to draw the prepare frame
-        wrapper.clear();
+#ifdef DREAMCAST
+        // Check for escape key press on Dreamcast
+        key = kbd_get_key();
+        if (key != -1) {
+            DEBUG_PRINTLN("Key pressed  int: %d  char: %c", key, key);
+            if (key == 27) {
+                DEBUG_PRINTLN("Escape key pressed, exiting");
+                exit(0);
+            }
+        }
+#endif
 
+        // Clear the buffer to draw the prepare frame
+        window.clear();
+
+        // TODO: Get this drawing behind the 3d mesh on Dreamcast
+#ifndef DREAMCAST
         // Draw the background image
-        wrapper.reshapeOrtho(1.0);
-        woodImage.draw(0, wrapper.height, wrapper.width, wrapper.height, wrapper.screenScale);
+        window.reshapeOrtho(1.0);
+        //woodImage.draw(0, window.height, -0.9999999, window.width, window.height, window.screenScale);
+        woodImage.draw(0, window.height, window.width, window.height, window.screenScale);
+#endif
 
         // Draw the 3d object(s)
-        wrapper.reshapeFrustum();
+        window.reshapeFrustum();
         //triangle.draw();
         //cube.draw();
         mesh.draw();
-        //mesh.rotationX = wrapper.rotationX;
-        //mesh.rotationY = wrapper.rotationY;
-        //mesh.rotationZ = wrapper.rotationZ;
+        mesh.rotationX += 0.75;
+        mesh.rotationY += 0.75;
+        mesh.rotationZ += 0.75;
+        
+        //mesh.rotationX = window.rotationX;
+        //mesh.rotationY = window.rotationY;
+        //mesh.rotationZ = window.rotationZ;
 
         // Draw the text
-        wrapper.reshapeOrtho(font.scale);
+        window.reshapeOrtho(font.scale);
         static char outputString[50];
         sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f", frameTime, fps);
-        font.draw(20, 20, outputString, wrapper.screenScale);
+        font.draw(20, 20, outputString, window.screenScale);
 
         // Draw the image
-        wrapper.reshapeOrtho(1.0);
-        woodImage.draw(100, 400, 256, 256, wrapper.screenScale);
+        window.reshapeOrtho(1.0);
+        woodImage.draw(10, 420, 100, 100, window.screenScale);
 
         // Swap buffers to display the current frame
-        wrapper.swapBuffers();
+        window.swapBuffers();
     }
 
-    wrapper.closeWindow();
+    window.closeWindow();
 }
