@@ -1,4 +1,4 @@
-#include "debug_log.h"
+#include "glex/common/log.h"
 #include "glex/DreamcastWindow.h"
 #include "glex/PCWindow.h"
 #include "glex/Triangle.h"
@@ -7,11 +7,6 @@
 #include "glex/Image.h"
 #include "glex/Font.h"
 #include "glex/MeshLoader.h"
-
-#include "meshes/cubeMesh.h"
-#include "textures/cubeMesh_RGBA_512x512.h"
-//#include "meshes/houseMesh.h"
-#include "textures/houseMesh_RGBA_512x512.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -42,32 +37,34 @@ int main(int argc, char *argv[])
 #endif
     window.createWindow("GLEX Playground", width, height);
 
-    Triangle triangle;
-    //Cube cube;
-    // MeshData *houseMesh = MeshLoader::loadObjMesh("meshes/cube.obj");
-    // Texture cubeTexture;
-    // cubeTexture.loadRgbaTexture(512, 512, cubeMesh_RGBA_512x512);
-    // Mesh mesh(&cubeMesh, &cubeTexture, 3.0);
-#ifdef DREAMCAST
-    std::string meshPath = "/cd/meshes/house.obj";
-    std::string woodPath = "/cd/images/wood1.bmp";
-#else
-    std::string meshPath = "meshes/house.obj";
-    std::string woodPath = "images/wood1.bmp";
-#endif
+    // NOTE: Both Image and Mesh classes can use textures loaded from JPG, PNG, or BMP.
+    //       All PNG files have been run through pngcrush.
+    //
+    //       I have not yet done profiling to determine the performance and memory 
+    //       implications of using each file format. However keep in mind that only PNG
+    //       fully supports RGBA as the others do not have alpha channels. The below test
+    //       code demostrates loading all 3 types. You can also change the extensions to 
+    //       try the other formats yourself for testing/profiling. 
+    //
+    //       In my limited testing with dcload only, the file size seems to have a much larger
+    //       impact on loading time than the format. So I found JPG files load significantly
+    //       faster than either PNG or BMP with no noticeable loss in quality (though no alpha).
+
+    Texture grayBrickTexture;
+    grayBrickTexture.loadRGB("images/gray_brick_512.jpg");
+    Image grayBrickImage(&grayBrickTexture);
 
     Texture woodTexture;
-    woodTexture.loadBmpTexture(woodPath);
+    woodTexture.loadRGB("images/wood1.bmp");
     Image woodImage(&woodTexture);
 
-    MeshData *houseMesh = MeshLoader::loadObjMesh(meshPath);
+    MeshData *houseMesh = MeshLoader::loadObjMesh("meshes/house.obj");
     Texture houseTexture;
-    houseTexture.loadRgbaTexture(512, 512, houseMesh_RGBA_512x512);
+    houseTexture.loadRGBA("images/house_512.jpg");
     Mesh mesh(houseMesh, &houseTexture, 0.3);
-    //Mesh mesh(houseMesh, &woodTexture, 0.3);
-    //Mesh mesh(&cubeMesh, NULL, 3.0);
 
-    Font font(FontFace::arial_16, FONT_COLOR_GREEN);
+    //FontColor darkBlue = (FontColor) { .r = 21, .g = 1, .b = 148 };
+    Font font(FontFace::arial_16, FONT_COLOR_BLACK);
     font.createTexture();
 
 #ifdef DREAMCAST
@@ -109,21 +106,15 @@ int main(int argc, char *argv[])
         // Draw the background image
         window.reshapeOrtho(1.0);
         //woodImage.draw(0, window.height, -0.9999999, window.width, window.height, window.screenScale);
-        woodImage.draw(0, window.height, window.width, window.height, window.screenScale);
+        grayBrickImage.draw(0, window.height, window.width, window.height, window.screenScale);
 #endif
 
         // Draw the 3d object(s)
         window.reshapeFrustum();
-        //triangle.draw();
-        //cube.draw();
         mesh.draw();
         mesh.rotationX += 0.75;
         mesh.rotationY += 0.75;
         mesh.rotationZ += 0.75;
-        
-        //mesh.rotationX = window.rotationX;
-        //mesh.rotationY = window.rotationY;
-        //mesh.rotationZ = window.rotationZ;
 
         // Draw the text
         window.reshapeOrtho(font.scale);

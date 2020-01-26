@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.5.1)
 project(glex)
 
 # Disable optimizations when building debug version
-SET(CMAKE_CXX_FLAGS_DEBUG "-O0")
-SET(CMAKE_C_FLAGS_DEBUG "-O0")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0")
+set(CMAKE_C_FLAGS_DEBUG "-O0")
 
 # Set C and C++ standards
 set(CMAKE_C_STANDARD 99)
@@ -49,44 +49,39 @@ else()
 endif()
 
 # Add the project files
-add_library(glex STATIC
+set(glex_SOURCES
     # Common
-    include/common_gl.h
-    include/debug_log.h
+    include/glex/common/font.h
+    include/glex/common/gl.h
+    include/glex/common/log.h
+    include/glex/common/mesh.h
+    include/glex/common/path.h
+    deps/shared/stb/stb_image.h
 
     # Fonts
-    include/fonts/common_font.h
-    src/fonts/arial_16pt.cpp  include/fonts/arial_16pt.h
-    src/fonts/arial_28pt.cpp  include/fonts/arial_28pt.h
-    src/fonts/arial_32pt.cpp  include/fonts/arial_32pt.h 
-    
-    # Meshes
-    include/meshes/common_mesh.h  
-    src/meshes/cubeMesh.cpp    include/meshes/cubeMesh.h
-    src/meshes/houseMesh.cpp   include/meshes/houseMesh.h
-    src/meshes/monkeyMesh.cpp  include/meshes/monkeyMesh.h
-
-    # Textures
-    src/textures/cubeMesh_RGBA_64x64.cpp     include/textures/cubeMesh_RGBA_64x64.h
-    src/textures/cubeMesh_RGBA_128x128.cpp   include/textures/cubeMesh_RGBA_128x128.h
-    src/textures/cubeMesh_RGBA_512x512.cpp   include/textures/cubeMesh_RGBA_512x512.h
-    src/textures/houseMesh_RGBA_128x128.cpp  include/textures/houseMesh_RGBA_128x128.h
-    src/textures/houseMesh_RGBA_256x256.cpp  include/textures/houseMesh_RGBA_256x256.h
-    src/textures/houseMesh_RGBA_512x512.cpp  include/textures/houseMesh_RGBA_512x512.h
+    src/fonts/arial_16pt.cpp  include/glex/fonts/arial_16pt.h
+    src/fonts/arial_28pt.cpp  include/glex/fonts/arial_28pt.h
+    src/fonts/arial_32pt.cpp  include/glex/fonts/arial_32pt.h 
 
     # GLEX
-    src/glex/Cube.cpp             include/glex/Cube.h
-    src/glex/Font.cpp             include/glex/Font.h
-    src/glex/Image.cpp            include/glex/Image.h
-    src/glex/Mesh.cpp             include/glex/Mesh.h
-    src/glex/MeshLoader.cpp       include/glex/MeshLoader.h
-    src/glex/Texture.cpp          include/glex/Texture.h
-    src/glex/Triangle.cpp         include/glex/Triangle.h  
-    src/glex/Window.cpp           include/glex/Window.h
-    src/glex/DreamcastWindow.cpp  include/glex/DreamcastWindow.h
-    src/glex/PCWindow.cpp         include/glex/PCWindow.h
+    src/Cube.cpp             include/glex/Cube.h
+    src/Font.cpp             include/glex/Font.h
+    src/Image.cpp            include/glex/Image.h
+    src/Mesh.cpp             include/glex/Mesh.h
+    src/MeshLoader.cpp       include/glex/MeshLoader.h
+    src/Texture.cpp          include/glex/Texture.h
+    src/Triangle.cpp         include/glex/Triangle.h  
+    src/Window.cpp           include/glex/Window.h
+    src/DreamcastWindow.cpp  include/glex/DreamcastWindow.h
+    src/PCWindow.cpp         include/glex/PCWindow.h
 )
+if(${USE_GLFW})
+     # Add the glad file
+     set(glex_SOURCES ${glex_SOURCES} deps/pc/glad_gl.cpp)
+endif()
+add_library(glex STATIC ${glex_SOURCES})
 include_directories("${CMAKE_SOURCE_DIR}/include")
+include_directories("${CMAKE_SOURCE_DIR}/deps/shared")
 
 # Add corrent OpenGL library
 if(${USE_GLFW})
@@ -102,9 +97,9 @@ elseif(${DREAMCAST_BUILD})
     #target_link_libraries(glex "${CMAKE_SOURCE_DIR}/deps/dc/libGLdc.a")
 
     # Build and include GLdc submodule so it's not necessary to build and install to system
-    FILE(GLOB_RECURSE GLDC "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/GL/*.c")
-    LIST(REMOVE_ITEM GLDC "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/samples/*")
-    INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/deps/dc/GLdc/include")
+    file(GLOB_RECURSE GLDC "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/GL/*.c")
+    list(REMOVE_ITEM GLDC "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/samples/*")
+    include_directories("${CMAKE_SOURCE_DIR}/deps/dc/GLdc/include")
 
     # Create GLdc library target
     add_custom_target(GLdc
@@ -119,19 +114,14 @@ if(${MACOS_BUILD})
     # Create final application target
     add_executable(playground-example 
         examples/playground/main.cpp 
-        examples/playground/glad_gl.cpp
     )
 
     # Copy meshes
-    file(GLOB OBJ_MESHES
-        "${CMAKE_SOURCE_DIR}/meshes/*.obj"
-    )
+    file(GLOB OBJ_MESHES "${CMAKE_SOURCE_DIR}/examples/playground/meshes/*.obj" )
     file(COPY ${OBJ_MESHES} DESTINATION "${CMAKE_BINARY_DIR}/meshes")
 
     # Copy images
-    file(GLOB IMG_FILES
-        "${CMAKE_SOURCE_DIR}/images/*"
-    )
+    file(GLOB IMG_FILES "${CMAKE_SOURCE_DIR}/examples/playground/images/*")
     file(COPY ${IMG_FILES} DESTINATION "${CMAKE_BINARY_DIR}/images")
 
     # Link macOS libraries
@@ -143,14 +133,14 @@ elseif(${DREAMCAST_BUILD})
     )
 
     # Build CDI
-    SET(DC_EXECUTABLES # Names without .elf extension
+    set(DC_EXECUTABLES # Names without .elf extension
         playground-example
     )
     #message(STATUS "DC_EXECUTABLES: ${DC_EXECUTABLES}")
 
-    FOREACH(EXE ${DC_EXECUTABLES})
+    foreach(EXE ${DC_EXECUTABLES})
     get_filename_component(EXE_FILENAME ${EXE} NAME)
-    ADD_CUSTOM_TARGET(
+    add_custom_target(
         ${EXE_FILENAME}.bin ALL
         COMMENT "EXE: ${EXE}"
         COMMENT "EXE_FILENAME: ${EXE_FILENAME}"
@@ -160,22 +150,17 @@ elseif(${DREAMCAST_BUILD})
         COMMAND mkdir -p ${EXECUTABLE_OUTPUT_PATH}/${EXE}
         COMMAND $ENV{KOS_BASE}/utils/scramble/scramble ${EXECUTABLE_OUTPUT_PATH}/${EXE}.bin ${EXECUTABLE_OUTPUT_PATH}/${EXE}/1ST_READ.BIN
         COMMAND IP_TEMPLATE_FILE=${CMAKE_SOURCE_DIR}/deps/dc/IP.TMPL $ENV{KOS_BASE}/utils/makeip/makeip ${CMAKE_SOURCE_DIR}/deps/dc/ip.txt ${EXECUTABLE_OUTPUT_PATH}/${EXE}/IP.BIN
-        #COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${EXE}/meshes
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/meshes ${CMAKE_BINARY_DIR}/${EXE}/
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/images ${CMAKE_BINARY_DIR}/${EXE}/
-        # COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${EXE}/simulant
-        # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/fonts ${CMAKE_BINARY_DIR}/${EXE}/simulant
-        # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/materials ${CMAKE_BINARY_DIR}/${EXE}/simulant
-        # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/particles ${CMAKE_BINARY_DIR}/${EXE}/simulant
-        # COMMAND cp -r ${CMAKE_SOURCE_DIR}/assets/textures ${CMAKE_BINARY_DIR}/${EXE}/simulant
-        # COMMAND cp -r ${CMAKE_SOURCE_DIR}/samples/data ${CMAKE_BINARY_DIR}/${EXE}/sample_data
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/playground/meshes ${CMAKE_BINARY_DIR}/${EXE}/
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/playground/images ${CMAKE_BINARY_DIR}/${EXE}/
+        # Generate CDI disc image
         COMMAND mkisofs -C 0,11702 -V ${EXE_FILENAME} -G ${EXECUTABLE_OUTPUT_PATH}/${EXE}/IP.BIN -joliet -rock -l -o ${EXECUTABLE_OUTPUT_PATH}/${EXE}.iso ${EXECUTABLE_OUTPUT_PATH}/${EXE}
         COMMAND $ENV{KOS_BASE}/utils/img4dc/cdi4dc/cdi4dc ${EXECUTABLE_OUTPUT_PATH}/${EXE}.iso ${EXECUTABLE_OUTPUT_PATH}/${EXE}.cdi
+        COMMAND rm ${EXECUTABLE_OUTPUT_PATH}/${EXE}.iso
+        # Generate data iso for use with dcload
+        COMMAND mkisofs -V ${EXE_FILENAME} -joliet -rock -o ${EXECUTABLE_OUTPUT_PATH}/${EXE}_dcload.iso ${EXECUTABLE_OUTPUT_PATH}/${EXE}
         DEPENDS ${EXE}
-        COMMENT "Converting ${EXE}.elf to ${EXE}.bin"
-        COMMENT "mkisofs -C 0,11702 -V ${EXE_FILENAME} -G ${EXECUTABLE_OUTPUT_PATH}/${EXE}/IP.BIN -joliet -rock -l -o ${EXE}.iso ${EXECUTABLE_OUTPUT_PATH}/${EXE}"
     )
-    ENDFOREACH()
+    endforeach()
 endif()
 target_link_libraries(playground-example glex)
 

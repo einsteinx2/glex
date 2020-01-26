@@ -1,5 +1,5 @@
 #pragma once
-#include "../common_gl.h"
+#include "glex/common/gl.h"
 
 #include <string>
 
@@ -10,14 +10,17 @@ public:
     const int& height = _height;
 
     ~Texture();
-    bool loadBmpTexture(std::string path);
-    void loadBgrTexture(GLsizei textureWidth, GLsizei textureHeight, char* bgrData);
-    void loadRgbaTexture(GLsizei textureWidth, GLsizei textureHeight, const unsigned char* rgbaData);
-    void loadExistingTexture(GLsizei textureWidth, GLsizei textureHeight, GLuint textureId);
-    void unloadTexture();
-    bool isTextureLoaded();
+    bool loadRGBA(std::string path);
+    bool loadRGBA(GLsizei textureWidth, GLsizei textureHeight, const unsigned char* rgbaData);
+    bool loadRGB(std::string path);
+    bool loadRGB(GLsizei textureWidth, GLsizei textureHeight, const unsigned char* rgbData);
+    bool loadExisting(GLsizei textureWidth, GLsizei textureHeight, GLuint textureId);
+    void unload();
+    bool isLoaded();
 
 private:
     GLsizei _width = 0;
     GLsizei _height = 0;
+
+    bool _loadTextureFromFile(std::string path, int numberOfColorComponents, bool flipVertically = true);
 };

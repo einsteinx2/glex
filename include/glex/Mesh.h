@@ -1,6 +1,6 @@
 #pragma once
-#include "../common_gl.h"
-#include "../meshes/common_mesh.h"
+#include "glex/common/gl.h"
+#include "glex/common/mesh.h"
 #include "Texture.h"
 
 class Mesh {

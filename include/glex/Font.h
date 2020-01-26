@@ -1,6 +1,6 @@
 #pragma once
-#include "../common_gl.h"
-#include "../fonts/common_font.h"
+#include "glex/common/gl.h"
+#include "glex/common/font.h"
 #include "Texture.h"
 
 #include <string>

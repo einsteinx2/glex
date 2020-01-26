@@ -42,7 +42,7 @@
  * ===============================================================================
  */
 
-#include "fonts/arial_28pt.h"
+#include "glex/fonts/arial_28pt.h"
 
 texture_font_t arial_28pt = {
  256, 256, 1, 

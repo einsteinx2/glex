@@ -42,7 +42,7 @@
  * ===============================================================================
  */
 
-#include "fonts/arial_16pt.h"
+#include "glex/fonts/arial_16pt.h"
 
 texture_font_t arial_16pt = {
  128, 128, 1, 

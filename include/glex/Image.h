@@ -1,5 +1,5 @@
 #pragma once
-#include "../common_gl.h"
+#include "glex/common/gl.h"
 #include "Texture.h"
 
 class Image {

@@ -1,5 +1,5 @@
 #pragma once
-#include "../common_gl.h"
+#include "glex/common/gl.h"
 
 #include <string>
 
@@ -18,9 +18,6 @@ void _sizeCallback(GLFWwindow* window, int width, int height);
 class Window {
 public:
     float screenScale = 1.0; // GLFW only, to handle scaled displays (i.e. macOS Retina)
-    float rotationX = 1.0;
-    float rotationY = 1.0;
-    float rotationZ = 1.0;
     bool vsyncEnabled = true; // By default, lock to 60fps (or whatever refresh rate the monitor is)
     const int& width = _width;
     const int& height = _height;

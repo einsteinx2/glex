@@ -1,5 +1,5 @@
 #pragma once
-#include "../meshes/common_mesh.h"
+#include "glex/common/mesh.h"
 
 #include <string>
 
