@@ -1,8 +1,10 @@
-#include "glex/Font.h"
+#include "glex/Text.h"
 #include "glex/common/log.h"
 #include "glex/fonts/arial_16pt.h"
 #include "glex/fonts/arial_28pt.h"
 #include "glex/fonts/arial_32pt.h"
+
+#include <cstdlib>
 
 // TODO: Fix font rendering (it has weird smaller ghost characters inside the normal characters)
 
@@ -10,26 +12,31 @@ bool operator==(const FontColor& lhs, const FontColor& rhs) {
     return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b;
 }
 
-Font::~Font() {
+Text::~Text() {
     deleteTexture();
 }
 
-Font::Font(FontFace f, FontColor color_, float scale_, float kerning_) {
-    switch(f) {
+Text::Text(FontFace face_, std::string text_, FontColor color_, float x_, float y_, float z_, float windowScale_, float scale_, float kerning_) {
+    switch(face_) {
     case arial_16:     _font = arial_16pt; break;
     case arial_28:     _font = arial_28pt; break;
     case arial_32:     _font = arial_32pt; break;
     default:
         DEBUG_PRINTLN("Unsupported font type");
-        //exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
+    _color = color_;
+    text = text_;
+    x = x_;
+    y = y_;
+    z = z_;
+    windowScale = windowScale_;
     scale = scale_;
     kerning = kerning_;
-    _color = color_;
 }
 
-void Font::createTexture() {
+void Text::createTexture() {
     GLuint textureId;
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
@@ -59,14 +66,14 @@ void Font::createTexture() {
     _texture.loadExisting(_font.tex_width, _font.tex_height, textureId);
 }
 
-void Font::deleteTexture() {
+void Text::deleteTexture() {
     if (_texture.id != 0) {
         glDeleteTextures(1, &_texture.id);
         _texture.id = 0;
     }
 }
 
-void Font::draw(float penX, float penY, float z, std::string const& text, float windowScale) {
+void Text::draw() {
     // Set OpenGL draw settings
     glDisable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
@@ -79,19 +86,25 @@ void Font::draw(float penX, float penY, float z, std::string const& text, float 
 
     glPushMatrix();
 
-    // Perform scaling
-    glScalef(scale * windowScale, scale * windowScale, 1.0);
+    // Perform scaling and rotation
+    //DEBUG_PRINTLN("Font scale: %f  windowScale: %f  xScale: %f  yScale: %f", scale, windowScale, scale * windowScale, scale * windowScale);
+    //glScalef(scale * windowScale, scale * windowScale, 1.0);
+    //glScalef(scale, scale, 1.0);
+    glScalef(scale, scale, 1.0);
+    glRotatef(rotationY, 0.0f, 1.0f, 0.0f);
+    glRotatef(rotationX, 1.0f, 0.0f, 0.0f);
 
-    _drawList(penX * (1 / windowScale), penY * (1 / windowScale), z, text, windowScale);
+    _drawList();
 
     glDisable(GL_BLEND);
 }
 
-void Font::_drawList(float penX, float penY, float z, std::string const& text, float ws) {
+void Text::_drawList() {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, _texture.id);
 
     size_t i, j;
+    float ix = x, iy = y;
     for(i = 0; i < text.length(); ++i) {
         // Find the glyph
         texture_glyph_t* glyph = 0;
@@ -118,32 +131,26 @@ void Font::_drawList(float penX, float penY, float z, std::string const& text, f
         //     }
         // }
 
-        penX += kerning;
-        float x = penX + glyph->offset_x;
-        float y = penY + glyph->offset_y;
+        // Calculate the size and location based on the current character's glyph
+        float ox = ix + glyph->offset_x + kerning;
+        float oy = iy + glyph->offset_y;
         float w  = glyph->width;
         float h  = glyph->height;
         
+        // Draw the letter
         glBegin(GL_TRIANGLES);
         glColor4f(1.0, 1.0, 1.0, 1.0);
-        // TODO: test resolution scaling (see if needed or not, seems to work fine now without but need to test more)
-        //ws = 1.0;
-        // glTexCoord2f(glyph->s0, glyph->t0); glVertex2f(ws * x,     ws * y  );
-        // glTexCoord2f(glyph->s0, glyph->t1); glVertex2f(ws * x,     ws * y - h);
-        // glTexCoord2f(glyph->s1, glyph->t1); glVertex2f(ws * x + w, ws * y - h);
-        // glTexCoord2f(glyph->s0, glyph->t0); glVertex2f(ws * x,     ws * y  );
-        // glTexCoord2f(glyph->s1, glyph->t1); glVertex2f(ws * x + w, ws * y - h);
-        // glTexCoord2f(glyph->s1, glyph->t0); glVertex2f(ws * x + w, ws * y  );
-        glTexCoord2f(glyph->s0, glyph->t0); glVertex3f(x,     y    , z);
-        glTexCoord2f(glyph->s0, glyph->t1); glVertex3f(x,     y - h, z);
-        glTexCoord2f(glyph->s1, glyph->t1); glVertex3f(x + w, y - h, z);
-        glTexCoord2f(glyph->s0, glyph->t0); glVertex3f(x,     y    , z);
-        glTexCoord2f(glyph->s1, glyph->t1); glVertex3f(x + w, y - h, z);
-        glTexCoord2f(glyph->s1, glyph->t0); glVertex3f(x + w, y    , z);
+        glTexCoord2f(glyph->s0, glyph->t0); glVertex3f(ox,     oy    , z);
+        glTexCoord2f(glyph->s0, glyph->t1); glVertex3f(ox,     oy - h, z);
+        glTexCoord2f(glyph->s1, glyph->t1); glVertex3f(ox + w, oy - h, z);
+        glTexCoord2f(glyph->s0, glyph->t0); glVertex3f(ox,     oy    , z);
+        glTexCoord2f(glyph->s1, glyph->t1); glVertex3f(ox + w, oy - h, z);
+        glTexCoord2f(glyph->s1, glyph->t0); glVertex3f(ox + w, oy    , z);
         glEnd();
         
-        penX += glyph->advance_x;
-        penY += glyph->advance_y;
+        // Advance to the next letter's position
+        ix += glyph->advance_x;
+        iy += glyph->advance_y;
     }
 
     glDisable(GL_TEXTURE_2D);

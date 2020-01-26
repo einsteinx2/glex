@@ -12,19 +12,26 @@ public:
     // Use this as the z value to draw on top of everything (e.g. a HUD or FPS counter)
     static constexpr float Z_HUD = 100;
 
-    GLfloat rotationX = 0.0;
-    GLfloat rotationY = 0.0;
-    GLfloat scale = 1.0;
+    float x = 0;
+    float y = 0;
+    float z = 0;
+    float width = 0;
+    float height = 0;
+    float windowScale = 1;
 
-    int width();
-    int height();
+    GLfloat rotationX = 0;
+    GLfloat rotationY = 0;
+    GLfloat scale = 1;
 
-    Image(Texture* texture, GLfloat scale = 1.0);
-    void draw(float x, float y, float z, float width, float height, float windowScale = 1.0);
+    Texture* texture;
+
+    Image() {};
+    Image(Texture* texture_) { texture = texture_; };
+    Image(Texture* texture_, float x_, float y_, float z_, float width_, float height_, float windowScale_, float scale_ = 1.0) {
+        texture = texture_; x = x_; y = y_; z = z_; width = width_; height = height_, windowScale = windowScale_; scale = scale_;
+    };
+    void draw();
 
 private:
-    Texture* _texture;
-    GLfloat _scale;
-
-    void _drawList(float x, float y, float z, float w, float h, float ws);
+    void _drawList();
 };

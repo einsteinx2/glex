@@ -23,22 +23,31 @@ bool operator==(const FontColor& lhs, const FontColor& rhs);
 #define FONT_COLOR_GREEN (FontColor){ .r = 0,   .g = 255, .b = 0   }
 #define FONT_COLOR_BLUE  (FontColor){ .r = 0,   .g = 0,   .b = 255 }
 
-class Font {
+class Text {
 public:
-    float scale = 1.0;
-    float kerning = 0.0; // TODO: Figure out sane default value
+    float x = 0;
+    float y = 0;
+    float z = 0;
+    float windowScale = 1;
+
+    GLfloat rotationX = 0;
+    GLfloat rotationY = 0;
+    float scale = 1;
+    float kerning = 0; // TODO: Figure out sane default value
+
+    std::string text;
     const FontColor& color = _color;
     const Texture& texture = _texture; // Texture object referencing the internal font texture
 
-    Font(FontFace face, FontColor color = FONT_COLOR_WHITE, float scale_ = 1.0, float kerning_ = 0.0);
-    ~Font();
+    Text(FontFace face, std::string text_, FontColor color_, float x_, float y_, float z_, float windowScale_, float scale_ = 1.0, float kerning_ = 0.0);
+    ~Text();
     void createTexture();
     void deleteTexture();
-    void draw(float penX, float penY, float z, std::string const& text, float windowScale = 1.0);
+    void draw();
 private:
     FontColor _color;
     texture_font_t _font;
     Texture _texture;
 
-    void _drawList(float penX, float penY, float z, std::string const& text, float ws);
+    void _drawList();
 };

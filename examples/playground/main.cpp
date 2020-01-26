@@ -5,7 +5,7 @@
 #include "glex/Cube.h"
 #include "glex/Mesh.h"
 #include "glex/Image.h"
-#include "glex/Font.h"
+#include "glex/Text.h"
 #include "glex/MeshLoader.h"
 
 #include <cstdio>
@@ -50,22 +50,25 @@ int main(int argc, char *argv[])
     //       impact on loading time than the format. So I found JPG files load significantly
     //       faster than either PNG or BMP with no noticeable loss in quality (though no alpha).
 
+    DEBUG_PRINTLN("window.width: %d  window.height %d  window.screenScale: %f", window.width, window.height, window.screenScale);
+
     Texture grayBrickTexture;
     grayBrickTexture.loadRGB("images/gray_brick_512.jpg");
-    Image grayBrickImage(&grayBrickTexture);
+    Image grayBrickImage(&grayBrickTexture, 0, window.height, Image::Z_BACKGROUND, window.width, window.height, window.screenScale);
 
     Texture woodTexture;
     woodTexture.loadRGB("images/wood1.bmp");
-    Image woodImage(&woodTexture);
+    Image woodImage(&woodTexture, 250, 420, 10, Image::Z_HUD, 100, window.screenScale);
 
     MeshData *houseMesh = MeshLoader::loadObjMesh("meshes/house.obj");
     Texture houseTexture;
-    houseTexture.loadRGBA("images/house_512.jpg");
+    houseTexture.loadRGBA("images/house_512.png");
     Mesh mesh(houseMesh, &houseTexture, 0.3);
 
-    //FontColor darkBlue = (FontColor) { .r = 21, .g = 1, .b = 148 };
-    Font font(FontFace::arial_16, FONT_COLOR_BLACK);
-    font.createTexture();
+    FontColor darkBlue = (FontColor) { .r = 21, .g = 1, .b = 148 };
+    FontFace fontFace = window.screenScale > 1.0 ? FontFace::arial_28 : FontFace::arial_16;
+    Text fpsCounter(fontFace, "", darkBlue, 20, 20, Image::Z_HUD, window.screenScale);
+    fpsCounter.createTexture();
 
 #ifdef DREAMCAST
     int key = -1;
@@ -93,7 +96,7 @@ int main(int argc, char *argv[])
             DEBUG_PRINTLN("Key pressed  int: %d  char: %c", key, key);
             if (key == 27) {
                 DEBUG_PRINTLN("Escape key pressed, exiting");
-                exit(0);
+                exit(EXIT_SUCCESS);
             }
         }
 #endif
@@ -103,7 +106,7 @@ int main(int argc, char *argv[])
 
         // Draw the background image
         window.reshapeOrtho(1.0);        
-        grayBrickImage.draw(0, window.height, Image::Z_BACKGROUND, window.width, window.height, window.screenScale);
+        grayBrickImage.draw();
 
         // Draw the 3d rotating house
         window.reshapeFrustum();
@@ -114,13 +117,14 @@ int main(int argc, char *argv[])
 
         // Draw the foreground 2d image
         window.reshapeOrtho(1.0);
-        woodImage.draw(250, 420, 10, Image::Z_HUD, 100, window.screenScale);
+        woodImage.draw();
 
         // Draw the FPS counter HUD text
-        window.reshapeOrtho(font.scale);
+        window.reshapeOrtho(fpsCounter.scale);
         static char outputString[50];
         sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f", frameTime, fps);
-        font.draw(20, 20, Image::Z_HUD, outputString, window.screenScale);
+        fpsCounter.text = outputString;
+        fpsCounter.draw();
 
         // Swap buffers to display the current frame
         window.swapBuffers();

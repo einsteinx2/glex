@@ -65,12 +65,12 @@ set(glex_SOURCES
 
     # GLEX
     src/Cube.cpp             include/glex/Cube.h
-    src/Font.cpp             include/glex/Font.h
     src/Image.cpp            include/glex/Image.h
     src/Mesh.cpp             include/glex/Mesh.h
     src/MeshLoader.cpp       include/glex/MeshLoader.h
     src/Texture.cpp          include/glex/Texture.h
-    src/Triangle.cpp         include/glex/Triangle.h  
+    src/Triangle.cpp         include/glex/Triangle.h 
+    src/Text.cpp             include/glex/Text.h
     src/Window.cpp           include/glex/Window.h
     src/DreamcastWindow.cpp  include/glex/DreamcastWindow.h
     src/PCWindow.cpp         include/glex/PCWindow.h

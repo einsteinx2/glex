@@ -10,6 +10,7 @@
 #include "glex/common/path.h"
 
 #include <fstream>
+#include <cstdlib>
 
 Texture::~Texture() {
     if (isLoaded()) {
@@ -45,7 +46,7 @@ bool Texture::_loadTextureFromFile(std::string path, int numberOfColorComponents
     }
 
     ERROR_PRINTLN("ERROR: couldn't open texture image file");
-    exit(1);
+    exit(EXIT_FAILURE);
     return false;
 }
 

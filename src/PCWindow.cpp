@@ -4,6 +4,9 @@
 #include "glex/common/gl.h"
 #include "glex/common/log.h"
 
+#include <unistd.h>
+#include <cstdlib>
+
 void PCWindow::createWindow(std::string windowName, int width, int height) {
     _windowName = windowName;
     _width = width;

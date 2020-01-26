@@ -24,7 +24,7 @@ MeshObjInfo MeshLoader::_getObjInfo(std::string path) {
     std::ifstream inOBJ(path);
     if (!inOBJ || !inOBJ.good()) {
         DEBUG_PRINTLN("ERROR: couldn't open OBJ file");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     
     // Read OBJ file
@@ -63,7 +63,7 @@ MeshData* MeshLoader::_readObjFile(std::string path, MeshObjInfo info) {
     if (!inOBJ.good()) {
         DEBUG_PRINTLN("ERROR OPENING OBJ FILE");
         
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     // Counters
