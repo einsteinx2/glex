@@ -34,11 +34,11 @@ public:
     ~Font();
     void createTexture();
     void deleteTexture();
-    void draw(float penX, float penY, std::string const& text, float windowScale = 1.0);
+    void draw(float penX, float penY, float z, std::string const& text, float windowScale = 1.0);
 private:
     FontColor _color;
     texture_font_t _font;
     Texture _texture;
 
-    void _drawList(float penX, float penY, std::string const& text, float ws);
+    void _drawList(float penX, float penY, float z, std::string const& text, float ws);
 };

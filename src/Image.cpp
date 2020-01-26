@@ -16,10 +16,11 @@ Image::Image(Texture* texture, GLfloat scale) {
     _scale = scale;
 }
 
-void Image::draw(float x, float y, float width, float height, float windowScale) {
+void Image::draw(float x, float y, float z, float width, float height, float windowScale) {
     // Set OpenGL draw settings
-    glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -30,7 +31,7 @@ void Image::draw(float x, float y, float width, float height, float windowScale)
     glRotatef(rotationY, 0.0f, 1.0f, 0.0f);
     glRotatef(rotationX, 1.0f, 0.0f, 0.0f);
 
-    _drawList(x, y, width, height, windowScale);
+    _drawList(x, y, z, width, height, windowScale);
 
     // Unset OpenGL draw settings
     glDisable(GL_BLEND);
@@ -38,7 +39,7 @@ void Image::draw(float x, float y, float width, float height, float windowScale)
     glPopMatrix();
 }
 
-void Image::_drawList(float x, float y, float w, float h, float ws) {
+void Image::_drawList(float x, float y, float z, float w, float h, float ws) {
     // Enable texture
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, _texture->id);
@@ -50,16 +51,16 @@ void Image::_drawList(float x, float y, float w, float h, float ws) {
 
     x *= (1.0 / ws);
     y *= (1.0 / ws);
-
+    
     // Left triangle
-    glTexCoord2f(0, 1); glVertex2f(ws * x,     ws * y  );    // Top Left
-    glTexCoord2f(0, 0); glVertex2f(ws * x,     ws * y - h);  // Bottom Left
-    glTexCoord2f(1, 0); glVertex2f(ws * x + w, ws * y - h);  // Buttom Right
+    glTexCoord2f(0, 1); glVertex3f(ws * x,     ws * y    , z);  // Top Left
+    glTexCoord2f(0, 0); glVertex3f(ws * x,     ws * y - h, z);  // Bottom Left
+    glTexCoord2f(1, 0); glVertex3f(ws * x + w, ws * y - h, z);  // Buttom Right
 
     // Right triangle
-    glTexCoord2f(0, 1); glVertex2f(ws * x,     ws * y  );    // Top Left
-    glTexCoord2f(1, 0); glVertex2f(ws * x + w, ws * y - h);  // Bottom Right
-    glTexCoord2f(1, 1); glVertex2f(ws * x + w, ws * y  );    // Top Right
+    glTexCoord2f(0, 1); glVertex3f(ws * x,     ws * y    , z);  // Top Left
+    glTexCoord2f(1, 0); glVertex3f(ws * x + w, ws * y - h, z);  // Bottom Right
+    glTexCoord2f(1, 1); glVertex3f(ws * x + w, ws * y    , z);  // Top Right
 
     glEnd();
 #else

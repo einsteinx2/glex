@@ -101,30 +101,26 @@ int main(int argc, char *argv[])
         // Clear the buffer to draw the prepare frame
         window.clear();
 
-        // TODO: Get this drawing behind the 3d mesh on Dreamcast
-#ifndef DREAMCAST
         // Draw the background image
-        window.reshapeOrtho(1.0);
-        //woodImage.draw(0, window.height, -0.9999999, window.width, window.height, window.screenScale);
-        grayBrickImage.draw(0, window.height, window.width, window.height, window.screenScale);
-#endif
+        window.reshapeOrtho(1.0);        
+        grayBrickImage.draw(0, window.height, Image::Z_BACKGROUND, window.width, window.height, window.screenScale);
 
-        // Draw the 3d object(s)
+        // Draw the 3d rotating house
         window.reshapeFrustum();
         mesh.draw();
         mesh.rotationX += 0.75;
         mesh.rotationY += 0.75;
         mesh.rotationZ += 0.75;
 
-        // Draw the text
+        // Draw the foreground 2d image
+        window.reshapeOrtho(1.0);
+        woodImage.draw(250, 420, 10, Image::Z_HUD, 100, window.screenScale);
+
+        // Draw the FPS counter HUD text
         window.reshapeOrtho(font.scale);
         static char outputString[50];
         sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f", frameTime, fps);
-        font.draw(20, 20, outputString, window.screenScale);
-
-        // Draw the image
-        window.reshapeOrtho(1.0);
-        woodImage.draw(10, 420, 100, 100, window.screenScale);
+        font.draw(20, 20, Image::Z_HUD, outputString, window.screenScale);
 
         // Swap buffers to display the current frame
         window.swapBuffers();

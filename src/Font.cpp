@@ -66,13 +66,14 @@ void Font::deleteTexture() {
     }
 }
 
-void Font::draw(float penX, float penY, std::string const& text, float windowScale) {
+void Font::draw(float penX, float penY, float z, std::string const& text, float windowScale) {
     // Set OpenGL draw settings
-    // glClear(GL_DEPTH_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // Not sure if I need these or not
     //glAlphaFunc(GL_GREATER, 0.f);
     //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
@@ -81,12 +82,12 @@ void Font::draw(float penX, float penY, std::string const& text, float windowSca
     // Perform scaling
     glScalef(scale * windowScale, scale * windowScale, 1.0);
 
-    _drawList(penX * (1 / windowScale), penY * (1 / windowScale), text, windowScale);
+    _drawList(penX * (1 / windowScale), penY * (1 / windowScale), z, text, windowScale);
 
     glDisable(GL_BLEND);
 }
 
-void Font::_drawList(float penX, float penY, std::string const& text, float ws) {
+void Font::_drawList(float penX, float penY, float z, std::string const& text, float ws) {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, _texture.id);
 
@@ -125,19 +126,20 @@ void Font::_drawList(float penX, float penY, std::string const& text, float ws) 
         
         glBegin(GL_TRIANGLES);
         glColor4f(1.0, 1.0, 1.0, 1.0);
-        ws = 1.0;
+        // TODO: test resolution scaling (see if needed or not, seems to work fine now without but need to test more)
+        //ws = 1.0;
         // glTexCoord2f(glyph->s0, glyph->t0); glVertex2f(ws * x,     ws * y  );
         // glTexCoord2f(glyph->s0, glyph->t1); glVertex2f(ws * x,     ws * y - h);
         // glTexCoord2f(glyph->s1, glyph->t1); glVertex2f(ws * x + w, ws * y - h);
         // glTexCoord2f(glyph->s0, glyph->t0); glVertex2f(ws * x,     ws * y  );
         // glTexCoord2f(glyph->s1, glyph->t1); glVertex2f(ws * x + w, ws * y - h);
         // glTexCoord2f(glyph->s1, glyph->t0); glVertex2f(ws * x + w, ws * y  );
-        glTexCoord2f(glyph->s0, glyph->t0); glVertex2f(x,     y  );
-        glTexCoord2f(glyph->s0, glyph->t1); glVertex2f(x,     y - h);
-        glTexCoord2f(glyph->s1, glyph->t1); glVertex2f(x + w, y - h);
-        glTexCoord2f(glyph->s0, glyph->t0); glVertex2f(x,     y  );
-        glTexCoord2f(glyph->s1, glyph->t1); glVertex2f(x + w, y - h);
-        glTexCoord2f(glyph->s1, glyph->t0); glVertex2f(x + w, y  );
+        glTexCoord2f(glyph->s0, glyph->t0); glVertex3f(x,     y    , z);
+        glTexCoord2f(glyph->s0, glyph->t1); glVertex3f(x,     y - h, z);
+        glTexCoord2f(glyph->s1, glyph->t1); glVertex3f(x + w, y - h, z);
+        glTexCoord2f(glyph->s0, glyph->t0); glVertex3f(x,     y    , z);
+        glTexCoord2f(glyph->s1, glyph->t1); glVertex3f(x + w, y - h, z);
+        glTexCoord2f(glyph->s1, glyph->t0); glVertex3f(x + w, y    , z);
         glEnd();
         
         penX += glyph->advance_x;

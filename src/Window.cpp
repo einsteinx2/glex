@@ -76,7 +76,7 @@ void _reshapeOrtho(GLFWwindow* window, int width, int height)
     //glViewport(0, 0, width * wrapper->screenScale, height * wrapper->screenScale);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, width, 0, height, -1, 1);
+    glOrtho(0, width, 0, height, -100.1, 100.1); // Added .1 to znear and zfar to allow using the full -100 - 100 range
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0.0, 0.0, 0.0);
