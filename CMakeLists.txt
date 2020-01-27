@@ -1,55 +1,38 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#                                                                                   #
+# NOTES:                                                                            #
+# ======                                                                            #
+#                                                                                   #
+# GCC build flags:                                                                  #
+# ----------------                                                                  #
+# CMAKE_C_FLAGS and CMAKE_CXX_FLAGS are added to all builds, while                  #
+# CMAKE_C_FLAGS_DEBUG and CMAKE_CXX_FLAGS_DEBUG are added to Debug                  #
+# builds and CMAKE_C_FLAGS_RELEASE and CMAKE_CXX_FLAGS_RELEASE are                  #
+# added to Release builds, etc (the last word is just the build type                #
+# in all caps, and there can be custom build types: see Common.cmake)               #
+#                                                                                   #
+# GCC optimization levels:                                                          #
+# ------------------------                                                          #
+# For complete information, see https://linux.die.net/man/1/gcc and                 #
+# search for "Options That Control Optimization" to find the section.               #
+# A shorter overview can be found here: https://stackoverflow.com/a/1778700/299262  #
+#                                                                                   #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+#variable_watch(CMAKE_BUILD_TYPE)
+
 cmake_minimum_required(VERSION 3.5.1)
 project(glex)
 
-# Disable optimizations when building debug version
-set(CMAKE_CXX_FLAGS_DEBUG "-O0")
-set(CMAKE_C_FLAGS_DEBUG "-O0")
-
-# Set C and C++ standards
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Set output directory
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-    message(STATUS "Building for macOS")
-    set(MACOS_BUILD true)
-    set(USE_GLFW true)
-    set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build/mac")
-    set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib/mac")
-elseif(${DREAMCAST_BUILD})
-    message(STATUS "Building for Dreamcast")
-    # Currently adding the toolchain file doesn't work from here because it's the toolchain file that sets DREAMCAST_BUILD,
-    # so instead it's set in the build script
-    #set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/toolchains/Dreamcast.cmake")
-    message(STATUS "DREAMCAST_BUILD: ${DREAMCAST_BUILD}")
-    SET(CMAKE_BUILD_TYPE Release)
-    #SET(CMAKE_BUILD_TYPE Debug)
-    SET(THREADS_PREFER_PTHREAD_FLAG OFF)
-    set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build/dc")
-    set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib/dc")
-    SET(OpenGL_GL_PREFERENCE "LEGACY")
-
-    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -DTIXML_USE_STL -Wdelete-non-virtual-dtor")
-    #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall")
-    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -DTIXML_USE_STL -Wdelete-non-virtual-dtor")
-    #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-    SET(CMAKE_ASM_FLAGS "")
-
-    # We force disable debugging information in release builds - this is so we override settings in the
-    # kallistios gnu-wrappers which sometimes pick up -g through the default env vars
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -s -fomit-frame-pointer -g0")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -s -fomit-frame-pointer -g0")
-    #set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -s -g0")
-    #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -s -g0")
-
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -Wextra -Wno-unused-parameter")
-else()
-    message(FATAL_ERROR "Your build system '${CMAKE_SYSTEM_NAME}' is not supported")
+if(NOT CMAKE_TOOLCHAIN_FILE)
+    message(FATAL_ERROR "Must set a toolchain file by setting -DCMAKE_TOOLCHAIN_FILE when running cmake")
 endif()
 
-# Add the project files
-set(glex_SOURCES
+# Setup build configurations
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/BuildConfigurations.cmake)
+
+# Add the glex project files
+add_library(glex STATIC 
     # Common
     include/glex/common/font.h
     include/glex/common/gl.h
@@ -75,33 +58,22 @@ set(glex_SOURCES
     src/DreamcastWindow.cpp  include/glex/DreamcastWindow.h
     src/PCWindow.cpp         include/glex/PCWindow.h
 )
-if(${USE_GLFW})
-     # Add the glad file
-     set(glex_SOURCES ${glex_SOURCES} deps/pc/glad_gl.cpp)
-endif()
-add_library(glex STATIC ${glex_SOURCES})
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_SOURCE_DIR}/deps/shared")
 
-# Add corrent OpenGL library
-if(${USE_GLFW})
-    # Build and include glfw submodule so it's not necessary to build and install to system
+# Add correct OpenGL library
+if(USE_GLFW)
+    # Add the glad dependency required by glfw
+    target_sources(glex PRIVATE "deps/pc/glad_gl.cpp")
+
+    # Build and include the glfw submodule so it's not necessary to build and install to system
     add_subdirectory("${CMAKE_SOURCE_DIR}/deps/pc/glfw")
     include_directories("${CMAKE_SOURCE_DIR}/deps/pc/glfw/include")
     include_directories("${CMAKE_SOURCE_DIR}/deps/pc/glfw/deps")
     target_link_libraries(glex glfw)
-elseif(${DREAMCAST_BUILD})
-    # Example to use pre-compiled GLdc library instead of compiling the submodule
-    #target_link_libraries(glex ${GLDC})
-    #message(STATUS "Linking pre-built libGLdc.a")
-    #target_link_libraries(glex "${CMAKE_SOURCE_DIR}/deps/dc/libGLdc.a")
-
-    # Build and include GLdc submodule so it's not necessary to build and install to system
-    file(GLOB_RECURSE GLDC "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/GL/*.c")
-    list(REMOVE_ITEM GLDC "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/samples/*")
-    include_directories("${CMAKE_SOURCE_DIR}/deps/dc/GLdc/include")
-
-    # Create GLdc library target
+    add_dependencies(glex glfw)
+elseif(${USE_GLDC})
+    # Build and include the GLdc submodule so it's not necessary to build and install to system
     add_custom_target(GLdc
         COMMAND make build
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/deps/dc/GLdc"
@@ -110,12 +82,11 @@ elseif(${DREAMCAST_BUILD})
     add_dependencies(glex GLdc)
 endif()
 
-if(${MACOS_BUILD})
-    # Create final application target
-    add_executable(playground-example 
-        examples/playground/main.cpp 
-    )
-
+# Create and build example programs (currently only one)
+add_executable(playground-example 
+    examples/playground/main.cpp 
+)
+if(MACOS_BUILD)
     # Copy meshes
     file(GLOB OBJ_MESHES "${CMAKE_SOURCE_DIR}/examples/playground/meshes/*.obj" )
     file(COPY ${OBJ_MESHES} DESTINATION "${CMAKE_BINARY_DIR}/meshes")
@@ -126,13 +97,8 @@ if(${MACOS_BUILD})
 
     # Link macOS libraries
     target_link_libraries(playground-example "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
-elseif(${DREAMCAST_BUILD})
-    # Create final application target
-    add_executable(playground-example 
-        examples/playground/main.cpp 
-    )
-
-    # Build CDI
+elseif(DREAMCAST_BUILD)
+    # Build CDIs (supports having multiple example projects, but there's currently only one)
     set(DC_EXECUTABLES # Names without .elf extension
         playground-example
     )
@@ -142,26 +108,21 @@ elseif(${DREAMCAST_BUILD})
     get_filename_component(EXE_FILENAME ${EXE} NAME)
     add_custom_target(
         ${EXE_FILENAME}.bin ALL
-        COMMENT "EXE: ${EXE}"
-        COMMENT "EXE_FILENAME: ${EXE_FILENAME}"
-        COMMENT "EXECUTABLE_OUTPUT_PATH: ${EXECUTABLE_OUTPUT_PATH}"
-        COMMAND $ENV{KOS_OBJCOPY} -R .stack -O binary -S -g ${EXECUTABLE_OUTPUT_PATH}/${EXE}.elf ${EXECUTABLE_OUTPUT_PATH}/${EXE}.bin
-        COMMAND rm -rf ${EXECUTABLE_OUTPUT_PATH}/${EXE}
-        COMMAND mkdir -p ${EXECUTABLE_OUTPUT_PATH}/${EXE}
-        COMMAND $ENV{KOS_BASE}/utils/scramble/scramble ${EXECUTABLE_OUTPUT_PATH}/${EXE}.bin ${EXECUTABLE_OUTPUT_PATH}/${EXE}/1ST_READ.BIN
-        COMMAND IP_TEMPLATE_FILE=${CMAKE_SOURCE_DIR}/deps/dc/IP.TMPL $ENV{KOS_BASE}/utils/makeip/makeip ${CMAKE_SOURCE_DIR}/deps/dc/ip.txt ${EXECUTABLE_OUTPUT_PATH}/${EXE}/IP.BIN
+        COMMAND $ENV{KOS_OBJCOPY} -R .stack -O binary -S -g ${PROJECT_BINARY_DIR}/${EXE}.elf ${PROJECT_BINARY_DIR}/${EXE}.bin
+        COMMAND rm -rf ${PROJECT_BINARY_DIR}/${EXE}
+        COMMAND mkdir -p ${PROJECT_BINARY_DIR}/${EXE}
+        COMMAND $ENV{KOS_BASE}/utils/scramble/scramble ${PROJECT_BINARY_DIR}/${EXE}.bin ${PROJECT_BINARY_DIR}/${EXE}/1ST_READ.BIN
+        COMMAND IP_TEMPLATE_FILE=${CMAKE_SOURCE_DIR}/deps/dc/IP.TMPL $ENV{KOS_BASE}/utils/makeip/makeip ${CMAKE_SOURCE_DIR}/deps/dc/ip.txt ${PROJECT_BINARY_DIR}/${EXE}/IP.BIN
         COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/playground/meshes ${CMAKE_BINARY_DIR}/${EXE}/
         COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/playground/images ${CMAKE_BINARY_DIR}/${EXE}/
         # Generate CDI disc image
-        COMMAND mkisofs -C 0,11702 -V ${EXE_FILENAME} -G ${EXECUTABLE_OUTPUT_PATH}/${EXE}/IP.BIN -joliet -rock -l -o ${EXECUTABLE_OUTPUT_PATH}/${EXE}.iso ${EXECUTABLE_OUTPUT_PATH}/${EXE}
-        COMMAND $ENV{KOS_BASE}/utils/img4dc/cdi4dc/cdi4dc ${EXECUTABLE_OUTPUT_PATH}/${EXE}.iso ${EXECUTABLE_OUTPUT_PATH}/${EXE}.cdi
-        COMMAND rm ${EXECUTABLE_OUTPUT_PATH}/${EXE}.iso
+        COMMAND mkisofs -C 0,11702 -V ${EXE_FILENAME} -G ${PROJECT_BINARY_DIR}/${EXE}/IP.BIN -joliet -rock -l -o ${PROJECT_BINARY_DIR}/${EXE}.iso ${PROJECT_BINARY_DIR}/${EXE}
+        COMMAND $ENV{KOS_BASE}/utils/img4dc/cdi4dc/cdi4dc ${PROJECT_BINARY_DIR}/${EXE}.iso ${PROJECT_BINARY_DIR}/${EXE}.cdi
+        COMMAND rm ${PROJECT_BINARY_DIR}/${EXE}.iso
         # Generate data iso for use with dcload
-        COMMAND mkisofs -V ${EXE_FILENAME} -joliet -rock -o ${EXECUTABLE_OUTPUT_PATH}/${EXE}_dcload.iso ${EXECUTABLE_OUTPUT_PATH}/${EXE}
+        COMMAND mkisofs -V ${EXE_FILENAME} -joliet -rock -o ${PROJECT_BINARY_DIR}/${EXE}_dcload.iso ${PROJECT_BINARY_DIR}/${EXE}
         DEPENDS ${EXE}
     )
     endforeach()
 endif()
 target_link_libraries(playground-example glex)
-
-#TODO: in docker container - add img4dc and makeip to kos utils, apt-get install cmake and genisoimage
