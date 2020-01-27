@@ -75,8 +75,10 @@ if(USE_GLFW)
 elseif(${USE_GLDC})
     # Build and include the GLdc submodule so it's not necessary to build and install to system
     add_custom_target(GLdc
-        COMMAND make build
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/deps/dc/GLdc"
+        # NOTE: Instead of just calling `make build` and setting WORKING_DIRECTORY
+        #       we must call make in a single command so that we can add the + to
+        #       the beginning so that the -j flag passed into the top level `make` works
+        COMMAND +make -C "${CMAKE_SOURCE_DIR}/deps/dc/GLdc" build
     )
     target_link_libraries(glex "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/libGLdc.a" "-lm")
     add_dependencies(glex GLdc)

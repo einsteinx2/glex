@@ -50,8 +50,6 @@ int main(int argc, char *argv[])
     //       impact on loading time than the format. So I found JPG files load significantly
     //       faster than either PNG or BMP with no noticeable loss in quality (though no alpha).
 
-    DEBUG_PRINTLN("window.width: %d  window.height %d  window.screenScale: %f", window.width, window.height, window.screenScale);
-
     Texture grayBrickTexture;
     grayBrickTexture.loadRGB("images/gray_brick_512.jpg");
     Image grayBrickImage(&grayBrickTexture, 0, window.height, Image::Z_BACKGROUND, window.width, window.height, window.screenScale);
@@ -71,8 +69,11 @@ int main(int argc, char *argv[])
     fpsCounter.createTexture();
 
 #ifdef DREAMCAST
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     int key = -1;
     kbd_set_queue(1); // Enable keyboard queue
+#pragma GCC diagnostic pop
 #endif
 
     // Main loop
@@ -84,12 +85,13 @@ int main(int argc, char *argv[])
         if (timeDiff >= 1000) {
             frameTime = float(timeDiff) / float(nbFrames);
             fps = nbFrames;
-            //DEBUG_PRINTLN("%f ms/frame\n", frameTime);
             nbFrames = 0;
             lastTime = currentTime;
         }
 
 #ifdef DREAMCAST
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
         // Check for escape key press on Dreamcast
         key = kbd_get_key();
         if (key != -1) {
@@ -99,6 +101,7 @@ int main(int argc, char *argv[])
                 exit(EXIT_SUCCESS);
             }
         }
+#pragma GCC diagnostic pop
 #endif
 
         // Clear the buffer to draw the prepare frame
@@ -122,7 +125,8 @@ int main(int argc, char *argv[])
         // Draw the FPS counter HUD text
         window.reshapeOrtho(fpsCounter.scale);
         static char outputString[50];
-        sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f", frameTime, fps);
+        // NOTE: Due to an old GCC bug, we must manually cast floats to double in order to use %f without a warning 
+        sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f", (double)frameTime, (double)fps);
         fpsCounter.text = outputString;
         fpsCounter.draw();
 

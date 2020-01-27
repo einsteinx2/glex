@@ -1,12 +1,5 @@
 #pragma once
 
-// #ifdef _WIN32
-// #include <io.h> 
-// #define access _access_s
-// #else
-// #include <unistd.h>
-// #endif
-
 #include "glex/common/log.h"
 #include <sys/stat.h>
 
@@ -32,8 +25,4 @@ namespace glex {
 #endif
         return path;
     }
-
-    
-
-
 }

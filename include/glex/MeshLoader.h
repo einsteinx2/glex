@@ -4,11 +4,11 @@
 #include <string>
 
 struct MeshObjInfo {
-    int vertices;
-    int positions;
-    int texels;
-    int normals;
-    int faces;
+    int vertices  = 0;
+    int positions = 0;
+    int texels    = 0;
+    int normals   = 0;
+    int faces     = 0;
 };
 
 class MeshLoader {

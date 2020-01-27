@@ -6,8 +6,8 @@
 class Texture {
 public:
     GLuint id = 0;
-    const int& width = _width;
-    const int& height = _height;
+    int width() { return _width; }
+    int height() { return _height; }
 
     ~Texture();
     bool loadRGBA(std::string path);
