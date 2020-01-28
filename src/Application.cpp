@@ -2,45 +2,6 @@
 #include "glex/common/gl.h"
 #include "glex/common/log.h"
 
-// /* change view angle, exit upon ESC */
-// #ifdef DREAMCAST
-// // TODO: Implement input handling for Dreamcast
-// #else
-// void key(GLFWwindow* window, int k, int s, int action, int mods) {
-//     if (action != GLFW_PRESS) {
-//         return;
-//     }
-
-//     Application* wrapper = (Application*)glfwGetWindowUserPointer(window);
-
-//     switch (k) {
-//     case GLFW_KEY_Z:
-//         if( mods & GLFW_MOD_SHIFT )
-//         wrapper->rotationZ -= 5.0;
-//         else
-//         wrapper->rotationZ += 5.0;
-//         break;
-//     case GLFW_KEY_ESCAPE:
-//         glfwSetWindowShouldClose(window, GLFW_TRUE);
-//         break;
-//     case GLFW_KEY_UP:
-//         wrapper->rotationX -= 5.0;
-//         break;
-//     case GLFW_KEY_DOWN:
-//         wrapper->rotationX += 5.0;
-//         break;
-//     case GLFW_KEY_LEFT:
-//         wrapper->rotationY -= 5.0;
-//         break;
-//     case GLFW_KEY_RIGHT:
-//         wrapper->rotationY += 5.0;
-//         break;
-//     default:
-//         return;
-//     }
-// }
-// #endif
-
 void Application::_reshapeFrustum(int width, int height) {
     GLfloat h = (GLfloat)height / (GLfloat)width;
     GLfloat xmax, znear, zfar;

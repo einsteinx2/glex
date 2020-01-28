@@ -54,7 +54,9 @@ add_library(glex STATIC
     src/MeshLoader.cpp       include/glex/MeshLoader.h
     src/Texture.cpp          include/glex/Texture.h
     src/Triangle.cpp         include/glex/Triangle.h 
-    src/Text.cpp             include/glex/Text.h    
+    src/Text.cpp             include/glex/Text.h 
+    include/glex/input/InputHandler.h
+    src/input/KeyboardInputHandler.cpp include/glex/input/KeyboardInputHandler.h
 )
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_SOURCE_DIR}/deps/shared")
@@ -62,18 +64,22 @@ include_directories("${CMAKE_SOURCE_DIR}/deps/shared")
 # Add platform specific files
 if(USE_GLFW)
     # GLFW (i.e. Mac, Linux, Windows)
-    target_sources(glex PRIVATE src/Application_glfw.cpp)
+    target_sources(glex PRIVATE 
+        src/Application_glfw.cpp
+        src/input/KeyboardInputHandler_glfw.cpp
+    )
 elseif(DREAMCAST_BUILD)
     # Dreamcast
-    target_sources(glex PRIVATE src/Application_dc.cpp)
+    target_sources(glex PRIVATE 
+        src/Application_dc.cpp
+        src/input/KeyboardInputHandler_dc.cpp
+    )
 endif()
 
 # Add correct OpenGL library
 if(USE_GLFW)
     # Add the glad dependency required by glfw
     target_sources(glex PRIVATE deps/pc/glad_gl.cpp)
-
-   
 
     # Build and include the glfw submodule so it's not necessary to build and install to system
     add_subdirectory("${CMAKE_SOURCE_DIR}/deps/pc/glfw")

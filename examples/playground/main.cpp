@@ -6,15 +6,12 @@
 #include "glex/Image.h"
 #include "glex/Text.h"
 #include "glex/MeshLoader.h"
+#include "glex/input/KeyboardInputHandler.h"
 
 #include <cstdio>
 #include <cstdlib>
 #include <string>
 #include <chrono>
-
-#ifdef DREAMCAST
-#include <dc/maple/keyboard.h>
-#endif
 
 std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
@@ -31,6 +28,23 @@ int main(int argc, char *argv[])
     int height = 480;
     Application app;
     app.createWindow("GLEX Playground", width, height);
+
+    KeyboardInputHandler keyboard;
+    keyboard.registerCallback([&app](KeyCode code) {
+        DEBUG_PRINTLN("keyboard callback called with code: %d", code);
+        // if (action != GLFW_PRESS) {
+        //     return;
+        // }
+
+        switch (code) {
+        case KeyCode::Escape:
+            app.closeWindow();
+            break;
+        default:
+            return;
+        }
+    });
+    app.addInputHandler(&keyboard);
 
     // NOTE: Both Image and Mesh classes can use textures loaded from JPG, PNG, or BMP.
     //       All PNG files have been run through pngcrush.
@@ -63,14 +77,6 @@ int main(int argc, char *argv[])
     Text fpsCounter(fontFace, "", darkBlue, 20, 20, Image::Z_HUD, app.screenScale);
     fpsCounter.createTexture();
 
-#ifdef DREAMCAST
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    int key = -1;
-    kbd_set_queue(1); // Enable keyboard queue
-#pragma GCC diagnostic pop
-#endif
-
     // Main loop
     while (!app.windowShouldClose()) {
         // Measure speed
@@ -83,21 +89,6 @@ int main(int argc, char *argv[])
             nbFrames = 0;
             lastTime = currentTime;
         }
-
-#ifdef DREAMCAST
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        // Check for escape key press on Dreamcast
-        key = kbd_get_key();
-        if (key != -1) {
-            DEBUG_PRINTLN("Key pressed  int: %d  char: %c", key, key);
-            if (key == 27) {
-                DEBUG_PRINTLN("Escape key pressed, exiting");
-                exit(EXIT_SUCCESS);
-            }
-        }
-#pragma GCC diagnostic pop
-#endif
 
         // Clear the buffer to draw the prepare frame
         app.clear();

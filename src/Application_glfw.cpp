@@ -30,7 +30,6 @@ void Application::createWindow(std::string windowName, int width, int height) {
     // Set callback functions
     glfwSetWindowUserPointer(_window, this);
     glfwSetFramebufferSizeCallback(_window, _sizeCallback);
-    //glfwSetKeyCallback(_window, key);
 
     // Lock to (probably) 60fps if vsyncEnabled, or unlock framerate
     glfwMakeContextCurrent(_window);
@@ -39,7 +38,7 @@ void Application::createWindow(std::string windowName, int width, int height) {
 
     // Setup the frame buffer and view port size
     _reshapeFrustum(width, height);
-    //_reshapeOrtho(width, height);
+    //_reshapeOrtho(width, height); // Don't seem to need to set ortho size here...
 
     // Detect screen scale by comparing window size to framebuffer size
     int frameBufferWidth;
@@ -69,12 +68,22 @@ void Application::_updateWindowSize() {
     glfwGetWindowSize(_window, &_windowWidth, &_windowHeight);
 }
 
-void _sizeCallback(GLFWwindow* window, int width, int height)
-{
+void _sizeCallback(GLFWwindow* window, int width, int height) {
     Application* app = (Application*)glfwGetWindowUserPointer(window);
     app->_updateWindowSize();
     app->_reshapeFrustum(width, height);
     app->_reshapeOrtho(width, height);
+}
+
+void Application::addInputHandler(InputHandler* inputHandler) {
+    _inputHandlers.push_back(inputHandler);
+    inputHandler->added(_window);
+}
+
+void Application::removeInputHandler(InputHandler* inputHandler) {
+    auto first = std::remove(_inputHandlers.begin(), _inputHandlers.end(), inputHandler);
+    _inputHandlers.erase(first, _inputHandlers.end());
+    inputHandler->removed(_window);
 }
 
 #endif
