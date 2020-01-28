@@ -8,14 +8,14 @@
 void _sizeCallback(GLFWwindow* window, int width, int height);
 #endif
 
-class Window {
+class Application {
 public:
     float screenScale = 1.0; // GLFW only, to handle scaled displays (i.e. macOS Retina)
     bool vsyncEnabled = true; // By default, lock to 60fps (or whatever refresh rate the monitor is)
-    const int& width = _width;
-    const int& height = _height;
+    int windowWidth() { return _windowWidth; }
+    int windowHeight() { return _windowHeight; }
     
-    Window() {};
+    Application() {};
     void createWindow(std::string windowName, int width, int height);
     void closeWindow();
     void reshapeFrustum();
@@ -30,11 +30,11 @@ private:
     GLFWwindow* _window;
 #endif
     std::string _windowName = "";
-    int _width = 0;
-    int _height = 0;
+    int _windowWidth = 0;
+    int _windowHeight = 0;
 
-    Window(Window const&);         // Prevent copies
-    void operator=(Window const&); // Prevent assignments
+    Application(Application const&);    // Prevent copies
+    void operator=(Application const&); // Prevent assignments
     void _updateWindowSize();
     void _reshapeFrustum(int width, int height);
     void _reshapeOrtho(int width, int height);

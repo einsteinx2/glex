@@ -1,16 +1,16 @@
 #ifdef GLFW
 
-#include "glex/Window.h"
+#include "glex/Application.h"
 #include "glex/common/gl.h"
 #include "glex/common/log.h"
 
 #include <unistd.h>
 #include <cstdlib>
 
-void Window::createWindow(std::string windowName, int width, int height) {
+void Application::createWindow(std::string windowName, int width, int height) {
     _windowName = windowName;
-    _width = width;
-    _height = height;
+    _windowWidth = width;
+    _windowHeight = height;
 
     if (!glfwInit()) {
         fprintf( stderr, "Failed to initialize GLFW\n" );
@@ -20,7 +20,7 @@ void Window::createWindow(std::string windowName, int width, int height) {
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
-    _window = glfwCreateWindow(_width, _height, _windowName.c_str(), NULL, NULL);
+    _window = glfwCreateWindow(width, height, _windowName.c_str(), NULL, NULL);
     if (!_window) {
         fprintf(stderr, "Failed to open GLFW window\n");
         glfwTerminate();
@@ -38,17 +38,17 @@ void Window::createWindow(std::string windowName, int width, int height) {
     glfwSwapInterval(vsyncEnabled ? 1 : 0);
 
     // Setup the frame buffer and view port size
-    _reshapeFrustum(_width, _height);
-    //_reshapeOrtho(_width, _height);
+    _reshapeFrustum(width, height);
+    //_reshapeOrtho(width, height);
 
     // Detect screen scale by comparing window size to framebuffer size
     int frameBufferWidth;
     glfwGetFramebufferSize(_window, &frameBufferWidth, NULL);
-    screenScale = frameBufferWidth / _width;
+    screenScale = frameBufferWidth / width;
     DEBUG_PRINTLN("screen scale detected: %f", screenScale);
 }
 
-void Window::closeWindow() {
+void Application::closeWindow() {
     // Terminate GLFW
     glfwTerminate();
 
@@ -56,25 +56,25 @@ void Window::closeWindow() {
     exit(EXIT_SUCCESS);
 }
 
-void Window::swapBuffers() {
+void Application::swapBuffers() {
     glfwSwapBuffers(_window);
     glfwPollEvents();
 }
 
-int Window::windowShouldClose() {
+int Application::windowShouldClose() {
     return glfwWindowShouldClose(_window);
 }
 
-void Window::_updateWindowSize() {
-    glfwGetWindowSize(_window, &_width, &_height);
+void Application::_updateWindowSize() {
+    glfwGetWindowSize(_window, &_windowWidth, &_windowHeight);
 }
 
 void _sizeCallback(GLFWwindow* window, int width, int height)
 {
-    Window* wrapper = (Window*)glfwGetWindowUserPointer(window);
-    wrapper->_updateWindowSize();
-    wrapper->_reshapeFrustum(width, height);
-    wrapper->_reshapeOrtho(width, height);
+    Application* app = (Application*)glfwGetWindowUserPointer(window);
+    app->_updateWindowSize();
+    app->_reshapeFrustum(width, height);
+    app->_reshapeOrtho(width, height);
 }
 
 #endif

@@ -1,4 +1,4 @@
-#include "glex/Window.h"
+#include "glex/Application.h"
 #include "glex/common/gl.h"
 #include "glex/common/log.h"
 
@@ -11,7 +11,7 @@
 //         return;
 //     }
 
-//     Window* wrapper = (Window*)glfwGetWindowUserPointer(window);
+//     Application* wrapper = (Application*)glfwGetWindowUserPointer(window);
 
 //     switch (k) {
 //     case GLFW_KEY_Z:
@@ -41,7 +41,7 @@
 // }
 // #endif
 
-void Window::_reshapeFrustum(int width, int height) {
+void Application::_reshapeFrustum(int width, int height) {
     GLfloat h = (GLfloat)height / (GLfloat)width;
     GLfloat xmax, znear, zfar;
 
@@ -58,7 +58,7 @@ void Window::_reshapeFrustum(int width, int height) {
     glTranslatef(0.5, 0.5, -20.0);
 }
 
-void Window::_reshapeOrtho(int width, int height) {
+void Application::_reshapeOrtho(int width, int height) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0, width, 0, height, -100.1, 100.1); // Added .1 to znear and zfar to allow using the full -100 - 100 range
@@ -67,28 +67,19 @@ void Window::_reshapeOrtho(int width, int height) {
     glTranslatef(0.0, 0.0, 0.0);
 }
 
-void Window::reshapeFrustum() {
-    _reshapeFrustum(_width * screenScale, _height * screenScale);
+void Application::reshapeFrustum() {
+    _reshapeFrustum(_windowWidth * screenScale, _windowHeight * screenScale);
 }
 
-void Window::reshapeOrtho(float scale) {
-    _reshapeOrtho(_width, _height);
-    glViewport(0, 0, (int)((float)_width * scale * screenScale), (int)((float)_height * screenScale));
+void Application::reshapeOrtho(float scale) {
+    _reshapeOrtho(_windowWidth, _windowHeight);
+    glViewport(0, 0, (int)((float)_windowWidth * scale * screenScale), (int)((float)_windowHeight * screenScale));
 }
 
-void Window::clear() {
+void Application::clear() {
     // Set the background color
     glClearColor(0.0, 0.0, 0.0, 0.75);
 
     // Clear color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
-
-/*
- * Override in subclasses
- */
-
-void createWindow(std::string windowName, int width, int height) {}
-void closeWindow() {}
-void swapBuffers() {}
-int windowShouldClose() { return 0; }

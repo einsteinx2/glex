@@ -1,5 +1,5 @@
 #include "glex/common/log.h"
-#include "glex/Window.h"
+#include "glex/Application.h"
 #include "glex/Triangle.h"
 #include "glex/Cube.h"
 #include "glex/Mesh.h"
@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
     DEBUG_PRINTLN("Application started!");
     int width = 640;
     int height = 480;
-    Window window;
-    window.createWindow("GLEX Playground", width, height);
+    Application app;
+    app.createWindow("GLEX Playground", width, height);
 
     // NOTE: Both Image and Mesh classes can use textures loaded from JPG, PNG, or BMP.
     //       All PNG files have been run through pngcrush.
@@ -47,11 +47,11 @@ int main(int argc, char *argv[])
 
     Texture grayBrickTexture;
     grayBrickTexture.loadRGB("images/gray_brick_512.jpg");
-    Image grayBrickImage(&grayBrickTexture, 0, window.height, Image::Z_BACKGROUND, window.width, window.height, window.screenScale);
+    Image grayBrickImage(&grayBrickTexture, 0, app.windowHeight(), Image::Z_BACKGROUND, app.windowWidth(), app.windowHeight(), app.screenScale);
 
     Texture woodTexture;
     woodTexture.loadRGB("images/wood1.bmp");
-    Image woodImage(&woodTexture, 250, 420, 10, Image::Z_HUD, 100, window.screenScale);
+    Image woodImage(&woodTexture, 250, 420, 10, Image::Z_HUD, 100, app.screenScale);
 
     MeshData *houseMesh = MeshLoader::loadObjMesh("meshes/house.obj");
     Texture houseTexture;
@@ -59,8 +59,8 @@ int main(int argc, char *argv[])
     Mesh mesh(houseMesh, &houseTexture, 0.3);
 
     FontColor darkBlue = (FontColor) { .r = 21, .g = 1, .b = 148 };
-    FontFace fontFace = window.screenScale > 1.0 ? FontFace::arial_28 : FontFace::arial_16;
-    Text fpsCounter(fontFace, "", darkBlue, 20, 20, Image::Z_HUD, window.screenScale);
+    FontFace fontFace = app.screenScale > 1.0 ? FontFace::arial_28 : FontFace::arial_16;
+    Text fpsCounter(fontFace, "", darkBlue, 20, 20, Image::Z_HUD, app.screenScale);
     fpsCounter.createTexture();
 
 #ifdef DREAMCAST
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 #endif
 
     // Main loop
-    while (!window.windowShouldClose()) {
+    while (!app.windowShouldClose()) {
         // Measure speed
         nbFrames++;
         currentTime = std::chrono::steady_clock::now();
@@ -100,25 +100,25 @@ int main(int argc, char *argv[])
 #endif
 
         // Clear the buffer to draw the prepare frame
-        window.clear();
+        app.clear();
 
         // Draw the background image
-        window.reshapeOrtho(1.0);        
+        app.reshapeOrtho(1.0);        
         grayBrickImage.draw();
 
         // Draw the 3d rotating house
-        window.reshapeFrustum();
+        app.reshapeFrustum();
         mesh.draw();
         mesh.rotationX += 0.75;
         mesh.rotationY += 0.75;
         mesh.rotationZ += 0.75;
 
         // Draw the foreground 2d image
-        window.reshapeOrtho(1.0);
+        app.reshapeOrtho(1.0);
         woodImage.draw();
 
         // Draw the FPS counter HUD text
-        window.reshapeOrtho(fpsCounter.scale);
+        app.reshapeOrtho(fpsCounter.scale);
         static char outputString[50];
         // NOTE: Due to an old GCC bug, we must manually cast floats to double in order to use %f without a warning 
         sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f", (double)frameTime, (double)fps);
@@ -126,8 +126,8 @@ int main(int argc, char *argv[])
         fpsCounter.draw();
 
         // Swap buffers to display the current frame
-        window.swapBuffers();
+        app.swapBuffers();
     }
 
-    window.closeWindow();
+    app.closeWindow();
 }

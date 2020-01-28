@@ -47,24 +47,25 @@ add_library(glex STATIC
     src/fonts/arial_32pt.cpp  include/glex/fonts/arial_32pt.h 
 
     # GLEX
+    src/Application.cpp      include/glex/Application.h
     src/Cube.cpp             include/glex/Cube.h
     src/Image.cpp            include/glex/Image.h
     src/Mesh.cpp             include/glex/Mesh.h
     src/MeshLoader.cpp       include/glex/MeshLoader.h
     src/Texture.cpp          include/glex/Texture.h
     src/Triangle.cpp         include/glex/Triangle.h 
-    src/Text.cpp             include/glex/Text.h
-    src/Window.cpp           include/glex/Window.h
-    
+    src/Text.cpp             include/glex/Text.h    
 )
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_SOURCE_DIR}/deps/shared")
 
 # Add platform specific files
 if(USE_GLFW)
-     target_sources(glex PRIVATE src/Window_glfw.cpp)
+    # GLFW (i.e. Mac, Linux, Windows)
+    target_sources(glex PRIVATE src/Application_glfw.cpp)
 elseif(DREAMCAST_BUILD)
-    target_sources(glex PRIVATE src/Window_dc.cpp)
+    # Dreamcast
+    target_sources(glex PRIVATE src/Application_dc.cpp)
 endif()
 
 # Add correct OpenGL library
