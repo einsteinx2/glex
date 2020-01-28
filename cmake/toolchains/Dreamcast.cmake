@@ -29,10 +29,9 @@ set(THREADS_PREFER_PTHREAD_FLAG OFF)
 set(OpenGL_GL_PREFERENCE "LEGACY")
 
 # Add compiler flags shared by all languages
-# TODO: I only use -DDREAMCAST in my own code, so investigate whether the other defines are necessary
 add_definitions(
-    -D__DREAMCAST__
     -DDREAMCAST
+    -D__DREAMCAST__
     -D_arch_dreamcast
     -D__arch_dreamcast
     -D_arch_sub_pristine

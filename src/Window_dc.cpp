@@ -1,10 +1,10 @@
 #ifdef DREAMCAST
 
-#include "glex/DreamcastWindow.h"
+#include "glex/Window.h"
 #include "glex/common/gl.h"
 #include "glex/common/log.h"
 
-void DreamcastWindow::createWindow(std::string windowName, int width, int height) {
+void Window::createWindow(std::string windowName, int width, int height) {
     _windowName = windowName;
     _width = width;
     _height = height;
@@ -13,16 +13,20 @@ void DreamcastWindow::createWindow(std::string windowName, int width, int height
     _reshapeFrustum(_width, _height);
 }
 
-void DreamcastWindow::closeWindow() {
+void Window::closeWindow() {
     // Not implemented for Dreamcast
 }
 
-void DreamcastWindow::swapBuffers() {
+void Window::swapBuffers() {
     glKosSwapBuffers();
 }
 
-int DreamcastWindow::windowShouldClose() {
+int Window::windowShouldClose() {
     return 0;
+}
+
+void Window::_updateWindowSize() {
+    // Not implemented for Dreamcast
 }
 
 #endif

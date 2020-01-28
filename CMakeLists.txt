@@ -55,16 +55,24 @@ add_library(glex STATIC
     src/Triangle.cpp         include/glex/Triangle.h 
     src/Text.cpp             include/glex/Text.h
     src/Window.cpp           include/glex/Window.h
-    src/DreamcastWindow.cpp  include/glex/DreamcastWindow.h
-    src/PCWindow.cpp         include/glex/PCWindow.h
+    
 )
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_SOURCE_DIR}/deps/shared")
 
+# Add platform specific files
+if(USE_GLFW)
+     target_sources(glex PRIVATE src/Window_glfw.cpp)
+elseif(DREAMCAST_BUILD)
+    target_sources(glex PRIVATE src/Window_dc.cpp)
+endif()
+
 # Add correct OpenGL library
 if(USE_GLFW)
     # Add the glad dependency required by glfw
-    target_sources(glex PRIVATE "deps/pc/glad_gl.cpp")
+    target_sources(glex PRIVATE deps/pc/glad_gl.cpp)
+
+   
 
     # Build and include the glfw submodule so it's not necessary to build and install to system
     add_subdirectory("${CMAKE_SOURCE_DIR}/deps/pc/glfw")
@@ -72,7 +80,7 @@ if(USE_GLFW)
     include_directories("${CMAKE_SOURCE_DIR}/deps/pc/glfw/deps")
     target_link_libraries(glex glfw)
     add_dependencies(glex glfw)
-elseif(${USE_GLDC})
+elseif(USE_GLDC)
     # Build and include the GLdc submodule so it's not necessary to build and install to system
     add_custom_target(GLdc
         # NOTE: Instead of just calling `make build` and setting WORKING_DIRECTORY

@@ -41,12 +41,7 @@
 // }
 // #endif
 
-#ifdef DREAMCAST
-void _reshapeFrustum(int width, int height)
-#else
-void _reshapeFrustum(GLFWwindow* window, int width, int height)
-#endif
-{
+void Window::_reshapeFrustum(int width, int height) {
     GLfloat h = (GLfloat)height / (GLfloat)width;
     GLfloat xmax, znear, zfar;
 
@@ -55,8 +50,6 @@ void _reshapeFrustum(GLFWwindow* window, int width, int height)
     xmax  = znear * 0.5f;
 
     glViewport(0, 0, (GLint) width, (GLint) height);
-    //Window* wrapper = (Window*)glfwGetWindowUserPointer(window);
-    //glViewport(0, 0, width * wrapper->screenScale, height * wrapper->screenScale);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glFrustum(-xmax, xmax, -xmax * h, xmax * h, znear, zfar);
@@ -65,15 +58,7 @@ void _reshapeFrustum(GLFWwindow* window, int width, int height)
     glTranslatef(0.5, 0.5, -20.0);
 }
 
-#ifdef DREAMCAST
-void _reshapeOrtho(int width, int height) 
-#else
-void _reshapeOrtho(GLFWwindow* window, int width, int height) 
-#endif
-{
-    //DEBUG_PRINTLN("_reshapeOrtho   width: %d  height: %d", width, height);
-    //Window* wrapper = (Window*)glfwGetWindowUserPointer(window);
-    //glViewport(0, 0, width * wrapper->screenScale, height * wrapper->screenScale);
+void Window::_reshapeOrtho(int width, int height) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0, width, 0, height, -100.1, 100.1); // Added .1 to znear and zfar to allow using the full -100 - 100 range
@@ -82,38 +67,12 @@ void _reshapeOrtho(GLFWwindow* window, int width, int height)
     glTranslatef(0.0, 0.0, 0.0);
 }
 
-#ifdef DREAMCAST
-void _sizeCallback(int width, int height)
-#else
-void _sizeCallback(GLFWwindow* window, int width, int height)
-#endif
-{
-    //printf("sizeCallback  width: %d  height %d", width, height);
-#ifdef DREAMCAST
-    _reshapeFrustum(width, height);
-    _reshapeOrtho(width, height);
-#else
-    Window* wrapper = (Window*)glfwGetWindowUserPointer(window);
-    wrapper->_updateWindowSize();
-    _reshapeFrustum(window, width, height);
-    _reshapeOrtho(window, width, height);
-#endif
-}
-
 void Window::reshapeFrustum() {
-#ifdef DREAMCAST
-    _reshapeFrustum(_width, _height);
-#else
-    _reshapeFrustum(_window, _width * screenScale, _height * screenScale);
-#endif
+    _reshapeFrustum(_width * screenScale, _height * screenScale);
 }
 
 void Window::reshapeOrtho(float scale) {
-#ifdef DREAMCAST
     _reshapeOrtho(_width, _height);
-#else
-    _reshapeOrtho(_window, _width, _height);
-#endif
     glViewport(0, 0, (int)((float)_width * scale * screenScale), (int)((float)_height * screenScale));
 }
 
@@ -123,12 +82,6 @@ void Window::clear() {
 
     // Clear color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void Window::_updateWindowSize() {
-#ifndef DREAMCAST
-    glfwGetWindowSize(_window, &_width, &_height);
-#endif
 }
 
 /*

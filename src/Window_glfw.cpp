@@ -1,13 +1,13 @@
-#ifndef DREAMCAST
+#ifdef GLFW
 
-#include "glex/PCWindow.h"
+#include "glex/Window.h"
 #include "glex/common/gl.h"
 #include "glex/common/log.h"
 
 #include <unistd.h>
 #include <cstdlib>
 
-void PCWindow::createWindow(std::string windowName, int width, int height) {
+void Window::createWindow(std::string windowName, int width, int height) {
     _windowName = windowName;
     _width = width;
     _height = height;
@@ -38,8 +38,8 @@ void PCWindow::createWindow(std::string windowName, int width, int height) {
     glfwSwapInterval(vsyncEnabled ? 1 : 0);
 
     // Setup the frame buffer and view port size
-    _reshapeFrustum(_window, _width, _height);
-    //_reshapeOrtho(_window, _width, _height);
+    _reshapeFrustum(_width, _height);
+    //_reshapeOrtho(_width, _height);
 
     // Detect screen scale by comparing window size to framebuffer size
     int frameBufferWidth;
@@ -48,7 +48,7 @@ void PCWindow::createWindow(std::string windowName, int width, int height) {
     DEBUG_PRINTLN("screen scale detected: %f", screenScale);
 }
 
-void PCWindow::closeWindow() {
+void Window::closeWindow() {
     // Terminate GLFW
     glfwTerminate();
 
@@ -56,13 +56,25 @@ void PCWindow::closeWindow() {
     exit(EXIT_SUCCESS);
 }
 
-void PCWindow::swapBuffers() {
+void Window::swapBuffers() {
     glfwSwapBuffers(_window);
     glfwPollEvents();
 }
 
-int PCWindow::windowShouldClose() {
+int Window::windowShouldClose() {
     return glfwWindowShouldClose(_window);
+}
+
+void Window::_updateWindowSize() {
+    glfwGetWindowSize(_window, &_width, &_height);
+}
+
+void _sizeCallback(GLFWwindow* window, int width, int height)
+{
+    Window* wrapper = (Window*)glfwGetWindowUserPointer(window);
+    wrapper->_updateWindowSize();
+    wrapper->_reshapeFrustum(width, height);
+    wrapper->_reshapeOrtho(width, height);
 }
 
 #endif

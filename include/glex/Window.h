@@ -3,15 +3,8 @@
 
 #include <string>
 
-#ifdef DREAMCAST
-// TODO: Implement input handling for Dreamcast
-void _reshapeFrustum(int width, int height);
-void _reshapeOrtho(int width, int height);
-void _sizeCallback(int width, int height);
-#else
-void key(GLFWwindow* window, int k, int s, int action, int mods);
-void _reshapeFrustum(GLFWwindow* window, int width, int height);
-void _reshapeOrtho(GLFWwindow* window, int width, int height);
+#if GLFW
+//void key(GLFWwindow* window, int k, int s, int action, int mods);
 void _sizeCallback(GLFWwindow* window, int width, int height);
 #endif
 
@@ -23,28 +16,30 @@ public:
     const int& height = _height;
     
     Window() {};
-    virtual void createWindow(std::string windowName, int width, int height) = 0;
-    virtual void closeWindow() = 0;
+    void createWindow(std::string windowName, int width, int height);
+    void closeWindow();
     void reshapeFrustum();
     void reshapeOrtho(float scale);
     void clear();
-    virtual void swapBuffers() = 0;
-    virtual int windowShouldClose() = 0;
+    void swapBuffers();
+    int windowShouldClose();
     std::string windowName() { return _windowName; }
 
-protected:
-#ifndef DREAMCAST
+private:
+#ifdef GLFW
     GLFWwindow* _window;
 #endif
     std::string _windowName = "";
     int _width = 0;
     int _height = 0;
 
-    Window(Window const&);        // Prevent copies
+    Window(Window const&);         // Prevent copies
     void operator=(Window const&); // Prevent assignments
     void _updateWindowSize();
+    void _reshapeFrustum(int width, int height);
+    void _reshapeOrtho(int width, int height);
 
-#ifndef DREAMCAST
+#ifdef GLFW
     friend void _sizeCallback(GLFWwindow* window, int width, int height);
 #endif
 };

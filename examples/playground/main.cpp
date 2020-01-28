@@ -1,6 +1,5 @@
 #include "glex/common/log.h"
-#include "glex/DreamcastWindow.h"
-#include "glex/PCWindow.h"
+#include "glex/Window.h"
 #include "glex/Triangle.h"
 #include "glex/Cube.h"
 #include "glex/Mesh.h"
@@ -30,11 +29,7 @@ int main(int argc, char *argv[])
     DEBUG_PRINTLN("Application started!");
     int width = 640;
     int height = 480;
-#ifdef DREAMCAST
-    DreamcastWindow window;
-#else
-    PCWindow window;
-#endif
+    Window window;
     window.createWindow("GLEX Playground", width, height);
 
     // NOTE: Both Image and Mesh classes can use textures loaded from JPG, PNG, or BMP.

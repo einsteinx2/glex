@@ -6,7 +6,7 @@ Cube::Cube() {
 }
 
 void Cube::_drawList() {
-    #ifndef DREAMCAST
+    #ifdef GLFW
     // Enable texture
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
