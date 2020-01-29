@@ -24,19 +24,13 @@ void Application::closeWindow() {
 
 void Application::swapBuffers() {
     glKosSwapBuffers();
+}
 
-    // Handle global keyboard input
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    int key = kbd_get_key();
-    if (key != -1) {
-        for (auto handler : _inputHandlers) {
-            if (handler->type() == InputType::Keyboard) {
-                static_cast<KeyboardInputHandler*>(handler)->keyPressed(key);
-            }
-        }
+void Application::handleInput() {
+    // On dreamcast, all input is done via polling
+    for (auto handler : _inputHandlers) {
+        handler->poll();
     }
-#pragma GCC diagnostic pop
 }
 
 int Application::windowShouldClose() {

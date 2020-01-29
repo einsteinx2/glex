@@ -1,19 +1,20 @@
 #pragma once
 #include "glex/input/InputHandler.h"
+#include "glex/input/KeyCode.h"
 #include "glex/common/gl.h"
 
 #include <functional>
 
-#ifdef GLFW
-enum KeyCode {
-    Escape = GLFW_KEY_ESCAPE
-};
-#endif
 #ifdef DREAMCAST
-enum KeyCode {
-    Escape = 27
-};
+#include <dc/maple.h>
 #endif
+
+/*
+ * Current limitations:
+ *   - Only supports a single keyboard
+ *   - Only supports US keyboard layouts
+ *   - Deals with raw key codes
+ */
 
 typedef std::function<void(KeyCode)> KeyboardCallback;
 
@@ -28,10 +29,15 @@ class KeyboardInputHandler: public InputHandler {
         virtual void added();
         virtual void removed();
 #endif
+        virtual void poll();
+
         void registerCallback(KeyboardCallback callback) { _callback = callback; }
         void unregisterCallback() { _callback = NULL; }
-
         void keyPressed(int keyValue);
     private:
         KeyboardCallback _callback;
+
+#ifdef DREAMCAST
+        maple_device_t* _mapleDevice;
+#endif
 };

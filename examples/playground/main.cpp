@@ -21,27 +21,23 @@ float frameTime = 0.0;
 float fps = 0.0;
 
 /* program entry */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     DEBUG_PRINTLN("Application started!");
     int width = 640;
     int height = 480;
     Application app;
     app.createWindow("GLEX Playground", width, height);
 
+    // Basic keyboard handling
+    int lastKeyCode = -1;
     KeyboardInputHandler keyboard;
-    keyboard.registerCallback([&app](KeyCode code) {
-        DEBUG_PRINTLN("keyboard callback called with code: %d", code);
-        // if (action != GLFW_PRESS) {
-        //     return;
-        // }
+    keyboard.registerCallback([&app, &lastKeyCode](KeyCode code) {
+        lastKeyCode = code;
 
-        switch (code) {
-        case KeyCode::Escape:
+        // Exit the application when escape key is pressed
+        if (code == KeyCode::Escape) {
+            DEBUG_PRINTLN("Escape pressed");
             app.closeWindow();
-            break;
-        default:
-            return;
         }
     });
     app.addInputHandler(&keyboard);
@@ -90,6 +86,9 @@ int main(int argc, char *argv[])
             lastTime = currentTime;
         }
 
+        // Handle input
+        app.handleInput();
+
         // Clear the buffer to draw the prepare frame
         app.clear();
 
@@ -112,7 +111,7 @@ int main(int argc, char *argv[])
         app.reshapeOrtho(fpsCounter.scale);
         static char outputString[50];
         // NOTE: Due to an old GCC bug, we must manually cast floats to double in order to use %f without a warning 
-        sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f", (double)frameTime, (double)fps);
+        sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f  key: %d", (double)frameTime, (double)fps, lastKeyCode);
         fpsCounter.text = outputString;
         fpsCounter.draw();
 

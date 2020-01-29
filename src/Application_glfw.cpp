@@ -57,6 +57,10 @@ void Application::closeWindow() {
 
 void Application::swapBuffers() {
     glfwSwapBuffers(_window);
+}
+
+void Application::handleInput() {
+    // Calls all GLFW event handler callback functions
     glfwPollEvents();
 }
 

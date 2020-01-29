@@ -16,4 +16,5 @@ public:
     virtual void added() = 0;
     virtual void removed() = 0;
 #endif
+    virtual void poll() = 0;
 };

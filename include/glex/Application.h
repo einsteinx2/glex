@@ -27,6 +27,7 @@ public:
     void clear();
     void swapBuffers();
     int windowShouldClose();
+    void handleInput();
     void addInputHandler(InputHandler* inputHandler);
     void removeInputHandler(InputHandler* inputHandler);
 
