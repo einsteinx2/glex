@@ -99,10 +99,12 @@ elseif(USE_GLDC)
     add_dependencies(glex GLdc)
 endif()
 
-# Create and build example programs (currently only one)
+# Create and build example programs
 add_executable(playground-example 
     examples/playground/main.cpp 
 )
+target_link_libraries(playground-example glex)
+
 if(MACOS_BUILD)
     # Copy meshes
     file(GLOB OBJ_MESHES "${CMAKE_SOURCE_DIR}/examples/playground/meshes/*.obj" )
@@ -115,9 +117,16 @@ if(MACOS_BUILD)
     # Link macOS libraries
     target_link_libraries(playground-example "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
 elseif(DREAMCAST_BUILD)
-    # Build CDIs (supports having multiple example projects, but there's currently only one)
+    # Dreamcast-only program
+    add_executable(audiotest-example
+        examples/audiotest/main.cpp 
+    )
+    target_link_libraries(audiotest-example glex)
+
+    # Build CDIs
     set(DC_EXECUTABLES # Names without .elf extension
         playground-example
+        audiotest-example
     )
     #message(STATUS "DC_EXECUTABLES: ${DC_EXECUTABLES}")
 
@@ -142,4 +151,4 @@ elseif(DREAMCAST_BUILD)
     )
     endforeach()
 endif()
-target_link_libraries(playground-example glex)
+
