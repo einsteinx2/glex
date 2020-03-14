@@ -1,4 +1,5 @@
 #include "glex/common/log.h"
+#include "glex/common/path.h"
 #include "glex/Application.h"
 #include "glex/Image.h"
 #include "glex/Text.h"
@@ -9,12 +10,36 @@
 #include <string>
 #include <chrono>
 
+// Temp audio stuff
+#include <kos.h>
+#include <unistd.h>
+#include <dc/sound/sound.h>
+#include <dc/sound/sfxmgr.h>
+
 std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
 int16_t timeDiff = 0;
 uint32_t nbFrames = 0;
 float frameTime = 0.0;
 float fps = 0.0;
+
+// KOS sound stuff
+sfxhnd_t kickSample;
+sfxhnd_t clapSample;
+
+/* sound thread */
+void *thd_0(void *v) {
+    //for (int i = 0; i < 4; i++) {
+    while(true) {
+        snd_sfx_play(kickSample, 254, 128);
+        DEBUG_PRINTLN("played kick");
+        thd_sleep(250);
+        snd_sfx_play(clapSample, 254, 128);
+        DEBUG_PRINTLN("played clap");
+        thd_sleep(250);
+    }
+    return NULL;
+}
 
 /* program entry */
 int main(int argc, char *argv[]) {
@@ -44,42 +69,52 @@ int main(int argc, char *argv[]) {
     Text fpsCounter(FontFace::arial_16, "", FONT_COLOR_WHITE, 20, 20, Image::Z_HUD, app.screenScale);
     fpsCounter.createTexture();
 
+    // Sound test stuff
+    snd_init();
+    DEBUG_PRINTLN("Initialized KOS audio");
+    kickSample = snd_sfx_load(glex::targetPlatformPath("samples/kick3.wav").c_str());
+    DEBUG_PRINTLN("Initialized kick sample: %lu", kickSample);
+    clapSample = snd_sfx_load(glex::targetPlatformPath("samples/clap3.wav").c_str());
+    DEBUG_PRINTLN("Initialized clap sample: %lu", clapSample);
+
+    kthread_t *soundThread = thd_create(0, thd_0, NULL);
+
     // Main loop
     while (!app.windowShouldClose()) {
-        // Measure speed
-        nbFrames++;
-        currentTime = std::chrono::steady_clock::now();
-        timeDiff = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
-        if (timeDiff >= 1000) {
-            frameTime = float(timeDiff) / float(nbFrames);
-            fps = nbFrames;
-            nbFrames = 0;
-            lastTime = currentTime;
-        }
+        // // Measure speed
+        // nbFrames++;
+        // currentTime = std::chrono::steady_clock::now();
+        // timeDiff = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
+        // if (timeDiff >= 1000) {
+        //     frameTime = float(timeDiff) / float(nbFrames);
+        //     fps = nbFrames;
+        //     nbFrames = 0;
+        //     lastTime = currentTime;
+        // }
 
         // Handle input
         app.handleInput();
 
-        // Clear the buffer to draw the prepare frame
-        app.clear();
+        // // Clear the buffer to draw the prepare frame
+        // app.clear();
 
-        // Draw the info text
-        app.reshapeOrtho(infoText.scale);
-        static char outputString[50];
-        // NOTE: Due to an old GCC bug, we must manually cast floats to double in order to use %f without a warning 
-        sprintf(&outputString[0], "Info text goes here");
-        infoText.text = outputString;
-        infoText.draw();
+        // // Draw the info text
+        // app.reshapeOrtho(infoText.scale);
+        // static char outputString[50];
+        // // NOTE: Due to an old GCC bug, we must manually cast floats to double in order to use %f without a warning 
+        // sprintf(&outputString[0], "Info text goes here");
+        // infoText.text = outputString;
+        // infoText.draw();
 
-        // Draw the FPS counter HUD text
-        app.reshapeOrtho(fpsCounter.scale);
-        // NOTE: Due to an old GCC bug, we must manually cast floats to double in order to use %f without a warning 
-        sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f  key: %d", (double)frameTime, (double)fps, lastKeyCode);
-        fpsCounter.text = outputString;
-        fpsCounter.draw();
+        // // Draw the FPS counter HUD text
+        // app.reshapeOrtho(fpsCounter.scale);
+        // // NOTE: Due to an old GCC bug, we must manually cast floats to double in order to use %f without a warning 
+        // sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f  key: %d", (double)frameTime, (double)fps, lastKeyCode);
+        // fpsCounter.text = outputString;
+        // fpsCounter.draw();
 
-        // Swap buffers to display the current frame
-        app.swapBuffers();
+        // // Swap buffers to display the current frame
+        // app.swapBuffers();
     }
 
     app.closeWindow();

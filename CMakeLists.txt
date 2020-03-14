@@ -100,10 +100,10 @@ elseif(USE_GLDC)
 endif()
 
 # Create and build example programs
-add_executable(playground-example 
+add_executable(playground 
     examples/playground/main.cpp 
 )
-target_link_libraries(playground-example glex)
+target_link_libraries(playground glex)
 
 if(MACOS_BUILD)
     # Copy meshes
@@ -115,18 +115,18 @@ if(MACOS_BUILD)
     file(COPY ${IMG_FILES} DESTINATION "${CMAKE_BINARY_DIR}/images")
 
     # Link macOS libraries
-    target_link_libraries(playground-example "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
+    target_link_libraries(playground "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
 elseif(DREAMCAST_BUILD)
     # Dreamcast-only program
-    add_executable(audiotest-example
+    add_executable(audiotest
         examples/audiotest/main.cpp 
     )
-    target_link_libraries(audiotest-example glex)
+    target_link_libraries(audiotest glex)
 
     # Build CDIs
     set(DC_EXECUTABLES # Names without .elf extension
-        playground-example
-        audiotest-example
+        playground
+        audiotest
     )
     #message(STATUS "DC_EXECUTABLES: ${DC_EXECUTABLES}")
 
@@ -139,8 +139,9 @@ elseif(DREAMCAST_BUILD)
         COMMAND mkdir -p ${PROJECT_BINARY_DIR}/${EXE}
         COMMAND $ENV{KOS_BASE}/utils/scramble/scramble ${PROJECT_BINARY_DIR}/${EXE}.bin ${PROJECT_BINARY_DIR}/${EXE}/1ST_READ.BIN
         COMMAND IP_TEMPLATE_FILE=${CMAKE_SOURCE_DIR}/deps/dc/IP.TMPL $ENV{KOS_BASE}/utils/makeip/makeip ${CMAKE_SOURCE_DIR}/deps/dc/ip.txt ${PROJECT_BINARY_DIR}/${EXE}/IP.BIN
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/playground/meshes ${CMAKE_BINARY_DIR}/${EXE}/
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/playground/images ${CMAKE_BINARY_DIR}/${EXE}/
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/meshes ${CMAKE_BINARY_DIR}/${EXE}/
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/images ${CMAKE_BINARY_DIR}/${EXE}/
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/samples ${CMAKE_BINARY_DIR}/${EXE}/
         # Generate CDI disc image
         COMMAND mkisofs -C 0,11702 -V ${EXE_FILENAME} -G ${PROJECT_BINARY_DIR}/${EXE}/IP.BIN -joliet -rock -l -o ${PROJECT_BINARY_DIR}/${EXE}.iso ${PROJECT_BINARY_DIR}/${EXE}
         COMMAND $ENV{KOS_BASE}/utils/img4dc/cdi4dc/cdi4dc ${PROJECT_BINARY_DIR}/${EXE}.iso ${PROJECT_BINARY_DIR}/${EXE}.cdi
