@@ -4,3 +4,6 @@
 [submodule "deps/pc/glfw"]
 	path = deps/pc/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "deps/dc/DCAudio"]
+	path = deps/dc/DCAudio
+	url = https://github.com/Moopthehedgehog/DCAudio.git

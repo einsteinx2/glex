@@ -132,6 +132,7 @@ elseif(DREAMCAST_BUILD)
     target_link_libraries(audiotest glex)
     target_link_libraries(audiotest "${CMAKE_SOURCE_DIR}/deps/dc/nsound/libNSound.a")
     include_directories("${CMAKE_SOURCE_DIR}/deps/dc/nsound/include")
+    include_directories("${CMAKE_SOURCE_DIR}/deps/dc/DCAudio")
 
     # Build CDIs
     set(DC_EXECUTABLES # Names without .elf extension
