@@ -13,8 +13,11 @@
 // Temp audio stuff
 #include <kos.h>
 #include <unistd.h>
-#include <dc/sound/sound.h>
-#include <dc/sound/sfxmgr.h>
+//#include <dc/sound/sound.h>
+//#include <dc/sound/sfxmgr.h>
+#include <nsound.h>
+#include <nsfxmgr.h>
+#include <nstream.h>
 
 std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
@@ -31,10 +34,10 @@ sfxhnd_t clapSample;
 void *thd_0(void *v) {
     //for (int i = 0; i < 4; i++) {
     while(true) {
-        snd_sfx_play(kickSample, 254, 128);
+        nsnd_sfx_play(kickSample, 254, 128);
         DEBUG_PRINTLN("played kick");
         thd_sleep(250);
-        snd_sfx_play(clapSample, 254, 128);
+        nsnd_sfx_play(clapSample, 254, 128);
         DEBUG_PRINTLN("played clap");
         thd_sleep(250);
     }
@@ -70,13 +73,12 @@ int main(int argc, char *argv[]) {
     fpsCounter.createTexture();
 
     // Sound test stuff
-    snd_init();
+    nsnd_init();
     DEBUG_PRINTLN("Initialized KOS audio");
-    kickSample = snd_sfx_load(glex::targetPlatformPath("samples/kick3.wav").c_str());
+    kickSample = nsnd_sfx_load(glex::targetPlatformPath("samples/kick3.wav").c_str());
     DEBUG_PRINTLN("Initialized kick sample: %lu", kickSample);
-    clapSample = snd_sfx_load(glex::targetPlatformPath("samples/clap3.wav").c_str());
+    clapSample = nsnd_sfx_load(glex::targetPlatformPath("samples/clap3.wav").c_str());
     DEBUG_PRINTLN("Initialized clap sample: %lu", clapSample);
-
     kthread_t *soundThread = thd_create(0, thd_0, NULL);
 
     // Main loop

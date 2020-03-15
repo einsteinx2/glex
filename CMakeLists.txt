@@ -29,7 +29,7 @@ if(NOT CMAKE_TOOLCHAIN_FILE)
 endif()
 
 # Setup build configurations
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/BuildConfigurations.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/BuildConfigurations.cmake)
 
 # Add the glex project files
 add_library(glex STATIC 
@@ -103,6 +103,7 @@ endif()
 add_executable(playground 
     examples/playground/main.cpp 
 )
+add_dependencies(playground glex)
 target_link_libraries(playground glex)
 
 if(MACOS_BUILD)
@@ -117,11 +118,20 @@ if(MACOS_BUILD)
     # Link macOS libraries
     target_link_libraries(playground "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
 elseif(DREAMCAST_BUILD)
-    # Dreamcast-only program
+    # Dreamcast-only audio test program
+    add_custom_target(NSound
+        # Build the custom sound driver based off of the KOS driver
+        # NOTE: Unlike with GLdc, here we must use "make" instead of "+make" or it will fail to build
+        COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/nsound" build
+    )
     add_executable(audiotest
         examples/audiotest/main.cpp 
     )
+    add_dependencies(audiotest glex)
+    add_dependencies(audiotest NSound)
     target_link_libraries(audiotest glex)
+    target_link_libraries(audiotest "${CMAKE_SOURCE_DIR}/deps/dc/nsound/libNSound.a")
+    include_directories("${CMAKE_SOURCE_DIR}/deps/dc/nsound/include")
 
     # Build CDIs
     set(DC_EXECUTABLES # Names without .elf extension

@@ -7,3 +7,9 @@ CMakeFiles
 cmake_install.cmake
 Makefile
 
+# Nsound build artifacts
+deps/dc/nsound/arm/*.o
+deps/dc/nsound/*.o
+deps/dc/nsound/arm/prog.map
+deps/dc/nsound/arm/prog.elf
+
