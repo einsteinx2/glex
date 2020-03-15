@@ -34,3 +34,31 @@ Detailed compilation instructions coming soon...
 ### API Documentation
 
 Coming soon...
+
+### Audio test project instructions
+
+The audio test project is a playground for working on the KOS sound driver. It includes a library called NSound which is just the existing KOS sound driver (including ARM code) pulled out of KOS and namespaced so it can be iterated quickly without rebuilding KOS (the idea is to eventually upstream those improvements). It also includes the DCAudio repo as a submodule so those headers can be used as well.
+
+Here are basic instructions to get started:
+
+```
+# Clone the repo including submodules and check out the correct branch
+git clone --recursive https://github.com/einsteinx2/glex.git
+cd glex && git checkout audio-test
+
+# Build the project (in this case using my Docker toolchain image, but you can use your own DC toolchain)
+docker run -it --rm -v "$PWD:/src" einsteinx2/dcdev-kos
+./build_dc.sh
+exit
+
+# Run the test project using dcload-ip (can also use dcload-serial obviously)
+dc-tool-ip -i build/dc/audiotest_dcload.iso -x build/dc/audiotest.elf
+```
+
+To modify the ARM sound driver (the code that runs on the ARM chip itself), see `./deps/dc/nsound/arm`.
+
+To modify the SH4 part of the sound driver (the code that controls the ARM driver), see `./deps/dc/nsound` and `./deps/dc/nsound/include`.
+
+To modify the DCAudio headers (#defines that make using the AICA registers simpler), see `./deps/dc/DCAudio`.
+
+To modify the audiotest playground program, see `./examples/audiotest`.
