@@ -89,7 +89,7 @@ enum KeyCode {
     Backslash = GLFW_KEY_BACKSLASH,
     CapsLock = GLFW_KEY_CAPS_LOCK,
     SemiColon = GLFW_KEY_SEMICOLON,
-    Comma = GLFW_KEY_COMMA,
+    SingleQuote = GLFW_KEY_APOSTROPHE,
     Enter = GLFW_KEY_ENTER,
     LeftShift = GLFW_KEY_LEFT_SHIFT,
     Comma = GLFW_KEY_COMMA,
