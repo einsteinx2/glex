@@ -1,5 +1,5 @@
-# IDE Configurations
-.vscode
+# VS Code symbol database
+.vscode/*.db
 
 # macOS files
 .DS_Store

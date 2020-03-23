@@ -1,0 +1,32 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Clean: All",
+            "type": "shell",
+            "command": "rm -rf ${workspaceRoot}/build"
+        },
+        {
+            "label": "Clean: Mac",
+            "type": "shell",
+            "command": "rm -rf ${workspaceRoot}/build/mac"
+        },
+        {
+            "label": "Clean: Dreamcast",
+            "type": "shell",
+            "command": "rm -rf ${workspaceRoot}/build/dc"
+        },
+        {
+            "label": "Build: Mac (Debug)",
+            "type": "shell",
+            "command": "bash ${workspaceRoot}/build_mac.sh"
+        },
+        {
+            "label": "Build: Dreamcast (Debug)",
+            "type": "shell",
+            "command": "bash ${workspaceRoot}/build_dc_docker.sh"
+        }
+    ]
+}

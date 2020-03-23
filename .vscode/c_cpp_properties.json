@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "macFrameworkPath": [],
+            "includePath": [
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/deps/dc/DCAudio",
+                "${workspaceFolder}/deps/dc/GLdc/include",
+                "${workspaceFolder}/deps/dc/kos/include",
+                "${workspaceFolder}/deps/dc/kos/kernel/arch/dreamcast/include",
+                "${workspaceFolder}/deps/dc/newlib/libc/include",
+                "${workspaceFolder}/deps/dc/nsound/include",
+                "${workspaceFolder}/deps/pc/glfw/include",
+                "${workspaceFolder}/deps/pc/glfw/deps",
+                "${workspaceFolder}/deps/shared"
+            ],
+            "intelliSenseMode": "clang-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "/usr/bin/clang++",
+            "configurationProvider": "vector-of-bool.cmake-tools",
+            "defines": ["DREAMCAST"]
+        }
+    ],
+    "version": 4
+}
