@@ -1,11 +1,18 @@
-.DS_Store
+# IDE Configurations
 .vscode
-/build
-/lib
+
+# macOS files
+.DS_Store
+
+# Cmake files
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
 Makefile
+/build
+
+# Static libs
+*.a
 
 # Nsound build artifacts
 deps/dc/nsound/arm/*.o
