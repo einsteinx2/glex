@@ -90,12 +90,16 @@ if(USE_GLFW)
 elseif(USE_GLDC)
     # Build and include the GLdc submodule so it's not necessary to build and install to system
     add_custom_target(GLdc
-        # NOTE: Instead of just calling `make build` and setting WORKING_DIRECTORY
-        #       we must call make in a single command so that we can add the + to
-        #       the beginning so that the -j flag passed into the top level `make` works
-        COMMAND +make -C "${CMAKE_SOURCE_DIR}/deps/dc/GLdc" build
+        # Build the GLdc library
+        # NOTE: We must use "make" instead of "+make" or it will fail to build
+        #       though we will not get multithreaded building
+        COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/GLdc" build
+        # Move the compiled library to the build directory
+        COMMAND mv "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/libGLdc.a" "${CMAKE_BINARY_DIR}/libGLdc.a"
+        # Clean the build artifacts
+        COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/GLdc" clean
     )
-    target_link_libraries(glex "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/libGLdc.a" "-lm")
+    target_link_libraries(glex "${CMAKE_BINARY_DIR}/libGLdc.a" "-lm")
     add_dependencies(glex GLdc)
 endif()
 
@@ -104,6 +108,7 @@ add_executable(playground
     examples/playground/main.cpp 
 )
 add_dependencies(playground glex)
+# target_link_libraries(playground GLdc)
 target_link_libraries(playground glex)
 
 if(MACOS_BUILD)
@@ -121,8 +126,15 @@ elseif(DREAMCAST_BUILD)
     # Dreamcast-only audio test program
     add_custom_target(NSound
         # Build the custom sound driver based off of the KOS driver
-        # NOTE: Unlike with GLdc, here we must use "make" instead of "+make" or it will fail to build
+        # NOTE: We must use "make" instead of "+make" or it will fail to build
+        #       though we will not get multithreaded building
         COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/nsound" build
+        # Move the compiled sound driver file to the build directory
+        COMMAND mv "${CMAKE_SOURCE_DIR}/deps/dc/nsound/arm/nstream.drv" "${CMAKE_BINARY_DIR}/nstream.drv"
+        # Move the compiled library to the build directory
+        COMMAND mv "${CMAKE_SOURCE_DIR}/deps/dc/nsound/libNSound.a" "${CMAKE_BINARY_DIR}/libNSound.a"
+        # Clean the build artifacts
+        COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/nsound" clean
     )
     add_executable(audiotest
         examples/audiotest/main.cpp 
@@ -130,16 +142,15 @@ elseif(DREAMCAST_BUILD)
     add_dependencies(audiotest glex)
     add_dependencies(audiotest NSound)
     target_link_libraries(audiotest glex)
-    target_link_libraries(audiotest "${CMAKE_SOURCE_DIR}/deps/dc/nsound/libNSound.a")
+    target_link_libraries(audiotest "${CMAKE_BINARY_DIR}/libNSound.a")
     include_directories("${CMAKE_SOURCE_DIR}/deps/dc/nsound/include")
     include_directories("${CMAKE_SOURCE_DIR}/deps/dc/DCAudio")
-
+    
     # Build CDIs
     set(DC_EXECUTABLES # Names without .elf extension
         playground
         audiotest
     )
-    #message(STATUS "DC_EXECUTABLES: ${DC_EXECUTABLES}")
 
     foreach(EXE ${DC_EXECUTABLES})
     get_filename_component(EXE_FILENAME ${EXE} NAME)

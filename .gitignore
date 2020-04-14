@@ -19,4 +19,5 @@ deps/dc/nsound/arm/*.o
 deps/dc/nsound/*.o
 deps/dc/nsound/arm/prog.map
 deps/dc/nsound/arm/prog.elf
+deps/dc/nsound/arm/nstream.drv
 
