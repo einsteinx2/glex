@@ -161,9 +161,9 @@ elseif(DREAMCAST_BUILD)
         COMMAND mkdir -p ${PROJECT_BINARY_DIR}/${EXE}
         COMMAND $ENV{KOS_BASE}/utils/scramble/scramble ${PROJECT_BINARY_DIR}/${EXE}.bin ${PROJECT_BINARY_DIR}/${EXE}/1ST_READ.BIN
         COMMAND IP_TEMPLATE_FILE=${CMAKE_SOURCE_DIR}/deps/dc/IP.TMPL $ENV{KOS_BASE}/utils/makeip/makeip ${CMAKE_SOURCE_DIR}/deps/dc/ip.txt ${PROJECT_BINARY_DIR}/${EXE}/IP.BIN
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/meshes ${CMAKE_BINARY_DIR}/${EXE}/
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/images ${CMAKE_BINARY_DIR}/${EXE}/
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/samples ${CMAKE_BINARY_DIR}/${EXE}/
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/meshes ${CMAKE_BINARY_DIR}/${EXE}/ || true
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/images ${CMAKE_BINARY_DIR}/${EXE}/ || true
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/samples ${CMAKE_BINARY_DIR}/${EXE}/ || true
         # Generate CDI disc image
         COMMAND mkisofs -C 0,11702 -V ${EXE_FILENAME} -G ${PROJECT_BINARY_DIR}/${EXE}/IP.BIN -joliet -rock -l -o ${PROJECT_BINARY_DIR}/${EXE}.iso ${PROJECT_BINARY_DIR}/${EXE}
         COMMAND $ENV{KOS_BASE}/utils/img4dc/cdi4dc/cdi4dc ${PROJECT_BINARY_DIR}/${EXE}.iso ${PROJECT_BINARY_DIR}/${EXE}.cdi
