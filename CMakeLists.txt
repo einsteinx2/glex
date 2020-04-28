@@ -124,32 +124,32 @@ if(MACOS_BUILD)
     target_link_libraries(playground "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
 elseif(DREAMCAST_BUILD)
     # Dreamcast-only audio test program
-    add_custom_target(NSound
-        # Build the custom sound driver based off of the KOS driver
-        # NOTE: We must use "make" instead of "+make" or it will fail to build
-        #       though we will not get multithreaded building
-        COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/nsound" build
-        # Move the compiled sound driver file to the build directory
-        COMMAND mv "${CMAKE_SOURCE_DIR}/deps/dc/nsound/arm/nstream.drv" "${CMAKE_BINARY_DIR}/nstream.drv"
-        # Move the compiled library to the build directory
-        COMMAND mv "${CMAKE_SOURCE_DIR}/deps/dc/nsound/libNSound.a" "${CMAKE_BINARY_DIR}/libNSound.a"
-        # Clean the build artifacts
-        COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/nsound" clean
-    )
-    add_executable(audiotest
-        examples/audiotest/main.cpp 
-    )
-    add_dependencies(audiotest glex)
-    add_dependencies(audiotest NSound)
-    target_link_libraries(audiotest glex)
-    target_link_libraries(audiotest "${CMAKE_BINARY_DIR}/libNSound.a")
-    include_directories("${CMAKE_SOURCE_DIR}/deps/dc/nsound/include")
-    include_directories("${CMAKE_SOURCE_DIR}/deps/dc/DCAudio")
+    # add_custom_target(NSound
+    #     # Build the custom sound driver based off of the KOS driver
+    #     # NOTE: We must use "make" instead of "+make" or it will fail to build
+    #     #       though we will not get multithreaded building
+    #     COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/nsound" build
+    #     # Move the compiled sound driver file to the build directory
+    #     COMMAND mv "${CMAKE_SOURCE_DIR}/deps/dc/nsound/arm/nstream.drv" "${CMAKE_BINARY_DIR}/nstream.drv"
+    #     # Move the compiled library to the build directory
+    #     COMMAND mv "${CMAKE_SOURCE_DIR}/deps/dc/nsound/libNSound.a" "${CMAKE_BINARY_DIR}/libNSound.a"
+    #     # Clean the build artifacts
+    #     COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/nsound" clean
+    # )
+    # add_executable(audiotest
+    #     examples/audiotest/main.cpp 
+    # )
+    # add_dependencies(audiotest glex)
+    # add_dependencies(audiotest NSound)
+    # target_link_libraries(audiotest glex)
+    # target_link_libraries(audiotest "${CMAKE_BINARY_DIR}/libNSound.a")
+    # include_directories("${CMAKE_SOURCE_DIR}/deps/dc/nsound/include")
+    # include_directories("${CMAKE_SOURCE_DIR}/deps/dc/DCAudio")
     
     # Build CDIs
     set(DC_EXECUTABLES # Names without .elf extension
         playground
-        audiotest
+        #audiotest
     )
 
     foreach(EXE ${DC_EXECUTABLES})
