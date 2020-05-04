@@ -1,6 +1,5 @@
 #pragma once
 
-#include "glex/common/log.h"
 #include <sys/stat.h>
 
 #include <string>
