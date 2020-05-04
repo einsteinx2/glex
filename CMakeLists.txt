@@ -24,8 +24,9 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(glex)
 
+# If no toolchain is specified, automatically build for the host OS
 if(NOT CMAKE_TOOLCHAIN_FILE)
-    message(FATAL_ERROR "Must set a toolchain file by setting -DCMAKE_TOOLCHAIN_FILE when running cmake")
+    include(${CMAKE_SOURCE_DIR}/cmake/OSDetection.cmake)
 endif()
 
 # Setup build configurations
@@ -108,10 +109,14 @@ add_executable(playground
     examples/playground/main.cpp 
 )
 add_dependencies(playground glex)
-# target_link_libraries(playground GLdc)
 target_link_libraries(playground glex)
 
-if(MACOS_BUILD)
+# Link macOS libraries if needed
+if(OS_MAC)
+    target_link_libraries(playground "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
+endif()
+
+if(PC_BUILD)
     # Copy meshes
     file(GLOB OBJ_MESHES "${CMAKE_SOURCE_DIR}/examples/playground/meshes/*.obj" )
     file(COPY ${OBJ_MESHES} DESTINATION "${CMAKE_BINARY_DIR}/meshes")
@@ -119,9 +124,6 @@ if(MACOS_BUILD)
     # Copy images
     file(GLOB IMG_FILES "${CMAKE_SOURCE_DIR}/examples/playground/images/*")
     file(COPY ${IMG_FILES} DESTINATION "${CMAKE_BINARY_DIR}/images")
-
-    # Link macOS libraries
-    target_link_libraries(playground "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
 elseif(DREAMCAST_BUILD)
     # Dreamcast-only audio test program
     add_custom_target(NSound

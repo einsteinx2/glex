@@ -1,5 +1,5 @@
 #
-## MacOS Specific Build Settings
+## Windows Specific Build Settings
 #
 
 include(${CMAKE_CURRENT_LIST_DIR}/Common.cmake)
@@ -13,5 +13,5 @@ set(USE_GLFW TRUE)
 # Add compiler flags shared by all languages
 add_definitions(
     -DGLFW
-    -DMACOS
+    -DWINDOWS
 )
