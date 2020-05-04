@@ -5,7 +5,6 @@
 #include "glex/common/log.h"
 
 #include <algorithm>
-#include <unistd.h>
 #include <cstdlib>
 
 void Application::createWindow(std::string windowName, int width, int height) {
