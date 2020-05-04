@@ -4,6 +4,7 @@
 #include "glex/common/gl.h"
 #include "glex/common/log.h"
 
+#include <algorithm>
 #include <unistd.h>
 #include <cstdlib>
 
