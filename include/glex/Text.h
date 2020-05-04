@@ -5,7 +5,7 @@
 
 #include <string>
 
-enum FontFace {
+enum class FontFace {
     arial_16,
     arial_28,
     arial_32

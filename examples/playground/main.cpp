@@ -15,10 +15,10 @@
 
 std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
-int16_t timeDiff = 0;
-uint32_t nbFrames = 0;
+uint16_t timeDiff = 0;
+uint16_t nbFrames = 0;
 float frameTime = 0.0;
-float fps = 0.0;
+uint16_t fps = 0;
 
 /* program entry */
 int main(int argc, char *argv[]) {
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
     Texture grayBrickTexture;
     grayBrickTexture.loadRGB("images/gray_brick_512.jpg");
-    Image grayBrickImage(&grayBrickTexture, 0, app.windowHeight(), Image::Z_BACKGROUND, app.windowWidth(), app.windowHeight(), app.screenScale);
+    Image grayBrickImage(&grayBrickTexture, 0, (float)app.windowHeight(), Image::Z_BACKGROUND, (float)app.windowWidth(), (float)app.windowHeight(), app.screenScale);
 
     Texture woodTexture;
     woodTexture.loadRGB("images/wood1.bmp");
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     MeshData *houseMesh = MeshLoader::loadObjMesh("meshes/house.obj");
     Texture houseTexture;
     houseTexture.loadRGBA("images/house_512.png");
-    Mesh mesh(houseMesh, &houseTexture, 0.3);
+    Mesh mesh(houseMesh, &houseTexture, 0.3f);
 
     FontColor darkBlue{21, 1, 148};
     FontFace fontFace = app.screenScale > 1.0 ? FontFace::arial_28 : FontFace::arial_16;
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
         // Measure speed
         nbFrames++;
         currentTime = std::chrono::steady_clock::now();
-        timeDiff = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
+        timeDiff = (uint16_t)std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
         if (timeDiff >= 1000) {
             frameTime = float(timeDiff) / float(nbFrames);
             fps = nbFrames;
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
         app.reshapeOrtho(fpsCounter.scale);
         static char outputString[50];
         // NOTE: Due to an old GCC bug, we must manually cast floats to double in order to use %f without a warning 
-        sprintf(&outputString[0], "frame time: %.2f ms  fps: %.2f  key: %d", (double)frameTime, (double)fps, lastKeyCode);
+        sprintf_s(&outputString[0], 50, "frame time: %.2f ms  fps: %.2f  key: %d", (double)frameTime, (double)fps, lastKeyCode);
         fpsCounter.text = outputString;
         fpsCounter.draw();
 

@@ -1,5 +1,5 @@
 # VS Code symbol database
-.vscode/*.db
+/.vscode/*.db
 
 # macOS files
 .DS_Store
@@ -10,13 +10,17 @@ CMakeFiles
 cmake_install.cmake
 /build
 
+# Windows
+/.vs
+/out
+
 # Static libs
 *.a
 
 # Nsound build artifacts
-deps/dc/nsound/arm/*.o
-deps/dc/nsound/*.o
-deps/dc/nsound/arm/prog.map
-deps/dc/nsound/arm/prog.elf
-deps/dc/nsound/arm/nstream.drv
+/deps/dc/nsound/arm/*.o
+/deps/dc/nsound/*.o
+/deps/dc/nsound/arm/prog.map
+/deps/dc/nsound/arm/prog.elf
+/deps/dc/nsound/arm/nstream.drv
 

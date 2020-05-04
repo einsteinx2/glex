@@ -2,7 +2,7 @@
 #include <vector>
 
 struct MeshData {
-    int numVertices;
+    size_t numVertices = 0;
     std::vector<float> vertices;
     std::vector<float> textureCoordinates;
     std::vector<float> normals;

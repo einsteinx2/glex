@@ -18,9 +18,9 @@ Text::~Text() {
 
 Text::Text(FontFace face_, std::string text_, FontColor color_, float x_, float y_, float z_, float windowScale_, float scale_, float kerning_) {
     switch(face_) {
-    case arial_16:     _font = arial_16pt; break;
-    case arial_28:     _font = arial_28pt; break;
-    case arial_32:     _font = arial_32pt; break;
+    case FontFace::arial_16:  _font = arial_16pt; break;
+    case FontFace::arial_28:  _font = arial_28pt; break;
+    case FontFace::arial_32:  _font = arial_32pt; break;
     default:
         DEBUG_PRINTLN("Unsupported font type");
         exit(EXIT_FAILURE);
@@ -48,7 +48,7 @@ void Text::createTexture() {
     // Optimization for white text
     if (_color == FONT_COLOR_WHITE) {
         // Use 8bit alpha only texture to save memory
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, _font.tex_width, _font.tex_height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, &_font.tex_data[0]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, (GLsizei)_font.tex_width, (GLsizei)_font.tex_height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, &_font.tex_data[0]);
     } else {
         // Convert the texture data to 32bit RGBA
         size_t currentSize = _font.tex_data.size();
@@ -60,10 +60,10 @@ void Text::createTexture() {
             rgbData[(i*4)+2] = _color.b;
             rgbData[(i*4)+3] = _font.tex_data[i];
         }
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _font.tex_width, _font.tex_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgbData);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)_font.tex_width, (GLsizei)_font.tex_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgbData);
     }
 
-    _texture.loadExisting(_font.tex_width, _font.tex_height, textureId);
+    _texture.loadExisting((GLsizei)_font.tex_width, (GLsizei)_font.tex_height, textureId);
 }
 
 void Text::deleteTexture() {
@@ -134,8 +134,8 @@ void Text::_drawList() {
         // Calculate the size and location based on the current character's glyph
         float ox = ix + glyph->offset_x + kerning;
         float oy = iy + glyph->offset_y;
-        float w  = glyph->width;
-        float h  = glyph->height;
+        float w  = (float)glyph->width;
+        float h  = (float)glyph->height;
         
         // Draw the letter
         glBegin(GL_TRIANGLES);

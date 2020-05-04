@@ -68,7 +68,7 @@ void Mesh::_drawList() {
     glTexCoordPointer(2, GL_FLOAT, 0, &_meshData->textureCoordinates[0]); //same with texcoord array
     glNormalPointer(GL_FLOAT, 0, &_meshData->normals[0]); //and normal array
 
-    glDrawArrays(GL_TRIANGLES, 0, _meshData->numVertices);
+    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)_meshData->numVertices);
 
     glDisableClientState(GL_VERTEX_ARRAY); //disable the client states again
     glDisableClientState(GL_NORMAL_ARRAY);

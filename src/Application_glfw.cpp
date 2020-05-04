@@ -43,7 +43,7 @@ void Application::createWindow(std::string windowName, int width, int height) {
     // Detect screen scale by comparing window size to framebuffer size
     int frameBufferWidth;
     glfwGetFramebufferSize(_window, &frameBufferWidth, NULL);
-    screenScale = frameBufferWidth / width;
+    screenScale = (float)frameBufferWidth / (float)width;
     DEBUG_PRINTLN("screen scale detected: %f", screenScale);
 }
 

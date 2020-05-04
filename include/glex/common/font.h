@@ -55,15 +55,15 @@ typedef struct
 
 typedef struct
 {
-    size_t tex_width;
-    size_t tex_height;
-    size_t tex_depth;
+    size_t tex_width = 0;
+    size_t tex_height = 0;
+    size_t tex_depth = 0;
     std::vector<unsigned char> tex_data;
-    float size;
-    float height;
-    float linegap;
-    float ascender;
-    float descender;
-    size_t glyphs_count;
+    float size = 0;
+    float height = 0;
+    float linegap = 0;
+    float ascender = 0;
+    float descender = 0;
+    size_t glyphs_count = 0;
     std::vector<texture_glyph_t> glyphs;
 } texture_font_t;

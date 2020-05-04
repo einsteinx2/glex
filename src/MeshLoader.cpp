@@ -37,9 +37,9 @@ MeshData* MeshLoader::loadObjMesh(std::string path) {
     // TODO: Switch to rendering the tiny_obj_loader format directly to save processing and memory
     MeshData* meshData = new MeshData();
     meshData->numVertices = shapes[0].mesh.indices.size();
-    std::vector<float> finalVertices(meshData->numVertices * 3);
-    std::vector<float> finalTextCoords(meshData->numVertices * 2);
-    std::vector<float> finalNormals(meshData->numVertices * 3);
+    std::vector<float> finalVertices((size_t)meshData->numVertices * 3);
+    std::vector<float> finalTextCoords((size_t)meshData->numVertices * 2);
+    std::vector<float> finalNormals((size_t)meshData->numVertices * 3);
     int vertCount = 0;
     int textCoordCount = 0;
     int normalCount = 0;
@@ -53,19 +53,19 @@ MeshData* MeshLoader::loadObjMesh(std::string path) {
             // access to vertex
             tinyobj::index_t idx = shapes[0].mesh.indices[index_offset + v];
             // DEBUG_PRINTLN("idx - vertex %d  normal: %d  texCoord: %d", idx.vertex_index, idx.normal_index, idx.texcoord_index);
-            tinyobj::real_t vx = attrib.vertices[3*idx.vertex_index+0];
-            tinyobj::real_t vy = attrib.vertices[3*idx.vertex_index+1];
-            tinyobj::real_t vz = attrib.vertices[3*idx.vertex_index+2];
-            finalVertices[vertCount] = vx; finalVertices[vertCount+1] = vy; finalVertices[vertCount+2] = vz;
+            tinyobj::real_t vx = attrib.vertices[3*(size_t)idx.vertex_index+0];
+            tinyobj::real_t vy = attrib.vertices[3*(size_t)idx.vertex_index+1];
+            tinyobj::real_t vz = attrib.vertices[3*(size_t)idx.vertex_index+2];
+            finalVertices[vertCount] = vx; finalVertices[(size_t)vertCount+1] = vy; finalVertices[(size_t)vertCount+2] = vz;
             vertCount += 3;
-            tinyobj::real_t nx = attrib.normals[3*idx.normal_index+0];
-            tinyobj::real_t ny = attrib.normals[3*idx.normal_index+1];
-            tinyobj::real_t nz = attrib.normals[3*idx.normal_index+2];
-            finalNormals[normalCount] = nx; finalNormals[normalCount+1] = ny; finalNormals[normalCount+2] = nz;
+            tinyobj::real_t nx = attrib.normals[3*(size_t)idx.normal_index+0];
+            tinyobj::real_t ny = attrib.normals[3*(size_t)idx.normal_index+1];
+            tinyobj::real_t nz = attrib.normals[3*(size_t)idx.normal_index+2];
+            finalNormals[normalCount] = nx; finalNormals[(size_t)normalCount+1] = ny; finalNormals[(size_t)normalCount+2] = nz;
             normalCount += 3;
-            tinyobj::real_t tx = attrib.texcoords[2*idx.texcoord_index+0];
-            tinyobj::real_t ty = attrib.texcoords[2*idx.texcoord_index+1];
-            finalTextCoords[textCoordCount] = tx; finalTextCoords[textCoordCount+1] = ty;
+            tinyobj::real_t tx = attrib.texcoords[2*(size_t)idx.texcoord_index+0];
+            tinyobj::real_t ty = attrib.texcoords[2*(size_t)idx.texcoord_index+1];
+            finalTextCoords[textCoordCount] = tx; finalTextCoords[(size_t)textCoordCount+1] = ty;
             textCoordCount += 2;
             // Optional: vertex colors
             // tinyobj::real_t red = attrib.colors[3*idx.vertex_index+0];

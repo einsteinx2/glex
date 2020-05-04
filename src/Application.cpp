@@ -29,7 +29,7 @@ void Application::_reshapeOrtho(int width, int height) {
 }
 
 void Application::reshapeFrustum() {
-    _reshapeFrustum(_windowWidth * screenScale, _windowHeight * screenScale);
+    _reshapeFrustum((int)((float)_windowWidth * screenScale), (int)((float)_windowHeight * screenScale));
 }
 
 void Application::reshapeOrtho(float scale) {
