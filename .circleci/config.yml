@@ -12,15 +12,10 @@ jobs:
     - checkout
     - run: 
         name: Init Git Submodules
-        command: |
-          git submodule init
-          git submodule update --remote
+        command: .ci/bash/ci_init_submodules.sh
     - run: 
         name: Build Project
-        command: |
-          . /opt/toolchains/dc/kos/environ.sh
-          ./build_dc.sh
-          ls -la ./build/dc
+        command: .ci/bash/ci_build_dc.sh
 
   build-dreamcast-gcc4:
     docker:
@@ -30,15 +25,10 @@ jobs:
     - checkout
     - run: 
         name: Init Git Submodules
-        command: |
-          git submodule init
-          git submodule update --remote
+        command: .ci/bash/ci_init_submodules.sh
     - run: 
         name: Build Project
-        command: |
-          . /opt/toolchains/dc/kos/environ.sh
-          ./build_dc.sh
-          ls -la ./build/dc
+        command: .ci/bash/ci_build_dc.sh
 
   build-linux-gcc9:
     docker:
@@ -48,24 +38,13 @@ jobs:
     - checkout
     - run: 
         name: Init Git Submodules
-        command: |
-          git submodule init
-          git submodule update --remote
-    - run: 
-        name: Init Git Submodules
-        command: |
-          git submodule init
-          git submodule update --remote
+        command: .ci/bash/ci_init_submodules.sh
     - run: 
         name: Install Dependencies
-        command: |
-          apt-get update 
-          apt-get install -y cmake xorg-dev
+        command: .ci/bash/ci_install_ubuntu_deps.sh
     - run: 
         name: Build Project
-        command: |
-          ./build_pc.sh
-          ls -la ./build/pc
+        command: .ci/bash/ci_build_pc.sh
 
   build-windows-msvc:
     executor: win/default
@@ -73,31 +52,13 @@ jobs:
     - checkout
     - run: 
         name: Init Git Submodules
-        command: |
-          git submodule init
-          git submodule update --remote
+        command: .ci\powershell\ci_init_submodules.ps1
     - run:
-        name: Download CMake
-        command: |
-          $ProgressPreference = "SilentlyContinue"
-          Invoke-WebRequest -URI https://github.com/Kitware/CMake/releases/download/v3.16.4/cmake-3.16.4-win64-x64.zip -OutFile $Env:HOMEPATH\cmake-3.16.4-win64-x64.zip
-          Expand-Archive $Env:HOMEPATH\cmake-3.16.4-win64-x64.zip -DestinationPath "$Env:ProgramFiles"
-          Rename-Item "$Env:ProgramFiles\cmake-3.16.4-win64-x64" -NewName CMake
+        name: Install CMake
+        command: .ci\powershell\ci_install_cmake.ps1
     - run:
         name: Build Project
-        command: |
-          $ErrorActionPreference="Stop"
-          $BUILD_DIR="build"
-          if (-not (Get-Command cmake -ErrorAction SilentlyContinue)) {
-            New-Alias -Name cmake -Value "$Env:ProgramFiles\CMake\bin\cmake.exe"
-          }
-          New-Item -Name $BUILD_DIR -ItemType Directory
-          Push-Location $BUILD_DIR
-          cmake ..
-          cmake --build .
-          mv .\Debug\* .
-          dir
-          Pop-Location
+        command: .ci\powershell\ci_build_pc.ps1
 
 workflows:
   version: 2
