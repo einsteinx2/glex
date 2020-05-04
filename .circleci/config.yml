@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  win: circleci/windows@2.4.0
+
 jobs:
   build-dreamcast-gcc9:
     docker:
@@ -7,25 +10,94 @@ jobs:
     working_directory: /src
     steps:
     - checkout
-    - run: git submodule init && git submodule update --remote 
-    - run: . /opt/toolchains/dc/kos/environ.sh && ./build_dc.sh
+    - run: 
+        name: Init Git Submodules
+        command: |
+          git submodule init
+          git submodule update --remote
+    - run: 
+        name: Build Project
+        command: |
+          . /opt/toolchains/dc/kos/environ.sh
+          ./build_dc.sh
+          ls -la ./build/dc
+
   build-dreamcast-gcc4:
     docker:
     - image: einsteinx2/dcdev-kos-toolchain:gcc-4
     working_directory: /src
     steps:
     - checkout
-    - run: git submodule init && git submodule update --remote 
-    - run: . /opt/toolchains/dc/kos/environ.sh && ./build_dc.sh
+    - run: 
+        name: Init Git Submodules
+        command: |
+          git submodule init
+          git submodule update --remote
+    - run: 
+        name: Build Project
+        command: |
+          . /opt/toolchains/dc/kos/environ.sh
+          ./build_dc.sh
+          ls -la ./build/dc
+
   build-linux-gcc9:
     docker:
     - image: gcc:9
     working_directory: /src
     steps:
     - checkout
-    - run: git submodule init && git submodule update --remote 
-    - run: apt-get update && apt-get install -y cmake xorg-dev
-    - run: ./build_pc.sh
+    - run: 
+        name: Init Git Submodules
+        command: |
+          git submodule init
+          git submodule update --remote
+    - run: 
+        name: Init Git Submodules
+        command: |
+          git submodule init
+          git submodule update --remote
+    - run: 
+        name: Install Dependencies
+        command: |
+          apt-get update 
+          apt-get install -y cmake xorg-dev
+    - run: 
+        name: Build Project
+        command: |
+          ./build_pc.sh
+          ls -la ./build/pc
+
+  build-windows-msvc:
+    executor: win/default
+    steps:
+    - checkout
+    - run: 
+        name: Init Git Submodules
+        command: |
+          git submodule init
+          git submodule update --remote
+    - run:
+        name: Download CMake
+        command: |
+          $ProgressPreference = "SilentlyContinue"
+          Invoke-WebRequest -URI https://github.com/Kitware/CMake/releases/download/v3.16.4/cmake-3.16.4-win64-x64.zip -OutFile $Env:HOMEPATH\cmake-3.16.4-win64-x64.zip
+          Expand-Archive $Env:HOMEPATH\cmake-3.16.4-win64-x64.zip -DestinationPath "$Env:ProgramFiles"
+          Rename-Item "$Env:ProgramFiles\cmake-3.16.4-win64-x64" -NewName CMake
+    - run:
+        name: Build Project
+        command: |
+          $ErrorActionPreference="Stop"
+          $BUILD_DIR="build"
+          if (-not (Get-Command cmake -ErrorAction SilentlyContinue)) {
+            New-Alias -Name cmake -Value "$Env:ProgramFiles\CMake\bin\cmake.exe"
+          }
+          New-Item -Name $BUILD_DIR -ItemType Directory
+          Push-Location $BUILD_DIR
+          cmake ..
+          cmake --build .
+          mv .\Debug\* .
+          dir
+          Pop-Location
 
 workflows:
   version: 2
@@ -34,3 +106,4 @@ workflows:
     - build-dreamcast-gcc9
     - build-dreamcast-gcc4
     - build-linux-gcc9
+    - build-windows-msvc
