@@ -17,11 +17,12 @@ struct FontColor {
     uint8_t b;
 };
 bool operator==(const FontColor& lhs, const FontColor& rhs);
-#define FONT_COLOR_WHITE FontColor { .r = 255, .g = 255, .b = 255 }
-#define FONT_COLOR_BLACK FontColor { .r = 0,   .g = 0,   .b = 0   }
-#define FONT_COLOR_RED   FontColor { .r = 255, .g = 0,   .b = 0   }
-#define FONT_COLOR_GREEN FontColor { .r = 0,   .g = 255, .b = 0   }
-#define FONT_COLOR_BLUE  FontColor { .r = 0,   .g = 0,   .b = 255 }
+
+const FontColor FONT_COLOR_WHITE { 255, 255, 255 };
+const FontColor FONT_COLOR_BLACK {   0,   0,   0 };
+const FontColor FONT_COLOR_RED   { 255,   0,   0 };
+const FontColor FONT_COLOR_GREEN {   0, 255,   0 };
+const FontColor FONT_COLOR_BLUE  {   0,   0, 255 };
 
 class Text {
 public:
