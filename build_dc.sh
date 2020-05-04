@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Clean
-#rm -rf ./build/dc
+rm -rf ./build/dc
 
 # Build using max available threads
 #export THREADS=$(getconf _NPROCESSORS_ONLN) &&

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <cstddef>
 
 struct MeshData {
     size_t numVertices = 0;

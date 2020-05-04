@@ -1,0 +1,36 @@
+version: 2.1
+
+jobs:
+  build-dreamcast-gcc9:
+    docker:
+    - image: einsteinx2/dcdev-kos-toolchain:gcc-9
+    working_directory: /src
+    steps:
+    - checkout
+    - run: git submodule init && git submodule update --remote 
+    - run: . /opt/toolchains/dc/kos/environ.sh && ./build_dc.sh
+  build-dreamcast-gcc4:
+    docker:
+    - image: einsteinx2/dcdev-kos-toolchain:gcc-4
+    working_directory: /src
+    steps:
+    - checkout
+    - run: git submodule init && git submodule update --remote 
+    - run: . /opt/toolchains/dc/kos/environ.sh && ./build_dc.sh
+  build-linux-gcc9:
+    docker:
+    - image: gcc:9
+    working_directory: /src
+    steps:
+    - checkout
+    - run: git submodule init && git submodule update --remote 
+    - run: apt-get update && apt-get install -y cmake xorg-dev
+    - run: ./build_pc.sh
+
+workflows:
+  version: 2
+  untagged-build:
+    jobs:
+    - build-dreamcast-gcc9
+    - build-dreamcast-gcc4
+    - build-linux-gcc9
