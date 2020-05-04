@@ -8,7 +8,7 @@
 #include "glex/MeshLoader.h"
 #include "glex/input/KeyboardInputHandler.h"
 
-#include <cstdio>
+#include <stdio.h>
 #include <cstdlib>
 #include <string>
 #include <chrono>
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
         app.reshapeOrtho(fpsCounter.scale);
         static char outputString[50];
         // NOTE: Due to an old GCC bug, we must manually cast floats to double in order to use %f without a warning 
-        sprintf_s(&outputString[0], 50, "frame time: %.2f ms  fps: %.2f  key: %d", (double)frameTime, (double)fps, lastKeyCode);
+        snprintf(&outputString[0], 50, "frame time: %.2f ms  fps: %.2f  key: %d", (double)frameTime, (double)fps, lastKeyCode);
         fpsCounter.text = outputString;
         fpsCounter.draw();
 
