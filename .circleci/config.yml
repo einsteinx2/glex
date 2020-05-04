@@ -10,12 +10,8 @@ jobs:
     working_directory: /src
     steps:
     - checkout
-    - run: 
-        name: Init Git Submodules
-        command: .ci/bash/ci_init_submodules.sh
-    - run: 
-        name: Build Project
-        command: .ci/bash/ci_build_dc.sh
+    - run: .ci/bash/ci_init_submodules.sh
+    - run: .ci/bash/ci_build_dc.sh
 
   build-dreamcast-gcc4:
     docker:
@@ -23,12 +19,8 @@ jobs:
     working_directory: /src
     steps:
     - checkout
-    - run: 
-        name: Init Git Submodules
-        command: .ci/bash/ci_init_submodules.sh
-    - run: 
-        name: Build Project
-        command: .ci/bash/ci_build_dc.sh
+    - run: .ci/bash/ci_init_submodules.sh
+    - run: .ci/bash/ci_build_dc.sh
 
   build-linux-gcc9:
     docker:
@@ -36,29 +28,17 @@ jobs:
     working_directory: /src
     steps:
     - checkout
-    - run: 
-        name: Init Git Submodules
-        command: .ci/bash/ci_init_submodules.sh
-    - run: 
-        name: Install Dependencies
-        command: .ci/bash/ci_install_ubuntu_deps.sh
-    - run: 
-        name: Build Project
-        command: .ci/bash/ci_build_pc.sh
+    - run: .ci/bash/ci_init_submodules.sh
+    - run: .ci/bash/ci_install_ubuntu_deps.sh
+    - run: .ci/bash/ci_build_pc.sh
 
   build-windows-msvc:
     executor: win/default
     steps:
     - checkout
-    - run: 
-        name: Init Git Submodules
-        command: .ci\powershell\ci_init_submodules.ps1
-    - run:
-        name: Install CMake
-        command: .ci\powershell\ci_install_cmake.ps1
-    - run:
-        name: Build Project
-        command: .ci\powershell\ci_build_pc.ps1
+    - run: .ci\powershell\ci_init_submodules.ps1
+    - run: .ci\powershell\ci_install_cmake.ps1
+    - run: .ci\powershell\ci_build_pc.ps1
 
 workflows:
   version: 2

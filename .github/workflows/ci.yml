@@ -1,0 +1,74 @@
+# NOTE: Matrix version numbers are quoted to ensure they are parsed as strings 
+#       For example, 6.0 is parsed as 6 without quotes which breaks Clang-6.0 builds on Linux.
+
+name: CI
+on: [push, pull_request]
+
+jobs:
+  build-dreamcast:
+    name: Dreamcast GCC
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ["9", "4"]
+    container: einsteinx2/dcdev-kos-toolchain:gcc-${{ matrix.version }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - run: .ci/bash/ci_build_dc.sh
+
+  build-ubuntu-gcc:
+    name: Ubuntu GCC
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ["9", "8", "7"]
+    env:
+      CC: gcc-${{ matrix.version }}
+      CXX: g++-${{ matrix.version }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - run: .ci/bash/ci_install_ubuntu_deps.sh
+      - run: .ci/bash/ci_build_pc.sh
+
+  build-ubuntu-clang:
+    name: Ubuntu Clang
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ["9", "8", "6.0"]
+    env:
+      CC: clang-${{ matrix.version }}
+      CXX: clang++-${{ matrix.version }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - run: .ci/bash/ci_install_ubuntu_deps.sh
+      - run: .ci/bash/ci_build_pc.sh
+
+  build-macos-xcode:
+    name: MacOS Xcode
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        version: ["11.4.1", "10.3"]
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.version }}.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - run: .ci/bash/ci_build_pc.sh
+
+  build-windows-msvc:
+    name: Windows MSVC (Latest)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - run: .ci/powershell/ci_build_pc.ps1

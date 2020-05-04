@@ -4,5 +4,5 @@
 set -e
 
 # Install the necessary package dependencies
-apt-get update
-apt-get install -y cmake xorg-dev
+sudo apt-get update
+sudo apt-get install -y cmake xorg-dev
