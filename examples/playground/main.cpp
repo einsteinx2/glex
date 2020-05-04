@@ -13,6 +13,8 @@
 #include <string>
 #include <chrono>
 
+#define FONT_COLOR_DARK_BLUE FontColor { .r = 21, .g = 1, .b = 148 }
+
 std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
 int16_t timeDiff = 0;
@@ -68,9 +70,8 @@ int main(int argc, char *argv[]) {
     houseTexture.loadRGBA("images/house_512.png");
     Mesh mesh(houseMesh, &houseTexture, 0.3);
 
-    FontColor darkBlue = (FontColor) { .r = 21, .g = 1, .b = 148 };
     FontFace fontFace = app.screenScale > 1.0 ? FontFace::arial_28 : FontFace::arial_16;
-    Text fpsCounter(fontFace, "", darkBlue, 20, 20, Image::Z_HUD, app.screenScale);
+    Text fpsCounter(fontFace, "", FONT_COLOR_DARK_BLUE, 20, 20, Image::Z_HUD, app.screenScale);
     fpsCounter.createTexture();
 
     // Main loop
