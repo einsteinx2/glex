@@ -2,6 +2,9 @@
 #include "glex/common/log.h"
 #include "glex/common/path.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cpp file
+#include "objl/tiny_obj_loader.h"
+
 #include <fstream>
 #include <cstring>
 #include <cstdlib>
@@ -9,197 +12,70 @@
 MeshData* MeshLoader::loadObjMesh(std::string path) { 
     std::string platformPath = glex::targetPlatformPath(path);
     DEBUG_PRINTLN("Started loading mesh %s", platformPath.c_str());
-    MeshObjInfo info = _getObjInfo(platformPath);
-    DEBUG_PRINTLN("Loaded info");
-    MeshData* data = _readObjFile(platformPath, info);
-    DEBUG_PRINTLN("Loaded data");
-    return data;
-}
 
-MeshObjInfo MeshLoader::_getObjInfo(std::string path) {
-    DEBUG_PRINTLN("obj path: %s", path.c_str());
-    MeshObjInfo info = {};
-    
-    // Open OBJ file
-    std::ifstream inOBJ(path);
-    if (!inOBJ || !inOBJ.good()) {
-        DEBUG_PRINTLN("ERROR: couldn't open OBJ file");
-        exit(EXIT_FAILURE);
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+
+    std::string warn;
+    std::string err;
+
+    bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, platformPath.c_str());
+
+    if (!warn.empty()) {
+        ERROR_PRINTLN("Warning while loading mesh: %s", warn.c_str());
     }
-    
-    // Read OBJ file
-    while (!inOBJ.eof()) {
-        std::string line;
-        getline(inOBJ, line);
-        std::string type = line.substr(0,2);
-         
-        if (type.compare("v ") == 0)
-            info.positions++;
-        else if (type.compare("vt") == 0)
-            info.texels++;
-        else if (type.compare("vn") == 0)
-            info.normals++;
-        else if (type.compare("f ") == 0)
-            info.faces++;
+    if (!err.empty()) {
+        ERROR_PRINTLN("Error while loading mesh: %s", err.c_str());
     }
-    
-    info.vertices = info.faces * 3;
-    
-    // Close OBJ file
-    inOBJ.close();
-    
-    return info;
-}
-
-MeshData* MeshLoader::_readObjFile(std::string path, MeshObjInfo info) {
-    float positions[info.positions][3];    // XYZ
-    float texels[info.texels][2];          // UV
-    float normals[info.normals][3];        // XYZ
-    int faces[info.faces][9];              // PTN PTN PTN
-
-    // Open OBJ file
-    std::ifstream inOBJ;
-    inOBJ.open(path);
-    if (!inOBJ.good()) {
-        DEBUG_PRINTLN("ERROR OPENING OBJ FILE");
-        
-        exit(EXIT_FAILURE);
+    if (!success) {
+        return NULL;
     }
 
-    // Counters
-    int p = 0;
-    int t = 0;
-    int n = 0;
-    int f = 0;
-    
-    // Read OBJ file
-    while (!inOBJ.eof()) {
-        std::string line;
-        getline(inOBJ, line);
-        std::string type = line.substr(0,2);
-        
-        // Vertices
-        if (type.compare("v ") == 0) {
-            // Copy line for parsing
-            char* l = new char[line.size() + 1];
-            std::memcpy(l, line.c_str(), line.size() + 1);
-            
-            // Extract tokens
-            std::strtok(l, " ");
-            for (int i = 0; i < 3; i++) {
-                positions[p][i] = std::atof(std::strtok(NULL, " "));
-            }
-
-            // Cleanup
-            delete[] l;
-            p++;
-        }
-        
-        // Texture Coordinates
-        else if (type.compare("vt") == 0) {
-            // Copy line for parsing
-            char* l = new char[line.size() + 1];
-            std::memcpy(l, line.c_str(), line.size() + 1);
-            
-            // Extract tokens
-            std::strtok(l, " ");
-            for (int i = 0; i < 2; i++) {
-                texels[t][i] = std::atof(std::strtok(NULL, " "));
-            }
-
-            // Cleanup
-            delete[] l;
-            t++;
-        }
-        
-        // Normals
-        else if (type.compare("vn") == 0) {
-            char* l = new char[line.size() + 1];
-            std::memcpy(l, line.c_str(), line.size() + 1);
-            
-            std::strtok(l, " ");
-            for (int i = 0; i < 3; i++) {
-                normals[n][i] = std::atof(std::strtok(NULL, " "));
-            }
-
-            // Cleanup
-            delete[] l;
-            n++;
-        }
-
-        // Faces
-        else if (type.compare("f ") == 0) {
-            char* l = new char[line.size() + 1];
-            std::memcpy(l, line.c_str(), line.size() + 1);
-            
-            std::strtok(l, " ");
-            for(int i=0; i < 9; i++) {
-                faces[f][i] = std::atof(std::strtok(NULL, " /"));
-            }
-
-            delete[] l;
-            f++;
-        }
-    }
-
-    // Close OBJ file
-    inOBJ.close();
-
-    std::vector<float> finalVertices(info.vertices * 3);
-    std::vector<float> finalTextCoords(info.vertices * 2);
-    std::vector<float> finalNormals(info.vertices * 3);
-
-    // Final Vertices
-    int count = 0;
-    for (int i = 0; i < info.faces; i++) {
-        int vA = faces[i][0] - 1;
-        int vB = faces[i][3] - 1;
-        int vC = faces[i][6] - 1;
-        
-        finalVertices[count] = positions[vA][0]; finalVertices[count+1] = positions[vA][1]; finalVertices[count+2] = positions[vA][2];
-        count += 3;
-        finalVertices[count] = positions[vB][0]; finalVertices[count+1] = positions[vB][1]; finalVertices[count+2] = positions[vB][2];
-        count += 3;
-        finalVertices[count] = positions[vC][0]; finalVertices[count+1] = positions[vC][1]; finalVertices[count+2] = positions[vC][2];
-        count += 3;        
-    }
-
-    // Final Tex Coords
-    count = 0;
-    for (int i = 0; i < info.faces; i++) {
-        int vtA = faces[i][1] - 1;
-        int vtB = faces[i][4] - 1;
-        int vtC = faces[i][7] - 1;
-        
-        // NOTE: Texture image must be flipped vertically to match OpenGL coordinate system 
-        //       (the Texture class does this automatically when loading image files)
-        finalTextCoords[count] = texels[vtA][0]; finalTextCoords[count+1] = texels[vtA][1];
-        count += 2;
-        finalTextCoords[count] = texels[vtB][0]; finalTextCoords[count+1] = texels[vtB][1];
-        count += 2;
-        finalTextCoords[count] = texels[vtC][0]; finalTextCoords[count+1] = texels[vtC][1];
-        count += 2;
-    }
-
-    // Final Normals
-    count = 0;
-    for (int i = 0; i < info.faces; i++) {
-        int vnA = faces[i][2] - 1;
-        int vnB = faces[i][5] - 1;
-        int vnC = faces[i][8] - 1;
-        
-        finalNormals[count] = normals[vnA][0]; finalNormals[count+1] = normals[vnA][1]; finalNormals[count+2] = normals[vnA][2];
-        count += 3;
-        finalNormals[count] = normals[vnB][0]; finalNormals[count+1] = normals[vnB][1]; finalNormals[count+2] = normals[vnB][2];
-        count += 3;
-        finalNormals[count] = normals[vnC][0]; finalNormals[count+1] = normals[vnC][1]; finalNormals[count+2] = normals[vnC][2];
-        count += 3;
-    }
-
+    // TODO: Load objs with more than one shape
+    // TODO: Load materials
+    // TODO: Switch to rendering the tiny_obj_loader format directly to save processing and memory
     MeshData* meshData = new MeshData();
-    meshData->numVertices = info.vertices;
+    meshData->numVertices = shapes[0].mesh.indices.size();
+    std::vector<float> finalVertices(meshData->numVertices * 3);
+    std::vector<float> finalTextCoords(meshData->numVertices * 2);
+    std::vector<float> finalNormals(meshData->numVertices * 3);
+    int vertCount = 0;
+    int textCoordCount = 0;
+    int normalCount = 0;
+    size_t index_offset = 0;
+    for (size_t f = 0; f < shapes[0].mesh.num_face_vertices.size(); f++) {
+        int fv = shapes[0].mesh.num_face_vertices[f];
+
+        // Loop over vertices in the face.
+        for (size_t v = 0; v < fv; v++) {
+
+            // access to vertex
+            tinyobj::index_t idx = shapes[0].mesh.indices[index_offset + v];
+            // DEBUG_PRINTLN("idx - vertex %d  normal: %d  texCoord: %d", idx.vertex_index, idx.normal_index, idx.texcoord_index);
+            tinyobj::real_t vx = attrib.vertices[3*idx.vertex_index+0];
+            tinyobj::real_t vy = attrib.vertices[3*idx.vertex_index+1];
+            tinyobj::real_t vz = attrib.vertices[3*idx.vertex_index+2];
+            finalVertices[vertCount] = vx; finalVertices[vertCount+1] = vy; finalVertices[vertCount+2] = vz;
+            vertCount += 3;
+            tinyobj::real_t nx = attrib.normals[3*idx.normal_index+0];
+            tinyobj::real_t ny = attrib.normals[3*idx.normal_index+1];
+            tinyobj::real_t nz = attrib.normals[3*idx.normal_index+2];
+            finalNormals[normalCount] = nx; finalNormals[normalCount+1] = ny; finalNormals[normalCount+2] = nz;
+            normalCount += 3;
+            tinyobj::real_t tx = attrib.texcoords[2*idx.texcoord_index+0];
+            tinyobj::real_t ty = attrib.texcoords[2*idx.texcoord_index+1];
+            finalTextCoords[textCoordCount] = tx; finalTextCoords[textCoordCount+1] = ty;
+            textCoordCount += 2;
+            // Optional: vertex colors
+            // tinyobj::real_t red = attrib.colors[3*idx.vertex_index+0];
+            // tinyobj::real_t green = attrib.colors[3*idx.vertex_index+1];
+            // tinyobj::real_t blue = attrib.colors[3*idx.vertex_index+2];
+        }
+        index_offset += fv;
+    }
     meshData->vertices = finalVertices;
     meshData->textureCoordinates = finalTextCoords;
-    meshData->normals = finalNormals ;
+    meshData->normals = finalNormals;
     return meshData;
 }

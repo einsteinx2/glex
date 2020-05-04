@@ -1,7 +1,7 @@
 # Blender v2.80 (sub 75) OBJ File: 'cottage_filled_blender.blend'
 # www.blender.org
-mtllib houseFilledTriangles.mtl
-o Cube_Cube.002
+#mtllib houseFilledTriangles.mtl
+#o Cube_Cube.002
 v 5.950066 8.192229 -8.604037
 v 5.950066 9.349227 -8.604036
 v 11.993354 9.349228 -9.035817
@@ -1127,7 +1127,7 @@ vn 0.6472 0.7609 -0.0462
 vn -0.0390 -0.8368 -0.5461
 vn -0.6404 -0.7666 0.0463
 vn -0.6424 -0.7649 0.0468
-usemtl cottage_texture
+#usemtl cottage_texture
 s 1
 f 1/1/1 2/2/2 3/3/3
 f 5/4/4 7/5/5 4/6/6
