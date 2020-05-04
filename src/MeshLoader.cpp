@@ -45,7 +45,7 @@ MeshData* MeshLoader::loadObjMesh(std::string path) {
     int normalCount = 0;
     size_t index_offset = 0;
     for (size_t f = 0; f < shapes[0].mesh.num_face_vertices.size(); f++) {
-        int fv = shapes[0].mesh.num_face_vertices[f];
+        size_t fv = shapes[0].mesh.num_face_vertices[f];
 
         // Loop over vertices in the face.
         for (size_t v = 0; v < fv; v++) {
