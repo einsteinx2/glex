@@ -2,6 +2,11 @@
 ## Common Build Settings
 #
 
+# Ensure CMAKE_SYSTEM_NAME is set
+if(NOT DEFINED CMAKE_SYSTEM_NAME)
+    set(CMAKE_SYSTEM_NAME Generic)
+endif()
+
 # Set C and C++ standards
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 14)
