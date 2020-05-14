@@ -1,5 +1,9 @@
 #include "glex/common/log.h"
 #include "glex/common/gl.h"
+#include "glex/common/font.h"
+#include "glex/fonts/arial_16pt.h"
+#include "glex/fonts/arial_28pt.h"
+#include "glex/fonts/arial_32pt.h"
 #include "glex/Triangle.h"
 #include "glex/Cube.h"
 #include "glex/Mesh.h"
@@ -11,6 +15,14 @@
 #include <cstdlib>
 #include <string>
 #include <chrono>
+
+ // NOTE: zNear is set to -100 and zFar to 100 in glOrtho, but it seems to work backwards...
+//       -100 is the farthest away (e.g. behind everything) while 100 is the closet (draws over everything)
+
+// Use this as the z value to draw behind everything (e.g. a background image)
+static constexpr float Z_BACKGROUND = -100;
+// Use this as the z value to draw on top of everything (e.g. a HUD or FPS counter)
+static constexpr float Z_HUD = 100;
 
 std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
@@ -167,44 +179,220 @@ void closeWindow() {
 #endif
 }
 
+Texture grayBrickTexture;
+int grayBrickTextureId = 0;
+Texture woodTexture;
+int woodTextureId = 0;
+Texture houseTexture;
+int houseTextureId = 0;
+void loadTextures() {
+    grayBrickTexture.loadRGB("images/gray_brick_512.jpg");
+    grayBrickTextureId = grayBrickTexture.id;
+
+    woodTexture.loadRGB("images/wood1.bmp");
+    woodTextureId = woodTexture.id;
+
+    houseTexture.loadRGBA("images/house_512.png");
+    houseTextureId = houseTexture.id;
+}
+
+void drawImage(int textureId_, float x_, float y_, float z_, float width_, float height_, float windowScale_, float scale_ = 1.0) {
+    // Set OpenGL draw settings
+    glDisable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glPushMatrix();
+
+    // Perform scaling and rotation
+    glScalef(scale_, scale_, 1.0);
+    // glRotatef(rotationY, 0.0f, 1.0f, 0.0f);
+    // glRotatef(rotationX, 1.0f, 0.0f, 0.0f);
+
+    // Enable texture
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureId_);
+
+    // Draw the image
+    glBegin(GL_TRIANGLES);
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+
+    // Left triangle
+    glTexCoord2f(0, 1); glVertex3f(x_,          y_            , z_);  // Top Left
+    glTexCoord2f(0, 0); glVertex3f(x_,          y_ - height_  , z_);  // Bottom Left
+    glTexCoord2f(1, 0); glVertex3f(x_ + width_, y_ - height_  , z_);  // Buttom Right
+    
+    // Right triangle
+    glTexCoord2f(0, 1); glVertex3f(x_,          y_            , z_);  // Top Left
+    glTexCoord2f(1, 0); glVertex3f(x_ + width_, y_ - height_  , z_);  // Bottom Right
+    glTexCoord2f(1, 1); glVertex3f(x_ + width_, y_            , z_);  // Top Right
+    
+    glEnd();
+
+    // Unset OpenGL draw settings
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+
+    glPopMatrix();
+}
+
+MeshData *_meshData = MeshLoader::loadObjMesh("meshes/house.obj");
+float meshRotationX = 0.0;
+float meshRotationY = 0.0;
+float meshRotationZ = 0.0;
+float meshScale = 0.3f;
+void drawMesh(int meshTextureId) {
+    // Enable depth test
+    glEnable(GL_DEPTH_TEST);
+    // Cull backfacing polygons 
+    glCullFace(GL_BACK); 
+    glEnable(GL_CULL_FACE);
+    glDepthFunc(GL_LESS);
+
+    glPushMatrix();
+
+    glScalef(meshScale, meshScale, meshScale);
+
+    glRotatef(meshRotationZ, 0.0f, 0.0f, 1.0f);
+    glRotatef(meshRotationY, 0.0f, 1.0f, 0.0f);
+    glRotatef(meshRotationX, 1.0f, 0.0f, 0.0f);
+    
+    // Enable texture
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glBindTexture(GL_TEXTURE_2D, meshTextureId);
+
+    glEnableClientState(GL_VERTEX_ARRAY); //enable vertex array
+    glEnableClientState(GL_NORMAL_ARRAY); //enable normal array
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY); //enable texcoord array
+
+    glVertexPointer(3, GL_FLOAT, 0, &_meshData->vertices[0]); //give vertex array to OGL
+    glTexCoordPointer(2, GL_FLOAT, 0, &_meshData->textureCoordinates[0]); //same with texcoord array
+    glNormalPointer(GL_FLOAT, 0, &_meshData->normals[0]); //and normal array
+
+    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)_meshData->numVertices);
+
+    glDisableClientState(GL_VERTEX_ARRAY); //disable the client states again
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glDisable(GL_TEXTURE_2D);
+
+    glPopMatrix();
+}
+
+FontColor darkBlue{21, 1, 148};
+FontFace fontFace = screenScale > 1.0 ? FontFace::arial_28 : FontFace::arial_16;
+texture_font_t _font;
+Texture _fontTexture;
+int _fontTextureId = 0;
+
+void createTextTexture(FontFace face_, FontColor color_) {
+    switch(face_) {
+    case FontFace::arial_16:  _font = arial_16pt; break;
+    case FontFace::arial_28:  _font = arial_28pt; break;
+    case FontFace::arial_32:  _font = arial_32pt; break;
+    default:
+        DEBUG_PRINTLN("Unsupported font type");
+        exit(EXIT_FAILURE);
+    }
+
+    GLuint textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    // Optimization for white text
+    if (color_ == FONT_COLOR_WHITE) {
+        // Use 8bit alpha only texture to save memory
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, (GLsizei)_font.tex_width, (GLsizei)_font.tex_height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, &_font.tex_data[0]);
+    } else {
+        // Convert the texture data to 32bit RGBA
+        size_t currentSize = _font.tex_data.size();
+        size_t newSize = _font.tex_data.size() * 4;
+        uint8_t* rgbData = new uint8_t[newSize];
+        for (size_t i = 0; i < currentSize; i+=1) {
+            rgbData[(i*4)]   = color_.r;
+            rgbData[(i*4)+1] = color_.g;
+            rgbData[(i*4)+2] = color_.b;
+            rgbData[(i*4)+3] = _font.tex_data[i];
+        }
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)_font.tex_width, (GLsizei)_font.tex_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgbData);
+    }
+
+    _fontTexture.loadExisting((GLsizei)_font.tex_width, (GLsizei)_font.tex_height, textureId);
+    _fontTextureId = _fontTexture.id;
+}
+
+void drawText(std::string text, float x_, float y_, float z_) {
+    // Set OpenGL draw settings
+    glDisable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glPushMatrix();
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, _fontTextureId);
+
+    size_t i, j;
+    float ix = x_, iy = y_;
+    for(i = 0; i < text.length(); ++i) {
+        // Find the glyph
+        texture_glyph_t* glyph = 0;
+        for(j = 0; j < _font.glyphs_count; ++j) {
+            if (_font.glyphs[j].charcode == text[i]) {
+                glyph = &_font.glyphs[j];
+                break;
+            }
+        }
+        if(!glyph) {
+            continue;
+        }
+
+        // Calculate the size and location based on the current character's glyph
+        float ox = ix + glyph->offset_x;// + kerning;
+        float oy = iy + glyph->offset_y;
+        float w  = (float)glyph->width;
+        float h  = (float)glyph->height;
+        
+        // Draw the letter
+        glBegin(GL_TRIANGLES);
+        glColor4f(1.0, 1.0, 1.0, 1.0);
+        glTexCoord2f(glyph->s0, glyph->t0); glVertex3f(ox,     oy    , z_);
+        glTexCoord2f(glyph->s0, glyph->t1); glVertex3f(ox,     oy - h, z_);
+        glTexCoord2f(glyph->s1, glyph->t1); glVertex3f(ox + w, oy - h, z_);
+        glTexCoord2f(glyph->s0, glyph->t0); glVertex3f(ox,     oy    , z_);
+        glTexCoord2f(glyph->s1, glyph->t1); glVertex3f(ox + w, oy - h, z_);
+        glTexCoord2f(glyph->s1, glyph->t0); glVertex3f(ox + w, oy    , z_);
+        glEnd();
+        
+        // Advance to the next letter's position
+        ix += glyph->advance_x;
+        iy += glyph->advance_y;
+    }
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+}
+
 /* program entry */
 int main(int argc, char *argv[]) {
     DEBUG_PRINTLN("Application started!");
-    DEBUG_PRINTLN("creating window");
     createWindow("GLEX Playground", 640, 480);
 
-    DEBUG_PRINTLN("loading grayBrickTexture");
-    Texture grayBrickTexture;
-    grayBrickTexture.loadRGB("images/gray_brick_512.jpg");
-    DEBUG_PRINTLN("creating grayBrickImage");
-    Image grayBrickImage(&grayBrickTexture, 0, (float)_windowHeight, Image::Z_BACKGROUND, _windowWidth, (float)_windowHeight, screenScale);
-
-    DEBUG_PRINTLN("loading woodTexture");
-    Texture woodTexture;
-    woodTexture.loadRGB("images/wood1.bmp");
-    DEBUG_PRINTLN("creating woodImage");
-    Image woodImage(&woodTexture, 250, 420, 10, Image::Z_HUD, 100, screenScale);
-
-    DEBUG_PRINTLN("loading houseMesh");
-    MeshData *houseMesh = MeshLoader::loadObjMesh("meshes/house.obj");
-    DEBUG_PRINTLN("loading houseTexture");
-    Texture houseTexture;
-    houseTexture.loadRGBA("images/house_512.png");
-    DEBUG_PRINTLN("creating mesh");
-    Mesh mesh(houseMesh, &houseTexture, 0.3f);
-
-    DEBUG_PRINTLN("loading fontFace");
-    FontColor darkBlue{21, 1, 148};
-    FontFace fontFace = screenScale > 1.0 ? FontFace::arial_28 : FontFace::arial_16;
-    DEBUG_PRINTLN("creating fpsCounter");
-    Text fpsCounter(fontFace, "", darkBlue, 20, 20, Image::Z_HUD, screenScale);
-    DEBUG_PRINTLN("creating fpsCounter texture");
-    fpsCounter.createTexture();
+    loadTextures();
+    createTextTexture(fontFace, darkBlue);
 
     // Main loop
-    DEBUG_PRINTLN("entering main loop");
     while (!windowShouldClose()) {
-        DEBUG_PRINTLN("measuring speed");
         // Measure speed
         nbFrames++;
         currentTime = std::chrono::steady_clock::now();
@@ -220,45 +408,33 @@ int main(int argc, char *argv[]) {
         handleInput();
 
         // Clear the buffer to draw the prepare frame
-        DEBUG_PRINTLN("clearing buffer");
         clear();
 
         // Draw the background image
-        DEBUG_PRINTLN("calling reshapeOrtho");
         reshapeOrtho(1.0);
-        DEBUG_PRINTLN("drawing grayBrickImage"); 
-        grayBrickImage.draw();
+        drawImage(grayBrickTextureId, 0, (float)_windowHeight, Z_BACKGROUND, _windowWidth, (float)_windowHeight, screenScale);
 
         // Draw the 3d rotating house
-        DEBUG_PRINTLN("calling reshapeFrustum");
         reshapeFrustum();
-        DEBUG_PRINTLN("drawing mesh");
-        mesh.draw();
-        mesh.rotationX += 0.75;
-        mesh.rotationY += 0.75;
-        mesh.rotationZ += 0.75;
+        drawMesh(houseTextureId);
+        meshRotationX += 0.75;
+        meshRotationY += 0.75;
+        meshRotationZ += 0.75;
 
         // Draw the foreground 2d image
-        DEBUG_PRINTLN("calling reshapeOrtho");
         reshapeOrtho(1.0);
-        DEBUG_PRINTLN("drawing woodImage");
-        woodImage.draw();
+        drawImage(woodTextureId, 250, 420, 10, Z_HUD, 100, screenScale);
 
         // Draw the FPS counter HUD text
-        DEBUG_PRINTLN("calling reshapeOrtho");
-        reshapeOrtho(fpsCounter.scale);
-        DEBUG_PRINTLN("drawing fpsCounter");
+        reshapeOrtho(1.0);
         static char outputString[50];
         // NOTE: Due to an old GCC bug, we must manually cast floats to double in order to use %f without a warning 
         snprintf(&outputString[0], 50, "frame time: %.2f ms  fps: %.2f", (double)frameTime, (double)fps);
-        fpsCounter.text = outputString;
-        fpsCounter.draw();
+        drawText(outputString, 20, 20, Z_HUD);
 
         // Swap buffers to display the current frame
-        DEBUG_PRINTLN("swapping buffers");
         swapBuffers();
     }
 
-    DEBUG_PRINTLN("closing window");
     closeWindow();
 }
