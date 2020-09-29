@@ -201,7 +201,7 @@ enum KeyCode {
     Up = KBD_KEY_UP,
     Down = KBD_KEY_DOWN,
     Left = KBD_KEY_LEFT,
-    Right = KDB_KEY_RIGHT
+    Right = KBD_KEY_RIGHT
 };
 
 #endif
