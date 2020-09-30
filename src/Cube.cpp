@@ -123,11 +123,11 @@ void Cube::_drawList() {
     glTexCoord2f(0, 0);
     glVertex3fv(v5);    // bottom face
     glTexCoord2f(1, 0);
-    glVertex3fv(v6);
+    glVertex3fv(v1);
     glTexCoord2f(1, 1);
     glVertex3fv(v2);
     glTexCoord2f(0, 1);
-    glVertex3fv(v1);
+    glVertex3fv(v6);
 
     glEnd();
     glDisable(GL_TEXTURE_2D);
