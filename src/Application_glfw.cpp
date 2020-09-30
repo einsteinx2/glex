@@ -68,6 +68,10 @@ int Application::windowShouldClose() {
     return glfwWindowShouldClose(_window);
 }
 
+void Application::setWindowShouldClose() {
+    glfwSetWindowShouldClose(_window, -1);
+}
+
 void Application::_updateWindowSize() {
     glfwGetWindowSize(_window, &_windowWidth, &_windowHeight);
 }
