@@ -2,7 +2,27 @@
 #include "glex/common/log.h"
 
 Cube::Cube() {
-    _texture.loadRGB("images/wood1.bmp");
+    _initTexture();
+}
+
+Cube::~Cube() {
+    DEBUG_PRINTLN("Destroy Cube!");
+    if (_texture != nullptr)
+        delete _texture;
+}
+
+Cube::Cube(const std::string texturePath) {
+    _initTexture();
+    _texture->loadRGB(texturePath);
+}
+
+Texture* Cube::GetTexture() {
+    return _texture;
+}
+
+void Cube::_initTexture() {
+    if (_texture == nullptr)
+        _texture = new Texture();
 }
 
 void Cube::_drawList() {
@@ -10,7 +30,7 @@ void Cube::_drawList() {
     // Enable texture
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D, _texture.id);
+    glBindTexture(GL_TEXTURE_2D, _texture->id);
     #endif
     
     // cube ///////////////////////////////////////////////////////////////////////
@@ -123,11 +143,11 @@ void Cube::_drawList() {
     glTexCoord2f(0, 0);
     glVertex3fv(v5);    // bottom face
     glTexCoord2f(1, 0);
-    glVertex3fv(v6);
+    glVertex3fv(v1);
     glTexCoord2f(1, 1);
     glVertex3fv(v2);
     glTexCoord2f(0, 1);
-    glVertex3fv(v1);
+    glVertex3fv(v6);
 
     glEnd();
     glDisable(GL_TEXTURE_2D);
