@@ -5,26 +5,22 @@ Cube::Cube() {
     _initTexture();
 }
 
-Cube::~Cube()
-{
+Cube::~Cube() {
     DEBUG_PRINTLN("Destroy Cube!");
     if (_texture != nullptr)
         delete _texture;
 }
 
-Cube::Cube(const std::string texturePath)
-{
+Cube::Cube(const std::string texturePath) {
     _initTexture();
     _texture->loadRGB(texturePath);
 }
 
-Texture* Cube::GetTexture()
-{
+Texture* Cube::GetTexture() {
     return _texture;
 }
 
-void Cube::_initTexture()
-{
+void Cube::_initTexture() {
     if (_texture == nullptr)
         _texture = new Texture();
 }
