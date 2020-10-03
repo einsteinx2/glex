@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
             app.closeWindow();
         }
     });
-    app.addInputHandler(&keyboard);
+    app.addInputHandler(std::shared_ptr<KeyboardInputHandler>(&keyboard));
 
     Text infoText(FontFace::arial_16, "", FONT_COLOR_WHITE, 20, app.windowHeight() - 40, Image::Z_HUD, app.screenScale);
     infoText.createTexture();

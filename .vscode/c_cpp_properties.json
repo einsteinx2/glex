@@ -20,7 +20,7 @@
             "cppStandard": "c++11",
             "compilerPath": "/usr/bin/clang++",
             "configurationProvider": "vector-of-bool.cmake-tools",
-            "defines": ["DREAMCAST"]
+            "defines": ["GLFW"]
         }
     ],
     "version": 4

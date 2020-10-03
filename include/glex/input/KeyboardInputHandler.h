@@ -35,9 +35,9 @@ class KeyboardInputHandler: public InputHandler {
         void unregisterCallback() { _callback = NULL; }
         void keyPressed(int keyValue);
     private:
-        KeyboardCallback _callback;
+        KeyboardCallback _callback = NULL;
 
 #ifdef DREAMCAST
-        maple_device_t* _mapleDevice;
+        maple_device_t* _mapleDevice = nullptr;
 #endif
 };

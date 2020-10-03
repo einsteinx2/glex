@@ -7,6 +7,7 @@
 #include "glex/Text.h"
 #include "glex/MeshLoader.h"
 #include "glex/input/KeyboardInputHandler.h"
+#include "glex/input/GamepadInputHandler.h"
 
 #include <stdio.h>
 #include <cstdlib>
@@ -40,7 +41,112 @@ int main(int argc, char *argv[]) {
             app.closeWindow();
         }
     });
-    app.addInputHandler(&keyboard);
+    app.addInputHandler(std::shared_ptr<KeyboardInputHandler>(&keyboard));
+
+#ifdef GLFW
+    // Basic gamepad handling
+    GamepadState lastGamepad1State;
+    GamepadInputHandler gamepad1(GamepadIndex::FIRST);
+    gamepad1.registerRawStateCallback([&app, &lastGamepad1State](GamepadState gamepadState) {
+        // Check if buttons are pressed
+        if (lastGamepad1State.buttons[GamepadButton::A] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::A] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("A pressed");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::B] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::B] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("B pressed");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::X] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::X] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("X pressed");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::Y] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::Y] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("Y pressed");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::L_SHOULDER] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::L_SHOULDER] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("Left Shoulder pressed");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::R_SHOULDER] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::R_SHOULDER] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("Right Shoulder pressed");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::L_STICK] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::L_STICK] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("Left Stick pressed");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::R_STICK] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::R_STICK] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("Right Stick pressed");
+        }
+
+        // Check if buttons are released
+        if (lastGamepad1State.buttons[GamepadButton::A] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::A] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("A released");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::B] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::B] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("B released");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::X] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::X] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("X released");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::Y] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::Y] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("Y released");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::L_SHOULDER] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::L_SHOULDER] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("Left Shoulder released");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::R_SHOULDER] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::R_SHOULDER] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("Right Shoulder released");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::L_STICK] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::L_STICK] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("Left Stick released");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::R_STICK] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::R_STICK] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("Right Stick released");
+        }
+
+        // Check if dpad directions are pressed
+        if (lastGamepad1State.buttons[GamepadButton::DPAD_DOWN] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::DPAD_DOWN] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("DPAD Down pressed");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::DPAD_LEFT] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::DPAD_LEFT] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("DPAD Left pressed");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::DPAD_RIGHT] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::DPAD_RIGHT] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("DPAD Right pressed");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::DPAD_UP] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::DPAD_UP] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("DPAD Up pressed");
+        }
+
+        // Check if dpad directions are released
+        if (lastGamepad1State.buttons[GamepadButton::DPAD_DOWN] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::DPAD_DOWN] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("DPAD Down released");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::DPAD_LEFT] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::DPAD_LEFT] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("DPAD Left released");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::DPAD_RIGHT] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::DPAD_RIGHT] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("DPAD Right released");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::DPAD_UP] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::DPAD_UP] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("DPAD Up released");
+        }
+
+        // Check analog sticks and triggers
+        if (lastGamepad1State.analog[GamepadAnalog::L_STICK_X] != gamepadState.analog[GamepadAnalog::L_STICK_X] || lastGamepad1State.analog[GamepadAnalog::L_STICK_Y] != gamepadState.analog[GamepadAnalog::L_STICK_Y]) {
+            DEBUG_PRINTLN("Left Stick: (x: %f, y: %f)", gamepadState.analog[GamepadAnalog::L_STICK_X], gamepadState.analog[GamepadAnalog::L_STICK_Y]);
+        }
+         if (lastGamepad1State.analog[GamepadAnalog::R_STICK_X] != gamepadState.analog[GamepadAnalog::R_STICK_X] || lastGamepad1State.analog[GamepadAnalog::R_STICK_Y] != gamepadState.analog[GamepadAnalog::R_STICK_Y]) {
+            DEBUG_PRINTLN("Right Stick: (x: %f, y: %f)", gamepadState.analog[GamepadAnalog::R_STICK_X], gamepadState.analog[GamepadAnalog::R_STICK_Y]);
+        }
+        if (lastGamepad1State.analog[GamepadAnalog::L_TRIGGER] != gamepadState.analog[GamepadAnalog::L_TRIGGER]) {
+            DEBUG_PRINTLN("Left Trigger: %f", gamepadState.analog[GamepadAnalog::L_TRIGGER]);
+        }
+        if (lastGamepad1State.analog[GamepadAnalog::R_TRIGGER] != gamepadState.analog[GamepadAnalog::R_TRIGGER]) {
+            DEBUG_PRINTLN("Right Trigger: %f", gamepadState.analog[GamepadAnalog::R_TRIGGER]);
+        }
+
+        // Store last state
+        lastGamepad1State = gamepadState;
+    });
+    app.addInputHandler(std::shared_ptr<GamepadInputHandler>(&gamepad1));
+#endif
 
     // NOTE: Both Image and Mesh classes can use textures loaded from JPG, PNG, or BMP.
     //       All PNG files have been run through pngcrush.

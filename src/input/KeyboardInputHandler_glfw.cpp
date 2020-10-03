@@ -15,7 +15,7 @@ namespace {
         Application* app = (Application*)glfwGetWindowUserPointer(window);
         for (auto handler : app->inputHandlers()) {
             if (handler->type() == InputType::Keyboard) {
-                dynamic_cast<KeyboardInputHandler*>(handler)->keyPressed(k);
+                std::dynamic_pointer_cast<KeyboardInputHandler>(handler)->keyPressed(k);
             }
         }
     }

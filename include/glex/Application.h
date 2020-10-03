@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #if GLFW
 //void key(GLFWwindow* window, int k, int s, int action, int mods);
@@ -17,7 +18,7 @@ public:
     std::string windowName() { return _windowName; }
     int windowWidth() { return _windowWidth; }
     int windowHeight() { return _windowHeight; }
-    const std::vector<InputHandler*> inputHandlers() { return _inputHandlers; }
+    const std::vector<std::shared_ptr<InputHandler>> inputHandlers() { return _inputHandlers; }
     
     Application() {};
     void createWindow(std::string windowName, int width, int height);
@@ -29,17 +30,17 @@ public:
     int windowShouldClose();
     void setWindowShouldClose();
     void handleInput();
-    void addInputHandler(InputHandler* inputHandler);
-    void removeInputHandler(InputHandler* inputHandler);
+    void addInputHandler(std::shared_ptr<InputHandler> inputHandler);
+    void removeInputHandler(std::shared_ptr<InputHandler> inputHandler);
 
 private:
 #ifdef GLFW
-    GLFWwindow* _window;
+    GLFWwindow* _window = nullptr;
 #endif
     std::string _windowName = "";
     int _windowWidth = 0;
     int _windowHeight = 0;
-    std::vector<InputHandler*> _inputHandlers;
+    std::vector<std::shared_ptr<InputHandler>> _inputHandlers;
 
     Application(Application const&);    // Prevent copies
     void operator=(Application const&); // Prevent assignments
