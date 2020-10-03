@@ -120,6 +120,7 @@ enum KeyCode {
 
 // TODO: Finish adding all keys
 enum KeyCode {
+    // Letters and Symbols
     A = KBD_KEY_A,
     B = KBD_KEY_B,
     C = KBD_KEY_C,
@@ -146,12 +147,61 @@ enum KeyCode {
     X = KBD_KEY_X,
     Y = KBD_KEY_Y,
     Z = KBD_KEY_Z,
+
+    // Number Row
+    Row0 = KBD_KEY_0,
+    Row1 = KBD_KEY_1,
+    Row2 = KBD_KEY_2,
+    Row3 = KBD_KEY_3,
+    Row4 = KBD_KEY_4,
+    Row5 = KBD_KEY_5,
+    Row6 = KBD_KEY_6,
+    Row7 = KBD_KEY_7,
+    Row8 = KBD_KEY_8,
+    Row9 = KBD_KEY_9,
+
+    // Number Pad
+    Pad0 = KBD_KEY_PAD_0,
+    Pad1 = KBD_KEY_PAD_1,
+    Pad2 = KBD_KEY_PAD_2,
+    Pad3 = KBD_KEY_PAD_3,
+    Pad4 = KBD_KEY_PAD_4,
+    Pad5 = KBD_KEY_PAD_5,
+    Pad6 = KBD_KEY_PAD_6,
+    Pad7 = KBD_KEY_PAD_7,
+    Pad8 = KBD_KEY_PAD_8,
+    Pad9 = KBD_KEY_PAD_9,
+    PadNumLock = KBD_KEY_PAD_NUMLOCK,
+    PadDivide = KBD_KEY_PAD_DIVIDE,
+    PadMultiply = KBD_KEY_PAD_MULTIPLY,
+    PadSubtract = KBD_KEY_PAD_MINUS,
+    PadAdd = KBD_KEY_PAD_PLUS,
+    PadDecimal = KBD_KEY_PAD_PERIOD,
+    PadEnter = KBD_KEY_PAD_ENTER,
+
+    // Special Keys
+    F1 = KBD_KEY_F1,
+    F2 = KBD_KEY_F2,
+    F3 = KBD_KEY_F3,
+    F4 = KBD_KEY_F4,
+    F5 = KBD_KEY_F5,
+    F6 = KBD_KEY_F6,
+    F7 = KBD_KEY_F7,
+    F8 = KBD_KEY_F8,
+    F9 = KBD_KEY_F9,
+    F10 = KBD_KEY_F10,
+    F11 = KBD_KEY_F11,
+    F12 = KBD_KEY_F12,
     
     Enter = KBD_KEY_ENTER,
     Escape = KBD_KEY_ESCAPE,
     Backspace = KBD_KEY_BACKSPACE,
     Tab = KBD_KEY_TAB,
-    Space = KBD_KEY_SPACE
+    Space = KBD_KEY_SPACE,
+    Up = KBD_KEY_UP,
+    Down = KBD_KEY_DOWN,
+    Left = KBD_KEY_LEFT,
+    Right = KBD_KEY_RIGHT
 };
 
 #endif
