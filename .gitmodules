@@ -6,4 +6,4 @@
 	url = https://github.com/glfw/glfw.git
 [submodule "deps/dc/DCAudio"]
 	path = deps/dc/DCAudio
-	url = https://github.com/Moopthehedgehog/DCAudio.git
+	url = https://github.com/einsteinx2/DCAudio.git
