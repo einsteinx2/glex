@@ -4,6 +4,8 @@
 #include "glex/common/log.h"
 #include "glex/Application.h"
 
+#include <cstring>
+
 void GamepadInputHandler::added(GLFWwindow *window) {
     // Check if the gamepad exists
     if (!glfwJoystickPresent(_joystickNumber)) {

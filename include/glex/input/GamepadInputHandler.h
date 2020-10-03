@@ -14,6 +14,9 @@
 /*
  * Current limitations:
  *   - Standardizes to an Xbox style controller (will add Dreamcast specific stuff later)
+ *   - Currently only raw input state is available (see playground example for how to use),
+ *     later additional callbacks will be added to allow watching for specific changes
+ *     without writing your own logic
  */
 
 // Gamepad indexes for instantiating GamepadInputHandlers
