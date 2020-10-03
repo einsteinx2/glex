@@ -1,6 +1,5 @@
 #pragma once
 #include "glex/input/InputHandler.h"
-#include "glex/input/KeyCode.h"
 #include "glex/common/gl.h"
 #include "glex/input/GamepadState.h"
 

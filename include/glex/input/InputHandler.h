@@ -3,7 +3,8 @@
 
 enum InputType {
     Keyboard,
-    Gamepad
+    Gamepad,
+    Mouse
 };
 
 class InputHandler {

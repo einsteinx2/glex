@@ -34,8 +34,8 @@ namespace GamepadAnalog {
 
 // Button states
 namespace GamepadButtonState {
-    constexpr uint8_t RELEASED = 0;
-    constexpr uint8_t PRESSED  = 1;
+    constexpr bool RELEASED = 0;
+    constexpr bool PRESSED  = 1;
 };
 
 // Gamepad button and analog stick/trigger states

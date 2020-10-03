@@ -22,10 +22,12 @@ namespace {
 }
 
 void KeyboardInputHandler::added(GLFWwindow *window) {
+    // Setup internal callback
     glfwSetKeyCallback(window, _internalCallback);
 }
 
 void KeyboardInputHandler::removed(GLFWwindow *window) {
+    // Remove internal callback
     glfwSetKeyCallback(window, NULL);
 }
 

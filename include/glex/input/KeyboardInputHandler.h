@@ -33,6 +33,7 @@ class KeyboardInputHandler: public InputHandler {
 
         void registerCallback(KeyboardCallback callback) { _callback = callback; }
         void unregisterCallback() { _callback = NULL; }
+        
         void keyPressed(int keyValue);
     private:
         KeyboardCallback _callback = NULL;

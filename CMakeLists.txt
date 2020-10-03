@@ -56,9 +56,8 @@ add_library(glex STATIC
     src/Texture.cpp          include/glex/Texture.h
     src/Triangle.cpp         include/glex/Triangle.h 
     src/Text.cpp             include/glex/Text.h 
-    include/glex/input/InputHandler.h
+    include/glex/input/InputHandler.h include/glex/input/MouseInputHandler.h include/glex/input/GamepadInputHandler.h
     src/input/KeyboardInputHandler.cpp include/glex/input/KeyboardInputHandler.h
-    include/glex/input/GamepadInputHandler.h
 )
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_SOURCE_DIR}/deps/shared")
@@ -69,6 +68,7 @@ if(USE_GLFW)
     target_sources(glex PRIVATE 
         src/Application_glfw.cpp
         src/input/KeyboardInputHandler_glfw.cpp
+        src/input/MouseInputHandler_glfw.cpp
         src/input/GamepadInputHandler_glfw.cpp
     )
 elseif(DREAMCAST_BUILD)

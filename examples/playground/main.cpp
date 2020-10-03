@@ -7,6 +7,7 @@
 #include "glex/Text.h"
 #include "glex/MeshLoader.h"
 #include "glex/input/KeyboardInputHandler.h"
+#include "glex/input/MouseInputHandler.h"
 #include "glex/input/GamepadInputHandler.h"
 
 #include <stdio.h>
@@ -44,10 +45,51 @@ int main(int argc, char *argv[]) {
     app.addInputHandler(std::shared_ptr<KeyboardInputHandler>(&keyboard));
 
 #ifdef GLFW
+    // Basic mouse handling
+    MouseState lastMouseState;
+    MouseInputHandler mouse;
+    mouse.registerRawStateCallback([&lastMouseState](MouseState mouseState) {
+        // Check if mouse moved
+        if (mouseState.posDeltaX != 0.0 || mouseState.posDeltaY != 0.0) {
+            DEBUG_PRINTLN("Mouse moved - pos: (x: %f, y: %f) delta: (dX: %f, dY: %f)", mouseState.posX, mouseState.posY, mouseState.posDeltaX, mouseState.posDeltaY);
+        }
+        
+        // Check if mouse scrolled
+        if (mouseState.scrollDeltaX != 0.0 || mouseState.scrollDeltaY != 0.0) {
+            DEBUG_PRINTLN("Mouse scrolled - delta: (dX: %f, dY: %f)", mouseState.scrollDeltaX, mouseState.scrollDeltaY);
+        }
+
+        // Check if buttons are pressed
+        if (lastMouseState.leftButton == MouseButtonState::RELEASED && mouseState.leftButton == MouseButtonState::PRESSED) {
+            DEBUG_PRINTLN("Mouse left button pressed");
+        }
+        if (lastMouseState.centerButton == MouseButtonState::RELEASED && mouseState.centerButton == MouseButtonState::PRESSED) {
+            DEBUG_PRINTLN("Mouse center button pressed");
+        }
+        if (lastMouseState.rightButton == MouseButtonState::RELEASED && mouseState.rightButton == MouseButtonState::PRESSED) {
+            DEBUG_PRINTLN("Mouse right button pressed");
+        }
+
+        // Check if buttons are released
+        if (lastMouseState.leftButton == MouseButtonState::PRESSED && mouseState.leftButton == MouseButtonState::RELEASED) {
+            DEBUG_PRINTLN("Mouse left button released");
+        }
+        if (lastMouseState.centerButton == MouseButtonState::PRESSED && mouseState.centerButton == MouseButtonState::RELEASED) {
+            DEBUG_PRINTLN("Mouse center button released");
+        }
+        if (lastMouseState.rightButton == MouseButtonState::PRESSED && mouseState.rightButton == MouseButtonState::RELEASED) {
+            DEBUG_PRINTLN("Mouse right button released");
+        }
+
+        // Store last state
+        lastMouseState = mouseState;
+    });
+    app.addInputHandler(std::shared_ptr<MouseInputHandler>(&mouse));
+
     // Basic gamepad handling
     GamepadState lastGamepad1State;
     GamepadInputHandler gamepad1(GamepadIndex::FIRST);
-    gamepad1.registerRawStateCallback([&app, &lastGamepad1State](GamepadState gamepadState) {
+    gamepad1.registerRawStateCallback([&lastGamepad1State](GamepadState gamepadState) {
         // Check if buttons are pressed
         if (lastGamepad1State.buttons[GamepadButton::A] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::A] == GamepadButtonState::PRESSED) {
             DEBUG_PRINTLN("A pressed");
