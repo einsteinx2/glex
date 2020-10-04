@@ -222,6 +222,8 @@ int main(int argc, char *argv[]) {
     woodTexture.loadRGB("images/wood1.bmp");
     Image woodImage(&woodTexture, 250, 420, 10, Image::Z_HUD, 100, app.screenScale);
 
+    Triangle triangle(250, 220, 10, Image::Z_HUD, 100, app.screenScale);
+
     MeshData *houseMesh = MeshLoader::loadObjMesh("meshes/house.obj");
     Texture houseTexture;
     houseTexture.loadRGBA("images/house_512.png");
@@ -265,6 +267,7 @@ int main(int argc, char *argv[]) {
         // Draw the foreground 2d image
         app.reshapeOrtho(1.0);
         woodImage.draw();
+        triangle.draw();
 
         // Draw the FPS counter HUD text
         app.reshapeOrtho(fpsCounter.scale);
