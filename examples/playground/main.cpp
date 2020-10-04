@@ -31,8 +31,10 @@ int main(int argc, char *argv[]) {
     app.createWindow("GLEX Playground", width, height);
 
     // Basic keyboard handling
+    DEBUG_PRINTLN("Creating keyboard handler");
     int lastKeyCode = -1;
     KeyboardInputHandler keyboard;
+    DEBUG_PRINTLN("Registering keyboard callback");
     keyboard.registerCallback([&app, &lastKeyCode](KeyCode code) {
         lastKeyCode = code;
 
@@ -40,14 +42,19 @@ int main(int argc, char *argv[]) {
         if (code == KeyCode::Escape) {
             DEBUG_PRINTLN("Escape pressed");
             app.closeWindow();
+        } else if (code == KeyCode::A) {
+            DEBUG_PRINTLN("A keyboard key pressed");
         }
     });
+    DEBUG_PRINTLN("Registered keyboard callback");
     app.addInputHandler(std::shared_ptr<KeyboardInputHandler>(&keyboard));
+    DEBUG_PRINTLN("Added keyboard input handler");
 
-#ifdef GLFW
     // Basic mouse handling
+    DEBUG_PRINTLN("Creating mouse handler");
     MouseState lastMouseState;
     MouseInputHandler mouse;
+    DEBUG_PRINTLN("Registering mouse callback");
     mouse.registerRawStateCallback([&lastMouseState](MouseState mouseState) {
         // Check if mouse moved
         if (mouseState.posDeltaX != 0.0 || mouseState.posDeltaY != 0.0) {
@@ -84,8 +91,11 @@ int main(int argc, char *argv[]) {
         // Store last state
         lastMouseState = mouseState;
     });
+    DEBUG_PRINTLN("Registered mouse callback");
     app.addInputHandler(std::shared_ptr<MouseInputHandler>(&mouse));
+    DEBUG_PRINTLN("Added mouse input handler");
 
+#ifdef GLFW
     // Basic gamepad handling
     GamepadState lastGamepad1State;
     GamepadInputHandler gamepad1(GamepadIndex::FIRST);

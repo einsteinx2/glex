@@ -19,3 +19,6 @@ struct MouseState {
     bool centerButton   = 0;
     bool rightButton    = 0;
 };
+
+bool operator == (const MouseState &lhs, const MouseState &rhs);
+bool operator != (const MouseState &lhs, const MouseState &rhs);
