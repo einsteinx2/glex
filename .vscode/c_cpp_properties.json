@@ -6,6 +6,7 @@
             "includePath": [
                 "${workspaceFolder}/include/**",
                 "${workspaceFolder}/deps/dc/DCAudio",
+                "${workspaceFolder}/deps/dc/DreamHAL",
                 "${workspaceFolder}/deps/dc/GLdc/include",
                 "${workspaceFolder}/deps/dc/kos/include",
                 "${workspaceFolder}/deps/dc/kos/kernel/arch/dreamcast/include",

@@ -108,14 +108,24 @@ elseif(USE_GLDC)
     )
     target_link_libraries(glex "${CMAKE_BINARY_DIR}/libGLdc.a" "-lm")
     add_dependencies(glex GLdc)
+
+    # DreamHAL
+    add_library(DreamHAL STATIC 
+        deps/dc/DreamHAL/perfctr.c
+    )
+    include_directories("${CMAKE_SOURCE_DIR}/deps/dc/DreamHAL")
 endif()
 
 # Create and build example programs
 add_executable(playground 
-    examples/playground/main.cpp 
+    examples/playground/main.cpp
 )
 add_dependencies(playground glex)
 target_link_libraries(playground glex)
+if(USE_GLDC)
+    add_dependencies(playground DreamHAL)
+    target_link_libraries(playground DreamHAL)
+endif()
 
 # Link macOS libraries if needed
 if(OS_MAC)

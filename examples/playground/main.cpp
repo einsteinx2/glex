@@ -15,13 +15,36 @@
 #include <string>
 #include <chrono>
 
+#include <iostream>
+
+#ifdef DREAMCAST
+extern "C" {
+    #include "perfctr.h"
+}
+#define PERF_COUNTER_WHICH 1
+    // No idea why the values are different depending on the GCC version, but it seems the counter is slightly slower on GCC 4 builds
+    #if __GNUC__ > 4 && !defined(__clang__)
+    // 1,000,000 ms in a ns, each count is approx 6.08333ns, so divide by (1,000,000 / 6.08333) = ~164,383 to get the ms
+    #define PERF_COUNTER_NS_TO_MS 164383ULL
+    #else
+    // 1,000,000 ms in a ns, each count is approx 5.83333ns, so divide by (1,000,000 / 5.83333) = ~171,428 to get the ms
+    #define PERF_COUNTER_NS_TO_MS 171428ULL
+    #endif
+#endif
+
 // Silence annoying printf float warning on Dreamcast 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Wformat"
 #endif
 
-std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
-std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
+// FPS counter
+#ifdef DREAMCAST
+unsigned long long currentTimeMs = 0;
+unsigned long long lastTimeMs = 0;
+#else
+auto currentTime = std::chrono::high_resolution_clock::now();
+auto lastTime = std::chrono::high_resolution_clock::now();
+#endif
 uint16_t timeDiff = 0;
 uint16_t nbFrames = 0;
 float frameTime = 0.0;
@@ -44,6 +67,9 @@ int main(int argc, char *argv[]) {
         // Exit the application when escape key is pressed
         if (code == KeyCode::Escape) {
             DEBUG_PRINTLN("Escape pressed");
+#ifdef DREAMCAST
+            PMCR_Disable(PERF_COUNTER_WHICH);
+#endif
             app.closeWindow();
         } else if (code == KeyCode::A) {
             DEBUG_PRINTLN("A keyboard key pressed");
@@ -236,11 +262,28 @@ int main(int argc, char *argv[]) {
     Text fpsCounter(fontFace, "", darkBlue, 20, 20, Image::Z_HUD, app.screenScale);
     fpsCounter.createTexture();
 
+#ifdef DREAMCAST
+    // Init perf counter
+    PMCR_Init(PERF_COUNTER_WHICH, PMCR_ELAPSED_TIME_MODE, PMCR_COUNT_CPU_CYCLES);
+    lastTimeMs = PMCR_Read(PERF_COUNTER_WHICH) / PERF_COUNTER_NS_TO_MS;
+#endif
+
     // Main loop
     while (!app.windowShouldClose()) {
         // Measure speed
         nbFrames++;
-        currentTime = std::chrono::steady_clock::now();
+
+#ifdef DREAMCAST
+        currentTimeMs = PMCR_Read(PERF_COUNTER_WHICH) / PERF_COUNTER_NS_TO_MS;
+        timeDiff = currentTimeMs - lastTimeMs;
+        if (timeDiff >= 1000) {
+            frameTime = float(timeDiff) / float(nbFrames);
+            fps = nbFrames;
+            nbFrames = 0;
+            lastTimeMs = currentTimeMs;
+        }
+#else
+        currentTime = std::chrono::high_resolution_clock::now();
         timeDiff = (uint16_t)std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
         if (timeDiff >= 1000) {
             frameTime = float(timeDiff) / float(nbFrames);
@@ -248,6 +291,7 @@ int main(int argc, char *argv[]) {
             nbFrames = 0;
             lastTime = currentTime;
         }
+#endif
 
         // Handle input
         app.handleInput();
@@ -275,8 +319,7 @@ int main(int argc, char *argv[]) {
         // Draw the FPS counter HUD text
         app.reshapeOrtho(fpsCounter.scale);
         static char outputString[50];
-        // NOTE: Due to an old GCC bug, we must manually cast floats to double in order to use %f without a warning 
-        snprintf(&outputString[0], 50, "frame time: %.2f ms  fps: %.2f  key: %d", (double)frameTime, (double)fps, lastKeyCode);
+        snprintf(&outputString[0], 50, "frame time: %.2f ms  fps: %d  key: %d", frameTime, fps, lastKeyCode);
         fpsCounter.text = outputString;
         fpsCounter.draw();
 
