@@ -30,6 +30,7 @@ public:
     Image(Texture* texture_, float x_, float y_, float z_, float width_, float height_, float windowScale_, float scale_ = 1.0) {
         texture = texture_; x = x_; y = y_; z = z_; width = width_; height = height_, windowScale = windowScale_; scale = scale_;
     };
+    
     void draw();
 
 private:
