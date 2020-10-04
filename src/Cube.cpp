@@ -2,27 +2,22 @@
 #include "glex/common/log.h"
 
 Cube::Cube() {
-    _initTexture();
 }
 
 Cube::~Cube() {
     DEBUG_PRINTLN("Destroy Cube!");
-    if (_texture != nullptr)
-        delete _texture;
 }
 
-Cube::Cube(const std::string texturePath) {
-    _initTexture();
-    _texture->loadRGB(texturePath);
+Cube::Cube(Texture* texture) {
+    setTexture(texture);
 }
 
-Texture* Cube::GetTexture() {
+Texture* Cube::getTexture() {
     return _texture;
 }
 
-void Cube::_initTexture() {
-    if (_texture == nullptr)
-        _texture = new Texture();
+void Cube::setTexture(Texture* texture) {
+    _texture = texture;
 }
 
 void Cube::_drawList() {

@@ -6,18 +6,16 @@ class Cube {
 public:
     Cube();
     ~Cube();
-    Cube(const std::string texturePath);
+    Cube(Texture* texture);
     void draw();
-
-    Texture* GetTexture();
-
+    Texture* getTexture();
+    void setTexture(Texture* texture);
 
 private:
     GLfloat _anglex = 0.0;
     GLfloat _angley = 0.0;
     GLfloat _anglez = 0.0;
     Texture* _texture = nullptr;
-    
+
     void _drawList();
-    void _initTexture();
 };
