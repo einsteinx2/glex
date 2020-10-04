@@ -229,6 +229,8 @@ int main(int argc, char *argv[]) {
     houseTexture.loadRGBA("images/house_512.png");
     Mesh mesh(houseMesh, &houseTexture, 0.3f);
 
+    Cube cube;
+
     FontColor darkBlue{21, 1, 148};
     FontFace fontFace = app.screenScale > 1.0 ? FontFace::arial_28 : FontFace::arial_16;
     Text fpsCounter(fontFace, "", darkBlue, 20, 20, Image::Z_HUD, app.screenScale);
@@ -263,6 +265,7 @@ int main(int argc, char *argv[]) {
         mesh.rotationX += 0.75;
         mesh.rotationY += 0.75;
         mesh.rotationZ += 0.75;
+        // cube.draw();
 
         // Draw the foreground 2d image
         app.reshapeOrtho(1.0);

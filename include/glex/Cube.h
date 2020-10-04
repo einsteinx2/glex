@@ -4,18 +4,17 @@
 
 class Cube {
 public:
-    Cube();
-    ~Cube();
-    Cube(Texture* texture);
+    Texture* texture = nullptr;
+
+    Cube() {};
+    Cube(Texture* texture_) { texture = texture_; }
+
     void draw();
-    Texture* getTexture();
-    void setTexture(Texture* texture);
 
 private:
     GLfloat _anglex = 0.0;
     GLfloat _angley = 0.0;
-    GLfloat _anglez = 0.0;
-    Texture* _texture = nullptr;
+    GLfloat _anglez = 0.0;    
 
     void _drawList();
 };
