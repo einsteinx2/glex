@@ -8,31 +8,31 @@
 
 void GamepadInputHandler::added(GLFWwindow *window) {
     // Check if the gamepad exists
-    if (!glfwJoystickPresent(_joystickNumber)) {
-        DEBUG_PRINTLN("GLFW joystick number %u doesn't exist!", _joystickNumber);
+    if (!glfwJoystickPresent(_gamepadIndex)) {
+        DEBUG_PRINTLN("GLFW joystick number %u doesn't exist!", _gamepadIndex);
         return;
     }
 
     // Make sure it's actually a gamepad
-    if(!glfwJoystickIsGamepad(_joystickNumber)) {
-        DEBUG_PRINTLN("GLFW joystick number %u isn't a gamepad!", _joystickNumber);
+    if(!glfwJoystickIsGamepad(_gamepadIndex)) {
+        DEBUG_PRINTLN("GLFW joystick number %u isn't a gamepad!", _gamepadIndex);
         return;
     }
 
     // Print the gamepad name
-    _gamepadName = std::string(glfwGetGamepadName(_joystickNumber));
-    DEBUG_PRINTLN("Gamepad added: %u - %s", _joystickNumber, _gamepadName.c_str());
+    _gamepadName = std::string(glfwGetGamepadName(_gamepadIndex));
+    DEBUG_PRINTLN("Gamepad added: %u - %s", _gamepadIndex, _gamepadName.c_str());
 }
 
 void GamepadInputHandler::removed(GLFWwindow *window) {
     // Print the gamepad name
-    DEBUG_PRINTLN("Gamepad removed: %u - %s", _joystickNumber, _gamepadName.c_str());
+    DEBUG_PRINTLN("Gamepad removed: %u - %s", _gamepadIndex, _gamepadName.c_str());
 }
 
 void GamepadInputHandler::poll() {
     // Get the GLFW gamepad state
     GLFWgamepadstate glfwState;
-    if (glfwGetGamepadState(_joystickNumber, &glfwState)) {
+    if (glfwGetGamepadState(_gamepadIndex, &glfwState)) {
         // Convert to GLEX state format
         GamepadState glexState;
         std::memcpy(glexState.buttons, glfwState.buttons, sizeof(unsigned char) * (GamepadButton::LAST + 1));

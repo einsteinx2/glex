@@ -26,23 +26,27 @@ void MouseInputHandler::removed() {
 
 void MouseInputHandler::poll() {
     if (_mapleDevice != NULL) {
-        MouseState prevState = _currentState;
-
-        // Process all mouse changes
         mouse_state_t *mouseState = (mouse_state_t *)maple_dev_status(_mapleDevice);
-        _currentState.posX += mouseState->dx;
-        _currentState.posY += mouseState->dy;
-        _currentState.posDeltaX = mouseState->dx;
-        _currentState.posDeltaY = mouseState->dy;
-        _currentState.scrollDeltaX = mouseState->dz;
-        _currentState.leftButton = mouseState->buttons & MOUSE_LEFTBUTTON;
-        _currentState.rightButton = mouseState->buttons & MOUSE_RIGHTBUTTON;
-        _currentState.centerButton = mouseState->buttons & MOUSE_SIDEBUTTON;
+        if (mouseState != NULL) {
+            // Remember previous state for comparison
+            MouseState prevState = _currentState;
 
-        // Check for changes
-        if (_rawCallback != NULL && prevState != _currentState) {
-            _rawCallback(_currentState);
+            // Process all mouse changes
+            _currentState.posX        += mouseState->dx;
+            _currentState.posY        += mouseState->dy;
+            _currentState.posDeltaX    = mouseState->dx;
+            _currentState.posDeltaY    = mouseState->dy;
+            _currentState.scrollDeltaX = mouseState->dz;
+            _currentState.leftButton   = mouseState->buttons & MOUSE_LEFTBUTTON;
+            _currentState.rightButton  = mouseState->buttons & MOUSE_RIGHTBUTTON;
+            _currentState.centerButton = mouseState->buttons & MOUSE_SIDEBUTTON;
+
+            // Check for changes
+            if (_rawCallback != NULL && prevState != _currentState) {
+                _rawCallback(_currentState);
+            }
         }
+        
     }
 }
 

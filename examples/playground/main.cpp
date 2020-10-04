@@ -15,6 +15,11 @@
 #include <string>
 #include <chrono>
 
+// Silence annoying printf float warning on Dreamcast 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
 uint16_t timeDiff = 0;
@@ -31,10 +36,8 @@ int main(int argc, char *argv[]) {
     app.createWindow("GLEX Playground", width, height);
 
     // Basic keyboard handling
-    DEBUG_PRINTLN("Creating keyboard handler");
     int lastKeyCode = -1;
     KeyboardInputHandler keyboard;
-    DEBUG_PRINTLN("Registering keyboard callback");
     keyboard.registerCallback([&app, &lastKeyCode](KeyCode code) {
         lastKeyCode = code;
 
@@ -46,15 +49,11 @@ int main(int argc, char *argv[]) {
             DEBUG_PRINTLN("A keyboard key pressed");
         }
     });
-    DEBUG_PRINTLN("Registered keyboard callback");
     app.addInputHandler(std::shared_ptr<KeyboardInputHandler>(&keyboard));
-    DEBUG_PRINTLN("Added keyboard input handler");
 
     // Basic mouse handling
-    DEBUG_PRINTLN("Creating mouse handler");
     MouseState lastMouseState;
     MouseInputHandler mouse;
-    DEBUG_PRINTLN("Registering mouse callback");
     mouse.registerRawStateCallback([&lastMouseState](MouseState mouseState) {
         // Check if mouse moved
         if (mouseState.posDeltaX != 0.0 || mouseState.posDeltaY != 0.0) {
@@ -91,11 +90,8 @@ int main(int argc, char *argv[]) {
         // Store last state
         lastMouseState = mouseState;
     });
-    DEBUG_PRINTLN("Registered mouse callback");
     app.addInputHandler(std::shared_ptr<MouseInputHandler>(&mouse));
-    DEBUG_PRINTLN("Added mouse input handler");
 
-#ifdef GLFW
     // Basic gamepad handling
     GamepadState lastGamepad1State;
     GamepadInputHandler gamepad1(GamepadIndex::FIRST);
@@ -112,6 +108,9 @@ int main(int argc, char *argv[]) {
         }
         if (lastGamepad1State.buttons[GamepadButton::Y] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::Y] == GamepadButtonState::PRESSED) {
             DEBUG_PRINTLN("Y pressed");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::START] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::START] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("Start pressed");
         }
         if (lastGamepad1State.buttons[GamepadButton::L_SHOULDER] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::L_SHOULDER] == GamepadButtonState::PRESSED) {
             DEBUG_PRINTLN("Left Shoulder pressed");
@@ -138,6 +137,9 @@ int main(int argc, char *argv[]) {
         }
         if (lastGamepad1State.buttons[GamepadButton::Y] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::Y] == GamepadButtonState::RELEASED) {
             DEBUG_PRINTLN("Y released");
+        }
+        if (lastGamepad1State.buttons[GamepadButton::START] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::START] == GamepadButtonState::RELEASED) {
+            DEBUG_PRINTLN("Start released");
         }
         if (lastGamepad1State.buttons[GamepadButton::L_SHOULDER] == GamepadButtonState::PRESSED && gamepadState.buttons[GamepadButton::L_SHOULDER] == GamepadButtonState::RELEASED) {
             DEBUG_PRINTLN("Left Shoulder released");
@@ -198,7 +200,6 @@ int main(int argc, char *argv[]) {
         lastGamepad1State = gamepadState;
     });
     app.addInputHandler(std::shared_ptr<GamepadInputHandler>(&gamepad1));
-#endif
 
     // NOTE: Both Image and Mesh classes can use textures loaded from JPG, PNG, or BMP.
     //       All PNG files have been run through pngcrush.

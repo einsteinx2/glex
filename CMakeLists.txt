@@ -56,7 +56,8 @@ add_library(glex STATIC
     src/Texture.cpp          include/glex/Texture.h
     src/Triangle.cpp         include/glex/Triangle.h 
     src/Text.cpp             include/glex/Text.h 
-    include/glex/input/InputHandler.h include/glex/input/GamepadInputHandler.h
+    include/glex/input/InputHandler.h 
+    src/input/GamepadState.cpp include/glex/input/GamepadInputHandler.h
     src/input/KeyboardInputHandler.cpp include/glex/input/KeyboardInputHandler.h
     src/input/MouseState.cpp include/glex/input/MouseInputHandler.h 
 )
@@ -78,6 +79,7 @@ elseif(DREAMCAST_BUILD)
         src/Application_dc.cpp
         src/input/KeyboardInputHandler_dc.cpp
         src/input/MouseInputHandler_dc.cpp
+        src/input/GamepadInputHandler_dc.cpp
     )
 endif()
 

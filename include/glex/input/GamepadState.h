@@ -1,6 +1,8 @@
 #pragma once
 #include "glex/common/gl.h"
 
+#include "stdint.h"
+
 // Xbox controller style button layout
 namespace GamepadButton {
     constexpr uint8_t A          = 0;
@@ -41,7 +43,10 @@ namespace GamepadButtonState {
 // Gamepad button and analog stick/trigger states
 struct GamepadState {
     // The states of each GamepadButton; values from GamepadButtonState
-    unsigned char buttons[15];
+    unsigned char buttons[15] = {};
     // The states of each GamepadAnalog; values between -1.0 and 1.0 inclusive
-    float analog[6];
+    float analog[6] = {};
 };
+
+bool operator == (const GamepadState &lhs, const GamepadState &rhs);
+bool operator != (const GamepadState &lhs, const GamepadState &rhs);

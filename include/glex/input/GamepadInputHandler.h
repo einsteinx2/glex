@@ -32,11 +32,7 @@ class GamepadInputHandler: public InputHandler {
     public:
         virtual InputType type() { return InputType::Gamepad; }
 
-#ifdef GLFW
-        GamepadInputHandler(uint8_t joystickNumber) { _joystickNumber = joystickNumber; }
-#else
-        GamepadInputHandler() {}
-#endif
+        GamepadInputHandler(uint8_t gamepadIndex) { _gamepadIndex = gamepadIndex; }
 
 #ifdef GLFW
         virtual void added(GLFWwindow *window);
@@ -52,6 +48,7 @@ class GamepadInputHandler: public InputHandler {
 
         GamepadState getCurrentState() { return _currentState; }
     private:
+        uint8_t _gamepadIndex = 0;
         GamepadRawStateCallback _rawCallback = NULL;
         GamepadState _currentState;
 
