@@ -230,7 +230,7 @@ int main(int argc, char *argv[]) {
         lastGamepad1State = gamepadState;
 
         // Check for L + R + Start button combo to exit the app
-        if (gamepadState.analog[GamepadAnalog::L_TRIGGER] > 250.0 && gamepadState.analog[GamepadAnalog::R_TRIGGER] > 250.0 && gamepadState.buttons[GamepadButton::START] == GamepadButtonState::PRESSED) {
+        if (gamepadState.analog[GamepadAnalog::L_TRIGGER] > 0.9 && gamepadState.analog[GamepadAnalog::R_TRIGGER] > 0.9 && gamepadState.buttons[GamepadButton::START] == GamepadButtonState::PRESSED) {
             DEBUG_PRINTLN("L + R + Start pressed!");
             cleanExit(&app);
         }

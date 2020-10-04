@@ -39,10 +39,14 @@ void GamepadInputHandler::poll() {
             glexState.buttons[GamepadButton::DPAD_RIGHT] = (bool)(contState->buttons & CONT_DPAD_RIGHT);
             glexState.buttons[GamepadButton::DPAD_DOWN]  = (bool)(contState->buttons & CONT_DPAD_DOWN);
             glexState.buttons[GamepadButton::DPAD_LEFT]  = (bool)(contState->buttons & CONT_DPAD_LEFT);
-            glexState.analog[GamepadAnalog::L_STICK_X]   = contState->joyx; 
-            glexState.analog[GamepadAnalog::L_STICK_Y]   = contState->joyy;
-            glexState.analog[GamepadAnalog::L_TRIGGER]   = contState->ltrig;
-            glexState.analog[GamepadAnalog::R_TRIGGER]   = contState->rtrig;
+
+            // Constrain L stick to -1.0 - 1.0 range
+            glexState.analog[GamepadAnalog::L_STICK_X]   = (((float)contState->joyx + 128.0) / 128.0) - 1.0;
+            glexState.analog[GamepadAnalog::L_STICK_Y]   = -((((float)contState->joyy + 128.0) / 128.0) - 1.0);
+
+            // Constrain L and R triggers to 0.0 - 1.0 range
+            glexState.analog[GamepadAnalog::L_TRIGGER]   = (float)contState->ltrig / 255.0;
+            glexState.analog[GamepadAnalog::R_TRIGGER]   = (float)contState->rtrig / 255.0;
 
             // Check for changes
             if (_rawCallback != NULL && _currentState != glexState) {

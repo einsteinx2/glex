@@ -36,7 +36,18 @@ void GamepadInputHandler::poll() {
         // Convert to GLEX state format
         GamepadState glexState;
         std::memcpy(glexState.buttons, glfwState.buttons, sizeof(unsigned char) * (GamepadButton::LAST + 1));
-        std::memcpy(glexState.analog, glfwState.axes, sizeof(float) * (GamepadAnalog::LAST + 1));
+
+        glexState.analog[GamepadAnalog::L_STICK_X] = glfwState.axes[GamepadAnalog::L_STICK_X];
+        glexState.analog[GamepadAnalog::R_STICK_X] = glfwState.axes[GamepadAnalog::R_STICK_X];
+
+        // Invert L and R sticks Y-axis so that up is positive
+        glexState.analog[GamepadAnalog::L_STICK_Y] = -(glfwState.axes[GamepadAnalog::L_STICK_Y]);
+        glexState.analog[GamepadAnalog::R_STICK_Y] = -(glfwState.axes[GamepadAnalog::R_STICK_Y]);
+        
+        // Convert L and R triggers to 0.0 - 1.0 range
+        glexState.analog[GamepadAnalog::L_TRIGGER] = (glfwState.axes[GamepadAnalog::L_TRIGGER] + 1.0) / 2.0;
+        glexState.analog[GamepadAnalog::R_TRIGGER] = (glfwState.axes[GamepadAnalog::R_TRIGGER] + 1.0) / 2.0;
+
         _currentState = glexState;
 
         // Call the raw state callback if it exists
