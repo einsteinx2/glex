@@ -50,6 +50,13 @@ uint16_t nbFrames = 0;
 float frameTime = 0.0;
 uint16_t fps = 0;
 
+void cleanExit(Application* app) {
+#ifdef DREAMCAST
+    PMCR_Disable(PERF_COUNTER_WHICH);
+#endif
+    app->closeWindow();
+}
+
 /* program entry */
 int main(int argc, char *argv[]) {
     DEBUG_PRINTLN("Application started!");
@@ -67,10 +74,7 @@ int main(int argc, char *argv[]) {
         // Exit the application when escape key is pressed
         if (code == KeyCode::Escape) {
             DEBUG_PRINTLN("Escape pressed");
-#ifdef DREAMCAST
-            PMCR_Disable(PERF_COUNTER_WHICH);
-#endif
-            app.closeWindow();
+            cleanExit(&app);
         } else if (code == KeyCode::A) {
             DEBUG_PRINTLN("A keyboard key pressed");
         }
@@ -121,7 +125,7 @@ int main(int argc, char *argv[]) {
     // Basic gamepad handling
     GamepadState lastGamepad1State;
     GamepadInputHandler gamepad1(GamepadIndex::FIRST);
-    gamepad1.registerRawStateCallback([&lastGamepad1State](GamepadState gamepadState) {
+    gamepad1.registerRawStateCallback([&app, &lastGamepad1State](GamepadState gamepadState) {
         // Check if buttons are pressed
         if (lastGamepad1State.buttons[GamepadButton::A] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::A] == GamepadButtonState::PRESSED) {
             DEBUG_PRINTLN("A pressed");
@@ -224,6 +228,12 @@ int main(int argc, char *argv[]) {
 
         // Store last state
         lastGamepad1State = gamepadState;
+
+        // Check for L + R + Start button combo to exit the app
+        if (gamepadState.analog[GamepadAnalog::L_TRIGGER] > 250.0 && gamepadState.analog[GamepadAnalog::R_TRIGGER] > 250.0 && gamepadState.buttons[GamepadButton::START] == GamepadButtonState::PRESSED) {
+            DEBUG_PRINTLN("L + R + Start pressed!");
+            cleanExit(&app);
+        }
     });
     app.addInputHandler(std::shared_ptr<GamepadInputHandler>(&gamepad1));
 
