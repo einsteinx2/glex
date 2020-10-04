@@ -15,17 +15,19 @@ namespace {
         Application* app = (Application*)glfwGetWindowUserPointer(window);
         for (auto handler : app->inputHandlers()) {
             if (handler->type() == InputType::Keyboard) {
-                dynamic_cast<KeyboardInputHandler*>(handler)->keyPressed(k);
+                std::dynamic_pointer_cast<KeyboardInputHandler>(handler)->keyPressed(k);
             }
         }
     }
 }
 
 void KeyboardInputHandler::added(GLFWwindow *window) {
+    // Setup internal callback
     glfwSetKeyCallback(window, _internalCallback);
 }
 
 void KeyboardInputHandler::removed(GLFWwindow *window) {
+    // Remove internal callback
     glfwSetKeyCallback(window, NULL);
 }
 

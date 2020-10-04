@@ -62,6 +62,11 @@ void Application::swapBuffers() {
 void Application::handleInput() {
     // Calls all GLFW event handler callback functions
     glfwPollEvents();
+
+    // Poll all input handlers (non-polling handlers will just nop)
+    for (auto handler : _inputHandlers) {
+        handler->poll();
+    }
 }
 
 int Application::windowShouldClose() {
@@ -83,12 +88,12 @@ void _sizeCallback(GLFWwindow* window, int width, int height) {
     app->_reshapeOrtho(width, height);
 }
 
-void Application::addInputHandler(InputHandler* inputHandler) {
+void Application::addInputHandler(std::shared_ptr<InputHandler> inputHandler) {
     _inputHandlers.push_back(inputHandler);
     inputHandler->added(_window);
 }
 
-void Application::removeInputHandler(InputHandler* inputHandler) {
+void Application::removeInputHandler(std::shared_ptr<InputHandler> inputHandler) {
     auto first = std::remove(_inputHandlers.begin(), _inputHandlers.end(), inputHandler);
     _inputHandlers.erase(first, _inputHandlers.end());
     inputHandler->removed(_window);

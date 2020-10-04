@@ -2,7 +2,9 @@
 #include "glex/common/gl.h"
 
 enum InputType {
-    Keyboard
+    Keyboard,
+    Gamepad,
+    Mouse
 };
 
 class InputHandler {

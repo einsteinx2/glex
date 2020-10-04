@@ -8,6 +8,7 @@
 #include <dc/maple/keyboard.h>
 
 #include <cstdlib>
+#include <algorithm>
 
 void Application::createWindow(std::string windowName, int width, int height) {
     _windowName = windowName;
@@ -41,18 +42,15 @@ void Application::_updateWindowSize() {
     // Not implemented for Dreamcast
 }
 
-void Application::addInputHandler(InputHandler* inputHandler) {
+void Application::addInputHandler(std::shared_ptr<InputHandler> inputHandler) {
     _inputHandlers.push_back(inputHandler);
     inputHandler->added();
 }
 
-void Application::removeInputHandler(InputHandler* inputHandler) {
-    // TODO: Doesn't compile on GCC 4.7
-    // error: cannot convert 'std::vector<InputHandler*>::iterator {aka __gnu_cxx::__normal_iterator<InputHandler**, std::vector<InputHandler*> >}' to 'const char*' for argument '1' to 'int remove(const char*)'
-    //
-    // auto first = std::remove(_inputHandlers.begin(), _inputHandlers.end(), inputHandler);
-    // _inputHandlers.erase(first, _inputHandlers.end());
-    // inputHandler->removed();
+void Application::removeInputHandler(std::shared_ptr<InputHandler> inputHandler) {
+    auto first = std::remove(_inputHandlers.begin(), _inputHandlers.end(), inputHandler);
+    _inputHandlers.erase(first, _inputHandlers.end());
+    inputHandler->removed();
 }
 
 #endif
