@@ -48,18 +48,19 @@ add_library(glex STATIC
     src/fonts/arial_32pt.cpp  include/glex/fonts/arial_32pt.h 
 
     # GLEX
-    src/Application.cpp      include/glex/Application.h
-    src/Cube.cpp             include/glex/Cube.h
-    src/Image.cpp            include/glex/Image.h
-    src/Mesh.cpp             include/glex/Mesh.h
-    src/MeshLoader.cpp       include/glex/MeshLoader.h
-    src/Texture.cpp          include/glex/Texture.h
-    src/Triangle.cpp         include/glex/Triangle.h 
-    src/Text.cpp             include/glex/Text.h 
+    src/Application.cpp                 include/glex/Application.h
+    include/glex/audio/Audio.h
+    src/graphics/Cube.cpp               include/glex/graphics/Cube.h
+    src/graphics/Image.cpp              include/glex/graphics/Image.h
+    src/graphics/Mesh.cpp               include/glex/graphics/Mesh.h
+    src/graphics/MeshLoader.cpp         include/glex/graphics/MeshLoader.h
+    src/graphics/Texture.cpp            include/glex/graphics/Texture.h
+    src/graphics/Triangle.cpp           include/glex/graphics/Triangle.h 
+    src/graphics/Text.cpp               include/glex/graphics/Text.h 
     include/glex/input/InputHandler.h 
-    src/input/GamepadState.cpp include/glex/input/GamepadInputHandler.h
-    src/input/KeyboardInputHandler.cpp include/glex/input/KeyboardInputHandler.h
-    src/input/MouseState.cpp include/glex/input/MouseInputHandler.h 
+    src/input/GamepadState.cpp          include/glex/input/GamepadInputHandler.h
+    src/input/KeyboardInputHandler.cpp  include/glex/input/KeyboardInputHandler.h
+    src/input/MouseState.cpp            include/glex/input/MouseInputHandler.h 
 )
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_SOURCE_DIR}/deps/shared")
@@ -77,6 +78,7 @@ elseif(DREAMCAST_BUILD)
     # Dreamcast
     target_sources(glex PRIVATE 
         src/Application_dc.cpp
+        src/audio/Audio_dc.cpp
         src/input/KeyboardInputHandler_dc.cpp
         src/input/MouseInputHandler_dc.cpp
         src/input/GamepadInputHandler_dc.cpp

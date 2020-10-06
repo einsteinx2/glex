@@ -1,4 +1,4 @@
-#include "glex/MeshLoader.h"
+#include "glex/graphics/MeshLoader.h"
 #include "glex/common/log.h"
 #include "glex/common/path.h"
 

@@ -1,8 +1,8 @@
 #include "glex/common/log.h"
 #include "glex/common/path.h"
 #include "glex/Application.h"
-#include "glex/Image.h"
-#include "glex/Text.h"
+#include "glex/graphics/Image.h"
+#include "glex/graphics/Text.h"
 #include "glex/input/KeyboardInputHandler.h"
 
 #include <cstdio>
@@ -31,7 +31,7 @@ sfxhnd_t kickSample;
 sfxhnd_t clapSample;
 
 /* sound thread */
-void *thd_0(void *v) {
+void* thd_0(void *v) {
     //for (int i = 0; i < 4; i++) {
     while(true) {
         nsnd_sfx_play(kickSample, 254, 128);

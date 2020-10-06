@@ -1,11 +1,12 @@
 #include "glex/common/log.h"
 #include "glex/Application.h"
-#include "glex/Triangle.h"
-#include "glex/Cube.h"
-#include "glex/Mesh.h"
-#include "glex/Image.h"
-#include "glex/Text.h"
-#include "glex/MeshLoader.h"
+#include "glex/audio/Audio.h"
+#include "glex/graphics/Triangle.h"
+#include "glex/graphics/Cube.h"
+#include "glex/graphics/Mesh.h"
+#include "glex/graphics/Image.h"
+#include "glex/graphics/Text.h"
+#include "glex/graphics/MeshLoader.h"
 #include "glex/input/KeyboardInputHandler.h"
 #include "glex/input/MouseInputHandler.h"
 #include "glex/input/GamepadInputHandler.h"
@@ -64,6 +65,9 @@ int main(int argc, char *argv[]) {
     int height = 480;
     Application app;
     app.createWindow("GLEX Playground", width, height);
+
+    Audio clap("samples/clap3.wav");
+    clap.load();
 
     // Basic keyboard handling
     int lastKeyCode = -1;
@@ -125,16 +129,19 @@ int main(int argc, char *argv[]) {
     // Basic gamepad handling
     GamepadState lastGamepad1State;
     GamepadInputHandler gamepad1(GamepadIndex::FIRST);
-    gamepad1.registerRawStateCallback([&app, &lastGamepad1State](GamepadState gamepadState) {
+    gamepad1.registerRawStateCallback([&app, &lastGamepad1State, &clap](GamepadState gamepadState) {
         // Check if buttons are pressed
         if (lastGamepad1State.buttons[GamepadButton::A] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::A] == GamepadButtonState::PRESSED) {
             DEBUG_PRINTLN("A pressed");
+            clap.play();
         }
         if (lastGamepad1State.buttons[GamepadButton::B] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::B] == GamepadButtonState::PRESSED) {
             DEBUG_PRINTLN("B pressed");
+            clap.pause();
         }
         if (lastGamepad1State.buttons[GamepadButton::X] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::X] == GamepadButtonState::PRESSED) {
             DEBUG_PRINTLN("X pressed");
+            clap.stop();
         }
         if (lastGamepad1State.buttons[GamepadButton::Y] == GamepadButtonState::RELEASED && gamepadState.buttons[GamepadButton::Y] == GamepadButtonState::PRESSED) {
             DEBUG_PRINTLN("Y pressed");

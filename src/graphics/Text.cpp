@@ -1,4 +1,4 @@
-#include "glex/Text.h"
+#include "glex/graphics/Text.h"
 #include "glex/common/log.h"
 #include "glex/fonts/arial_16pt.h"
 #include "glex/fonts/arial_28pt.h"

@@ -1,4 +1,4 @@
-#include "glex/Mesh.h"
+#include "glex/graphics/Mesh.h"
 #include "glex/common/log.h"
 
 Mesh::Mesh(MeshData* meshData, Texture* texture, GLfloat scale) {
