@@ -21,7 +21,7 @@
 
 #variable_watch(CMAKE_BUILD_TYPE)
 
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.12.0)
 project(glex)
 
 # If no toolchain is specified, automatically build for the host OS
@@ -119,28 +119,28 @@ elseif(USE_GLDC)
 endif()
 
 # Create and build example programs
-add_executable(playground 
-    examples/playground/main.cpp
+add_executable(PlaygroundExample 
+    examples/PlaygroundExample/main.cpp
 )
-add_dependencies(playground glex)
-target_link_libraries(playground glex)
+add_dependencies(PlaygroundExample glex)
+target_link_libraries(PlaygroundExample glex)
 if(USE_GLDC)
-    add_dependencies(playground DreamHAL)
-    target_link_libraries(playground DreamHAL)
+    add_dependencies(PlaygroundExample DreamHAL)
+    target_link_libraries(PlaygroundExample DreamHAL)
 endif()
 
 # Link macOS libraries if needed
 if(OS_MAC)
-    target_link_libraries(playground "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
+    target_link_libraries(PlaygroundExample "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
 endif()
 
 if(PC_BUILD)
     # Copy meshes
-    file(GLOB OBJ_MESHES "${CMAKE_SOURCE_DIR}/examples/playground/meshes/*.obj" )
+    file(GLOB OBJ_MESHES "${CMAKE_SOURCE_DIR}/examples/PlaygroundExample/meshes/*.obj" )
     file(COPY ${OBJ_MESHES} DESTINATION "${CMAKE_BINARY_DIR}/meshes")
 
     # Copy images
-    file(GLOB IMG_FILES "${CMAKE_SOURCE_DIR}/examples/playground/images/*")
+    file(GLOB IMG_FILES "${CMAKE_SOURCE_DIR}/examples/PlaygroundExample/images/*")
     file(COPY ${IMG_FILES} DESTINATION "${CMAKE_BINARY_DIR}/images")
 elseif(DREAMCAST_BUILD)
     # Dreamcast-only audio test program
@@ -148,6 +148,7 @@ elseif(DREAMCAST_BUILD)
         # Build the custom sound driver based off of the KOS driver
         # NOTE: We must use "make" instead of "+make" or it will fail to build
         #       though we will not get multithreaded building
+        # OUTPUT "${CMAKE_BINARY_DIR}/libNSound.a"
         COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/nsound" build
         # Move the compiled sound driver file to the build directory
         COMMAND mv "${CMAKE_SOURCE_DIR}/deps/dc/nsound/arm/nstream.drv" "${CMAKE_BINARY_DIR}/nstream.drv"
@@ -156,20 +157,20 @@ elseif(DREAMCAST_BUILD)
         # Clean the build artifacts
         COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/nsound" clean
     )
-    add_executable(audiotest
-        examples/audiotest/main.cpp 
+    add_executable(DCAudioPlaygroundExample
+        examples/DCAudioPlaygroundExample/main.cpp 
     )
-    add_dependencies(audiotest glex)
-    add_dependencies(audiotest NSound)
-    target_link_libraries(audiotest glex)
-    target_link_libraries(audiotest "${CMAKE_BINARY_DIR}/libNSound.a")
+    add_dependencies(DCAudioPlaygroundExample glex)
+    add_dependencies(DCAudioPlaygroundExample NSound)
+    target_link_libraries(DCAudioPlaygroundExample glex)
+    target_link_libraries(DCAudioPlaygroundExample "${CMAKE_BINARY_DIR}/libNSound.a")
     include_directories("${CMAKE_SOURCE_DIR}/deps/dc/nsound/include")
     include_directories("${CMAKE_SOURCE_DIR}/deps/dc/DCAudio")
     
     # Build CDIs
     set(DC_EXECUTABLES # Names without .elf extension
-        playground
-        audiotest
+        PlaygroundExample
+        DCAudioPlaygroundExample
     )
 
     foreach(EXE ${DC_EXECUTABLES})

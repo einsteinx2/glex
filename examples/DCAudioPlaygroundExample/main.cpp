@@ -1,3 +1,11 @@
+/*
+ * NOTE: This is meant for my own personal testing! Please see the "audiotest" example project to learn how to use audio with GLEX. 
+ * 
+ * This is a test project to work try out low level Dreamcast AICA sound chip programming.
+ * It uses the DCAudio low level header library and a duplicated copy of the KOS sound code 
+ * for easily testing changes.
+ */
+
 #include "glex/common/log.h"
 #include "glex/common/path.h"
 #include "glex/Application.h"
