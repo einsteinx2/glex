@@ -1,4 +1,4 @@
-#include "glex/Image.h"
+#include "glex/graphics/Image.h"
 #include "glex/common/log.h"
 
 void Image::draw() {

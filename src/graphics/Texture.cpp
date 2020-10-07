@@ -1,13 +1,13 @@
+#include "glex/graphics/Texture.h"
+#include "glex/common/log.h"
+#include "glex/common/path.h"
+
 // To reduce footprint, only support JPEG, PNG, and BMP files
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_JPEG
 #define STBI_ONLY_PNG
 #define STBI_ONLY_BMP
 #include "stb/stb_image.h"
-
-#include "glex/Texture.h"
-#include "glex/common/log.h"
-#include "glex/common/path.h"
 
 #include <fstream>
 #include <cstdlib>

@@ -1,4 +1,4 @@
-#include "glex/Cube.h"
+#include "glex/graphics/Cube.h"
 #include "glex/common/log.h"
 
 void Cube::draw() {

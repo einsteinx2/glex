@@ -8,4 +8,3 @@ export THREADS=$(getconf _NPROCESSORS_ONLN) &&
 mkdir -p ./build/pc && cd ./build/pc && 
 cmake -DCMAKE_BUILD_TYPE=Debug ../../ && 
 make VERBOSE=ON -j$THREADS
-

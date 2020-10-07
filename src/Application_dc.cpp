@@ -3,9 +3,6 @@
 #include "glex/Application.h"
 #include "glex/common/gl.h"
 #include "glex/common/log.h"
-#include "glex/input/KeyboardInputHandler.h"
-
-#include <dc/maple/keyboard.h>
 
 #include <cstdlib>
 #include <algorithm>

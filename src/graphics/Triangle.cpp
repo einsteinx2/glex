@@ -1,4 +1,4 @@
-#include "glex/Triangle.h"
+#include "glex/graphics/Triangle.h"
 #include "glex/common/log.h"
 
 void Triangle::draw() {
