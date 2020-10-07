@@ -22,7 +22,7 @@
 #variable_watch(CMAKE_BUILD_TYPE)
 
 cmake_minimum_required(VERSION 3.12.0)
-project(glex)
+project(GLEX)
 
 # If no toolchain is specified, automatically build for the host OS
 if(NOT CMAKE_TOOLCHAIN_FILE)
@@ -32,8 +32,8 @@ endif()
 # Setup build configurations
 include(${CMAKE_SOURCE_DIR}/cmake/BuildConfigurations.cmake)
 
-# Add the glex project files
-add_library(glex STATIC 
+# Add the GLEX project files
+add_library(GLEX STATIC 
     # Common
     include/glex/common/font.h
     include/glex/common/gl.h
@@ -68,7 +68,7 @@ include_directories("${CMAKE_SOURCE_DIR}/deps/shared")
 # Add platform specific files
 if(USE_GLFW)
     # GLFW (i.e. Mac, Linux, Windows)
-    target_sources(glex PRIVATE 
+    target_sources(GLEX PRIVATE 
         src/Application_glfw.cpp
         src/input/KeyboardInputHandler_glfw.cpp
         src/input/MouseInputHandler_glfw.cpp
@@ -76,7 +76,7 @@ if(USE_GLFW)
     )
 elseif(DREAMCAST_BUILD)
     # Dreamcast
-    target_sources(glex PRIVATE 
+    target_sources(GLEX PRIVATE 
         src/Application_dc.cpp
         src/audio/Audio_dc.cpp
         src/input/KeyboardInputHandler_dc.cpp
@@ -88,14 +88,14 @@ endif()
 # Add correct OpenGL library
 if(USE_GLFW)
     # Add the glad dependency required by glfw
-    target_sources(glex PRIVATE deps/pc/glad_gl.cpp)
+    target_sources(GLEX PRIVATE deps/pc/glad_gl.cpp)
 
     # Build and include the glfw submodule so it's not necessary to build and install to system
     add_subdirectory("${CMAKE_SOURCE_DIR}/deps/pc/glfw")
     include_directories("${CMAKE_SOURCE_DIR}/deps/pc/glfw/include")
     include_directories("${CMAKE_SOURCE_DIR}/deps/pc/glfw/deps")
-    target_link_libraries(glex glfw)
-    add_dependencies(glex glfw)
+    target_link_libraries(GLEX glfw)
+    add_dependencies(GLEX glfw)
 elseif(USE_GLDC)
     # Build and include the GLdc submodule so it's not necessary to build and install to system
     add_custom_target(GLdc
@@ -109,8 +109,8 @@ elseif(USE_GLDC)
         COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/GLdc" clean
         VERBATIM
     )
-    target_link_libraries(glex "${CMAKE_BINARY_DIR}/libGLdc.a" "-lm")
-    add_dependencies(glex GLdc)
+    target_link_libraries(GLEX "${CMAKE_BINARY_DIR}/libGLdc.a" "-lm")
+    add_dependencies(GLEX GLdc)
 
     # DreamHAL
     add_library(DreamHAL STATIC 
@@ -140,16 +140,16 @@ if(DREAMCAST_BUILD)
     add_executable(GLEXAudioExample 
         examples/GLEXAudioExample/main.cpp
     )
-    add_dependencies(GLEXAudioExample glex)
-    target_link_libraries(GLEXAudioExample glex)
+    add_dependencies(GLEXAudioExample GLEX)
+    target_link_libraries(GLEXAudioExample GLEX)
 endif()
 
 # GLEXGraphicsExample
 add_executable(GLEXGraphicsExample 
     examples/GLEXGraphicsExample/main.cpp
 )
-add_dependencies(GLEXGraphicsExample glex)
-target_link_libraries(GLEXGraphicsExample glex)
+add_dependencies(GLEXGraphicsExample GLEX)
+target_link_libraries(GLEXGraphicsExample GLEX)
 if(USE_GLDC)
     add_dependencies(GLEXGraphicsExample DreamHAL)
     target_link_libraries(GLEXGraphicsExample DreamHAL)
@@ -159,17 +159,17 @@ endif()
 add_executable(GLEXInputExample 
     examples/GLEXInputExample/main.cpp
 )
-add_dependencies(GLEXInputExample glex)
-target_link_libraries(GLEXInputExample glex)
+add_dependencies(GLEXInputExample GLEX)
+target_link_libraries(GLEXInputExample GLEX)
 
 # DCAudioPlayground (Dreamcast-only new audio driver test playground)
 if(DREAMCAST_BUILD)
     add_executable(DCAudioPlayground
         examples/DCAudioPlayground/main.cpp 
     )
-    add_dependencies(DCAudioPlayground glex)
+    add_dependencies(DCAudioPlayground GLEX)
     add_dependencies(DCAudioPlayground NSound)
-    target_link_libraries(DCAudioPlayground glex)
+    target_link_libraries(DCAudioPlayground GLEX)
     target_link_libraries(DCAudioPlayground "${CMAKE_BINARY_DIR}/libNSound.a")
     target_include_directories(DCAudioPlayground PRIVATE "${CMAKE_SOURCE_DIR}/deps/dc/nsound/include")
     target_include_directories(DCAudioPlayground PRIVATE "${CMAKE_SOURCE_DIR}/deps/dc/DCAudio")
@@ -179,8 +179,8 @@ endif()
 add_executable(GLEXPlayground 
     examples/GLEXPlayground/main.cpp
 )
-add_dependencies(GLEXPlayground glex)
-target_link_libraries(GLEXPlayground glex)
+add_dependencies(GLEXPlayground GLEX)
+target_link_libraries(GLEXPlayground GLEX)
 if(USE_GLDC)
     add_dependencies(GLEXPlayground DreamHAL)
     target_link_libraries(GLEXPlayground DreamHAL)
