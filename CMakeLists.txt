@@ -107,6 +107,7 @@ elseif(USE_GLDC)
         COMMAND mv "${CMAKE_SOURCE_DIR}/deps/dc/GLdc/libGLdc.a" "${CMAKE_BINARY_DIR}/libGLdc.a"
         # Clean the build artifacts
         COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/GLdc" clean
+        VERBATIM
     )
     target_link_libraries(glex "${CMAKE_BINARY_DIR}/libGLdc.a" "-lm")
     add_dependencies(glex GLdc)
@@ -118,37 +119,12 @@ elseif(USE_GLDC)
     include_directories("${CMAKE_SOURCE_DIR}/deps/dc/DreamHAL")
 endif()
 
-# Create and build example programs
-add_executable(PlaygroundExample 
-    examples/PlaygroundExample/main.cpp
-)
-add_dependencies(PlaygroundExample glex)
-target_link_libraries(PlaygroundExample glex)
-if(USE_GLDC)
-    add_dependencies(PlaygroundExample DreamHAL)
-    target_link_libraries(PlaygroundExample DreamHAL)
-endif()
-
-# Link macOS libraries if needed
-if(OS_MAC)
-    target_link_libraries(PlaygroundExample "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
-endif()
-
-if(PC_BUILD)
-    # Copy meshes
-    file(GLOB OBJ_MESHES "${CMAKE_SOURCE_DIR}/examples/PlaygroundExample/meshes/*.obj" )
-    file(COPY ${OBJ_MESHES} DESTINATION "${CMAKE_BINARY_DIR}/meshes")
-
-    # Copy images
-    file(GLOB IMG_FILES "${CMAKE_SOURCE_DIR}/examples/PlaygroundExample/images/*")
-    file(COPY ${IMG_FILES} DESTINATION "${CMAKE_BINARY_DIR}/images")
-elseif(DREAMCAST_BUILD)
-    # Dreamcast-only audio test program
+ # Dreamcast-only new audio driver test
+if(DREAMCAST_BUILD)
     add_custom_target(NSound
         # Build the custom sound driver based off of the KOS driver
         # NOTE: We must use "make" instead of "+make" or it will fail to build
         #       though we will not get multithreaded building
-        # OUTPUT "${CMAKE_BINARY_DIR}/libNSound.a"
         COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/nsound" build
         # Move the compiled sound driver file to the build directory
         COMMAND mv "${CMAKE_SOURCE_DIR}/deps/dc/nsound/arm/nstream.drv" "${CMAKE_BINARY_DIR}/nstream.drv"
@@ -157,22 +133,86 @@ elseif(DREAMCAST_BUILD)
         # Clean the build artifacts
         COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/dc/nsound" clean
     )
-    add_executable(DCAudioPlaygroundExample
-        examples/DCAudioPlaygroundExample/main.cpp 
+endif()
+
+# GLEXAudioExample
+if(DREAMCAST_BUILD)
+    add_executable(GLEXAudioExample 
+        examples/GLEXAudioExample/main.cpp
     )
-    add_dependencies(DCAudioPlaygroundExample glex)
-    add_dependencies(DCAudioPlaygroundExample NSound)
-    target_link_libraries(DCAudioPlaygroundExample glex)
-    target_link_libraries(DCAudioPlaygroundExample "${CMAKE_BINARY_DIR}/libNSound.a")
-    include_directories("${CMAKE_SOURCE_DIR}/deps/dc/nsound/include")
-    include_directories("${CMAKE_SOURCE_DIR}/deps/dc/DCAudio")
-    
+    add_dependencies(GLEXAudioExample glex)
+    target_link_libraries(GLEXAudioExample glex)
+endif()
+
+# GLEXGraphicsExample
+add_executable(GLEXGraphicsExample 
+    examples/GLEXGraphicsExample/main.cpp
+)
+add_dependencies(GLEXGraphicsExample glex)
+target_link_libraries(GLEXGraphicsExample glex)
+if(USE_GLDC)
+    add_dependencies(GLEXGraphicsExample DreamHAL)
+    target_link_libraries(GLEXGraphicsExample DreamHAL)
+endif()
+
+# GLEXInputExample
+add_executable(GLEXInputExample 
+    examples/GLEXInputExample/main.cpp
+)
+add_dependencies(GLEXInputExample glex)
+target_link_libraries(GLEXInputExample glex)
+
+# DCAudioPlayground (Dreamcast-only new audio driver test playground)
+if(DREAMCAST_BUILD)
+    add_executable(DCAudioPlayground
+        examples/DCAudioPlayground/main.cpp 
+    )
+    add_dependencies(DCAudioPlayground glex)
+    add_dependencies(DCAudioPlayground NSound)
+    target_link_libraries(DCAudioPlayground glex)
+    target_link_libraries(DCAudioPlayground "${CMAKE_BINARY_DIR}/libNSound.a")
+    target_include_directories(DCAudioPlayground PRIVATE "${CMAKE_SOURCE_DIR}/deps/dc/nsound/include")
+    target_include_directories(DCAudioPlayground PRIVATE "${CMAKE_SOURCE_DIR}/deps/dc/DCAudio")
+endif()
+
+# GLEXPlayground
+add_executable(GLEXPlayground 
+    examples/GLEXPlayground/main.cpp
+)
+add_dependencies(GLEXPlayground glex)
+target_link_libraries(GLEXPlayground glex)
+if(USE_GLDC)
+    add_dependencies(GLEXPlayground DreamHAL)
+    target_link_libraries(GLEXPlayground DreamHAL)
+endif()
+
+# Link macOS libraries if needed
+if(OS_MAC)
+    target_link_libraries(GLEXPlayground "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
+endif()
+
+# Final build steps (prepare assets and disc images)
+if(PC_BUILD)
+    # Copy meshes
+    file(GLOB OBJ_MESHES "${CMAKE_SOURCE_DIR}/examples/meshes/*.obj" )
+    file(COPY ${OBJ_MESHES} DESTINATION "${CMAKE_BINARY_DIR}/meshes")
+
+    # Copy images
+    file(GLOB IMG_FILES "${CMAKE_SOURCE_DIR}/examples/images/*")
+    file(COPY ${IMG_FILES} DESTINATION "${CMAKE_BINARY_DIR}/images")
+
+    # Copy samples
+    file(GLOB SAMPLE_FILES "${CMAKE_SOURCE_DIR}/examples/samples/*")
+    file(COPY ${SAMPLE_FILES} DESTINATION "${CMAKE_BINARY_DIR}/samples")
+elseif(DREAMCAST_BUILD)
     # Build CDIs
     set(DC_EXECUTABLES # Names without .elf extension
-        PlaygroundExample
-        DCAudioPlaygroundExample
+        GLEXAudioExample
+        GLEXGraphicsExample
+        GLEXInputExample
+        DCAudioPlayground
+        GLEXPlayground
     )
-
     foreach(EXE ${DC_EXECUTABLES})
     get_filename_component(EXE_FILENAME ${EXE} NAME)
     add_custom_target(
@@ -182,9 +222,9 @@ elseif(DREAMCAST_BUILD)
         COMMAND mkdir -p ${PROJECT_BINARY_DIR}/${EXE}
         COMMAND $ENV{KOS_BASE}/../bin/scramble ${PROJECT_BINARY_DIR}/${EXE}.bin ${PROJECT_BINARY_DIR}/${EXE}/1ST_READ.BIN
         COMMAND IP_TEMPLATE_FILE=${CMAKE_SOURCE_DIR}/deps/dc/IP.TMPL $ENV{KOS_BASE}/../bin/makeip ${CMAKE_SOURCE_DIR}/deps/dc/ip.txt ${PROJECT_BINARY_DIR}/${EXE}/IP.BIN
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/meshes ${CMAKE_BINARY_DIR}/${EXE}/ || true
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/images ${CMAKE_BINARY_DIR}/${EXE}/ || true
-        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/${EXE}/samples ${CMAKE_BINARY_DIR}/${EXE}/ || true
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/meshes ${CMAKE_BINARY_DIR}/${EXE}/ || true
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/images ${CMAKE_BINARY_DIR}/${EXE}/ || true
+        COMMAND cp -r ${CMAKE_SOURCE_DIR}/examples/samples ${CMAKE_BINARY_DIR}/${EXE}/ || true
         # Generate CDI disc image
         COMMAND mkisofs -C 0,11702 -V ${EXE_FILENAME} -G ${PROJECT_BINARY_DIR}/${EXE}/IP.BIN -joliet -rock -l -o ${PROJECT_BINARY_DIR}/${EXE}.iso ${PROJECT_BINARY_DIR}/${EXE}
         COMMAND $ENV{KOS_BASE}/../bin/cdi4dc ${PROJECT_BINARY_DIR}/${EXE}.iso ${PROJECT_BINARY_DIR}/${EXE}.cdi

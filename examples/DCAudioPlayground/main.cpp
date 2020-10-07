@@ -1,5 +1,5 @@
 /*
- * NOTE: This is meant for my own personal testing! Please see the "audiotest" example project to learn how to use audio with GLEX. 
+ * NOTE: This is meant for my own personal testing! Please see the "GLEXAudioExample" project to learn how to use audio with GLEX. 
  * 
  * This is a test project to work try out low level Dreamcast AICA sound chip programming.
  * It uses the DCAudio low level header library and a duplicated copy of the KOS sound code 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     int width = 640;
     int height = 480;
     Application app;
-    app.createWindow("GLEX Playground", width, height);
+    app.createWindow("Dreamcast Audio Playground", width, height);
 
     // Basic keyboard handling
     int lastKeyCode = -1;
@@ -88,6 +88,7 @@ int main(int argc, char *argv[]) {
     clapSample = nsnd_sfx_load(glex::targetPlatformPath("samples/clap3.wav").c_str());
     DEBUG_PRINTLN("Initialized clap sample: %lu", clapSample);
     kthread_t *soundThread = thd_create(0, thd_0, NULL);
+    DEBUG_PRINTLN("Initialized sound thread: %p", soundThread);
 
     // Main loop
     while (!app.windowShouldClose()) {

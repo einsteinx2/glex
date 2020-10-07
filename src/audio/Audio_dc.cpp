@@ -94,7 +94,7 @@ bool Audio::load() {
     }
 
     _handle = snd_sfx_load(glex::targetPlatformPath(_path).c_str());
-    DEBUG_PRINTLN("Audio::load - _handle: %u", _handle);
+    DEBUG_PRINTLN("Audio::load - _handle: %lu", _handle);
     _isLoaded = _handle > 0;
     return _isLoaded;
 }
