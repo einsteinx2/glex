@@ -5,7 +5,7 @@
 #include "glex/common/log.h"
 #include "glex/Application.h"
 #ifdef DREAMCAST
-#include "glex/audio/Audio.h"
+#include "glex/audio/AudioSoundEffect.h"
 #endif
 #include "glex/graphics/Triangle.h"
 #include "glex/graphics/Cube.h"
@@ -65,6 +65,11 @@ void cleanExit(Application* app) {
 }
 
 int main(int argc, char *argv[]) {
+#if DEBUG_LOGGING
+    // Cause printf (including DEBUG_PRINT/LN) to print immediately
+    setbuf(stdout, NULL);
+#endif
+
     DEBUG_PRINTLN("Application started!");
     int width = 640;
     int height = 480;
@@ -72,7 +77,7 @@ int main(int argc, char *argv[]) {
     app.createWindow("GLEX Playground", width, height);
 
 #ifdef DREAMCAST
-    Audio clap("samples/clap3.wav");
+    AudioSoundEffect clap("samples/clap3.wav");
     clap.load();
 #endif
 

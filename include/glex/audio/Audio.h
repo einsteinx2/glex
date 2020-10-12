@@ -1,38 +1,27 @@
 #pragma once
 
-#ifdef DREAMCAST
-#include <dc/sound/sound.h>
-#include <dc/sound/sfxmgr.h>
-#endif
-
 #include <string>
-
-/*
- * Current limitations:
- *   - Only uncompressed 44.1Khz WAV is currently supported (more formats coming later)
- */
 
 class Audio {
 public:
-    static void audioInit();
+    // static void audioInit();
 
-    Audio(std::string path) { _path = path; }
-    ~Audio();
+    virtual ~Audio() {}
 
-    bool load();
-    void unload();
+    virtual bool load() = 0;
+    virtual void unload() = 0;
 
-    void play();
-    void pause();
-    void stop();
+    virtual void play() = 0;
+    virtual void pause() = 0;
+    virtual void stop() = 0;
 
-private:
-    static bool _isAudioInitialized;
+protected:
     std::string _path = "";
     bool _isLoaded = false;
     // bool _isPlaying = false;
 
-#ifdef DREAMCAST
-    sfxhnd_t _handle = 0;
-#endif
+    Audio(std::string path) : _path(path) {}
+
+private:
+    static bool _isAudioInitialized;
 };

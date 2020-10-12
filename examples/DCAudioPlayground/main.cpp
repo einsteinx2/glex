@@ -54,6 +54,11 @@ void* thd_0(void *v) {
 
 /* program entry */
 int main(int argc, char *argv[]) {
+#if DEBUG_LOGGING
+    // Cause printf (including DEBUG_PRINT/LN) to print immediately
+    setbuf(stdout, NULL);
+#endif
+
     DEBUG_PRINTLN("Application started!");
     int width = 640;
     int height = 480;

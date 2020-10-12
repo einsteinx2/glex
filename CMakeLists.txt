@@ -50,6 +50,8 @@ add_library(GLEX STATIC
     # GLEX
     src/Application.cpp                 include/glex/Application.h
     include/glex/audio/Audio.h
+    include/glex/audio/AudioSoundEffect.h
+    include/glex/audio/AudioStream.h
     src/graphics/Cube.cpp               include/glex/graphics/Cube.h
     src/graphics/Image.cpp              include/glex/graphics/Image.h
     src/graphics/Mesh.cpp               include/glex/graphics/Mesh.h
@@ -70,6 +72,7 @@ if(USE_GLFW)
     # GLFW (i.e. Mac, Linux, Windows)
     target_sources(GLEX PRIVATE 
         src/Application_glfw.cpp
+        src/audio/Audio_glfw.cpp
         src/input/KeyboardInputHandler_glfw.cpp
         src/input/MouseInputHandler_glfw.cpp
         src/input/GamepadInputHandler_glfw.cpp
@@ -79,6 +82,8 @@ elseif(DREAMCAST_BUILD)
     target_sources(GLEX PRIVATE 
         src/Application_dc.cpp
         src/audio/Audio_dc.cpp
+        src/audio/AudioSoundEffect_dc.cpp
+        src/audio/AudioStream_dc.cpp
         src/input/KeyboardInputHandler_dc.cpp
         src/input/MouseInputHandler_dc.cpp
         src/input/GamepadInputHandler_dc.cpp
@@ -141,7 +146,7 @@ if(DREAMCAST_BUILD)
         examples/GLEXAudioExample/main.cpp
     )
     add_dependencies(GLEXAudioExample GLEX)
-    target_link_libraries(GLEXAudioExample GLEX)
+    target_link_libraries(GLEXAudioExample GLEX "-ltremor -lmp3")
 endif()
 
 # GLEXGraphicsExample
@@ -188,6 +193,8 @@ endif()
 
 # Link macOS libraries if needed
 if(OS_MAC)
+    target_link_libraries(GLEXGraphicsExample "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
+    target_link_libraries(GLEXInputExample "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
     target_link_libraries(GLEXPlayground "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
 endif()
 
